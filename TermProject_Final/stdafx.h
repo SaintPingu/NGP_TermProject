@@ -10,6 +10,8 @@
 #include <fmod.hpp>
 #include <algorithm>
 
+#include <string>
+
 #include "..\Common.h"
 
 #define	WIN32_LEAN_AND_MEAN
