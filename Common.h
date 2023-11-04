@@ -7,6 +7,31 @@
 #define WINDOWSIZE_Y 750
 #define MSEC 1000
 
+#define PI 3.141592
+#define DEGREE_TO_RADIAN(degree) ((PI/180) * (degree))
+#define RADIAN_TO_DEGREE(radian) ((180/PI) * (radian))
+
+#define SINGLETON_PATTERN(TYPE)				\
+private:									\
+   static TYPE* mInst;						\
+public:										\
+   static TYPE* Inst()						\
+   {										\
+      if (!mInst) mInst = new TYPE;			\
+      return mInst;							\
+   }										\
+   static void Destroy() {					\
+      if (nullptr != mInst) {				\
+         delete mInst;						\
+         mInst = nullptr;					\
+      }										\
+   }                  
+
+#define SINGLETON_PATTERN_DEFINITION(TYPE)  \
+   TYPE* TYPE::mInst = nullptr;
+
+
+
 enum class Scene { Intro = 0, Town, Stage, Phase, Battle };
 enum class Action { Idle = 0, Attack, Hurt, Death };
 
@@ -17,10 +42,6 @@ enum class Skill { Empty = 0, Identity, Sector, Circle };
 
 enum class StageElement { Water = 0, Fire, Elec, Dark, Town, Null };
 
-
-#define PI 3.141592
-#define DEGREE_TO_RADIAN(degree) ((PI/180) * (degree))
-#define RADIAN_TO_DEGREE(radian) ((180/PI) * (radian))
 
 enum class Dir { Empty = 0, Left, Right, Up, Down, LD, LU, RD, RU };
 

@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "resource.h"
+#include "Timer.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow){
 	srand((unsigned int)time(NULL));
@@ -46,6 +49,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
+	SetTimer(hWnd, 1, 1, Update);
+
+	Timer::Inst()->Reset();
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);
@@ -58,6 +64,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	HDC hdc;
+	PAINTSTRUCT ps;
+	static std::wstring frameRate{};
+	RECT rect = { 0, 0, 100, 100 };
+
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -68,6 +79,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return FALSE;
 	case WM_PAINT:
 	{
+		hdc = BeginPaint(hWnd, &ps);
+		Timer::Inst()->GetFrameRate(frameRate);
+		DrawText(hdc, frameRate.c_str(), _tcslen(frameRate.c_str()), &rect, DT_TOP | DT_LEFT);
+		EndPaint(hWnd, &ps);
 	}
 	break;
 	case WM_KEYDOWN:
@@ -80,4 +95,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
+{
+	static int count = 0;
+	Timer::Inst()->Tick(60.f);
+	InvalidateRect(hWnd, NULL, FALSE);
 }
