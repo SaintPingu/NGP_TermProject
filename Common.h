@@ -11,6 +11,7 @@
 #define DEGREE_TO_RADIAN(degree) ((PI/180) * (degree))
 #define RADIAN_TO_DEGREE(radian) ((180/PI) * (radian))
 
+
 #define SINGLETON_PATTERN(TYPE)				\
 private:									\
    static TYPE* mInst;						\
