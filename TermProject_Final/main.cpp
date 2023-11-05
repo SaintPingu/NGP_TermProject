@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "Timer.h"
+#include "InputManager.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -52,6 +53,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	SetTimer(hWnd, 1, 1, Update);
 
 	Timer::Inst()->Reset();
+	InputManager::Inst()->Init();
+
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);
@@ -67,7 +70,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	HDC hdc;
 	PAINTSTRUCT ps;
 	static std::wstring frameRate{};
-	RECT rect = { 0, 0, 100, 100 };
+	RECT rect = { 0, 0, 300, 300 };
 
 	switch (uMsg)
 	{
@@ -80,8 +83,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 	{
 		hdc = BeginPaint(hWnd, &ps);
+		Rectangle(hdc, 0, 0, rect.right, rect.bottom);
+
 		Timer::Inst()->GetFrameRate(frameRate);
 		DrawText(hdc, frameRate.c_str(), _tcslen(frameRate.c_str()), &rect, DT_TOP | DT_LEFT);
+
+		if (KEY_TAP('Q')) {
+			std::wstring text = L"Q Tapped.";
+			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_RIGHT);
+		}
+		if (KEY_PRESSED('Q')) {
+			std::wstring text = L"Q Pressed.";
+			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_CENTER);
+		}
+		if (KEY_AWAY('Q')) {
+			std::wstring text = L"Q Away.";
+			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_RIGHT);
+		}
 		EndPaint(hWnd, &ps);
 	}
 	break;
@@ -101,5 +119,6 @@ void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
 	static int count = 0;
 	Timer::Inst()->Tick(60.f);
-	InvalidateRect(hWnd, NULL, FALSE);
+	InputManager::Inst()->Update();
+	InvalidateRect(hWnd, NULL, TRUE);
 }
