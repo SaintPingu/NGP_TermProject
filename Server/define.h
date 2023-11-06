@@ -1,22 +1,4 @@
 #pragma once
-#define SINGLETON_PATTERN(TYPE)				\
-private:									\
-   static TYPE* mInst;						\
-public:										\
-   static TYPE* Inst()						\
-   {										\
-      if (!mInst) mInst = new TYPE;			\
-      return mInst;							\
-   }										\
-   static void Destroy() {					\
-      if (nullptr != mInst) {				\
-         delete mInst;						\
-         mInst = nullptr;					\
-      }										\
-   }                  
-
-#define SINGLETON_PATTERN_DEFINITION(TYPE)  \
-   TYPE* TYPE::mInst = nullptr;
 
 #define SERVER_FRAMEWORK ServerFramework::Inst()
 
