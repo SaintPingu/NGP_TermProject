@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "TermProject_Final/stdafx.h"
 
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
 enum class BossAct { Line = 0, Circle, Spiral, Sector, Spread, Skill1, Skill2, Idle };
