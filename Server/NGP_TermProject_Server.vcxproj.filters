@@ -36,6 +36,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+    <ClCompile Include="ClientMgr.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="Data.h">
       <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientMgr.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -45,6 +45,7 @@ void ServerFramework::Execute()
 void ServerFramework::Exit()
 {
 	// TODO : 서버 프레임 워크 삭제 
+	SERVER_FRAMEWORK->Stop();
 
 }
 
