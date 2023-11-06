@@ -33,7 +33,7 @@ public:										\
 
 
 
-enum class Scene { Intro = 0, Town, Stage, Phase, Battle };
+enum class SceneType { Intro = 0, Town, Stage, Phase, Battle };
 enum class Action { Idle = 0, Attack, Hurt, Death };
 
 enum class Pokemon { Null = 0, Moltres, Articuno, Thunder };

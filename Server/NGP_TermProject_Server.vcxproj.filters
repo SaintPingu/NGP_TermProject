@@ -39,6 +39,9 @@
     <ClCompile Include="ClientMgr.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common.cpp">
+      <Filter>PCH</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
