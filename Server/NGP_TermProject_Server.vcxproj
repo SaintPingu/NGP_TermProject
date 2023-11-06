@@ -157,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="func.h" />
     <ClInclude Include="PacketNetwork.h" />

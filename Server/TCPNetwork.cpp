@@ -7,6 +7,26 @@ bool TCPNetwork::Init()
 	return false;
 }
 
+TResult TCPNetwork::CreateSocket()
+{
+	return TResult();
+}
+
+TResult TCPNetwork::CloseSocket()
+{
+	return TResult();
+}
+
+const SOCKET& TCPNetwork::GetSocket()
+{
+	return TCP_Socket;
+}
+
+const SOCKADDR_IN& TCPNetwork::GetSocketAddr()
+{
+	return TCP_SockAddr;
+}
+
 TCPNetwork::TCPNetwork()
 {
 

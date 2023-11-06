@@ -71,5 +71,8 @@
     <ClInclude Include="func.h">
       <Filter>PCH</Filter>
     </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
