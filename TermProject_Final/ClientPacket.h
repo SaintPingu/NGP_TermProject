@@ -1,5 +1,5 @@
 #pragma once
-
+#include "../Server/PacketStruct.h"
 
 enum class ClientLobbyCmd { Terminate = 0, MoveLeft, MoveRight, MoveUp, MoveDown };
 
@@ -9,20 +9,22 @@ struct ClientLobbyPacket {
 	ClientLobbyCmd* cmds;
 };
 
-class PacketBuffer {};
+class PacketBuffer : LobbyPacket, StagePacket, BattlePacket {};
 // PacketBuffer 구현시 제거
 
 class PacketGenerator
 {
 	CommandList* cmdList;
 	ClientLobbyPacket GenLobbyPacket();
-	
 };
 
 class PacketLoader
 {
-	PacketBuffer* buffer;
-	bool PopCommand(BYTE& cmd, std::vector<BYTE*>&);
-	std::vector<BYTE*> PopData();
+	LobbyPacket* LobbyPacketbuffer   = NULL;
+	StagePacket* StagePacketbuffer   = NULL;
+	BattlePacket* BattlePacketbuffer = NULL;
+
+	bool PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList);
+	std::vector<BYTE> PopData();
 };
 

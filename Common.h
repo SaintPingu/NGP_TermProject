@@ -357,10 +357,10 @@ public:
 	CommandList();
 	~CommandList();
 
-	std::vector<BYTE*> buffer;
+	std::vector<BYTE> buffer;
 
 	void CommandPush(BYTE& cmd, void* data, size_t size);
 
-	std::vector<BYTE*> GetCmdList();
+	std::vector<BYTE> GetCmdList();
 };
 
