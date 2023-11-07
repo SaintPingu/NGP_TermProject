@@ -374,11 +374,11 @@ void CommandList::CommandPush(BYTE& cmd, void* data, size_t size)
 }
 
 
-std::vector<BYTE> CommandList::GetCmdList()
+std::vector<BYTE*> CommandList::GetCmdList()
 {
-	std::vector<BYTE> copyBuffer;
+	std::vector<BYTE*> copyBuffer;
 	for (int i = 0; i < buffer.size();++i) {
-		copyBuffer.emplace_back(*buffer[i]);
+		copyBuffer.emplace_back(buffer[i]);
 	}
 	buffer.clear();
 
