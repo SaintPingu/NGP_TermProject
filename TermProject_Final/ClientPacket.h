@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 
 
 enum class ClientLobbyCmd { Terminate = 0, MoveLeft, MoveRight, MoveUp, MoveDown };

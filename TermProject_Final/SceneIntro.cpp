@@ -18,7 +18,7 @@
 #define LOGO_COLOR RGB(255, 212, 0)
 #define LOGO_SHADOW_COLOR RGB(200, 100, 0)
 
-#define LOGOsize 106
+#define LOGO_SIZE 106
 
 #define MENUsize 31
 
@@ -67,7 +67,7 @@ void Cloud::Move(int MoveX, int MoveY, const RECT& rectWindow)
 void Logo::Paint(HDC hdc)
 {
 	// 폰트 설정
-	HFONT hFont = CreateFont(LOGOsize, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ChubbyChoo-SemiBold"));
+	HFONT hFont = CreateFont(LOGO_SIZE, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ChubbyChoo-SemiBold"));
 	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
 
 	// 글자 배경색 투명으로
@@ -88,7 +88,7 @@ void Logo::Paint(HDC hdc)
 }
 
 // 처음 메인 화면 start, finish, finish등 메인 메뉴 설정
-void Menu::Paint(HDC hdc, HWND hWnd)
+void Menu::Paint(HDC hdc)
 {
 	HFONT hFont = CreateFont(MENUsize, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ARCADECLASSIC"));
 	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
@@ -205,7 +205,15 @@ void SceneIntro::Init()
 
 void SceneIntro::Render(HDC hdc, const RECT& rectWindow)
 {
+	intro.Paint(hdc, rectWindow);
+	for (int i = 0; i < CLOUD_NUM; i++)
+	{
+		clouds[i].Paint(hdc, rectWindow);
+	}
 
+	logo.Paint(hdc);
+
+	menu.Paint(hdc);
 }
 
 void SceneIntro::Animate()

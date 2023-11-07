@@ -53,7 +53,7 @@ public:
 	{
 		background.Load(L"images\\loading\\Loading_Black_background.bmp");
 	}
-	void Paint(HDC hdc, HWND hWnd);
+	void Paint(HDC hdc);
 	void fingerController(const HWND& hWnd);
 };
 
