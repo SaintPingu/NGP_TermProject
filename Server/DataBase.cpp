@@ -245,20 +245,6 @@ void BossDataInit(BossData& bossData,Type type, Difficulty difficulty)
 			bossData.damage_skill2 = 1.75f;
 			bossData.actDelay = 1550;
 			break;
-		case Difficulty::Normal:
-			bossData.hp = 5000;
-			bossData.damage = 2.8f;
-			bossData.damage_skill1 = 15.5f;
-			bossData.damage_skill2 = 2.5f;
-			bossData.actDelay = 1250;
-			break;
-		case Difficulty::Hard:
-			bossData.hp = 6000;
-			bossData.damage = 3.25f;
-			bossData.damage_skill1 = 17.5f;
-			bossData.damage_skill2 = 3.0f;
-			bossData.actDelay = 1100;
-			break;
 		default:
 			assert(0);
 			break;
@@ -280,20 +266,6 @@ void BossDataInit(BossData& bossData,Type type, Difficulty difficulty)
 			bossData.damage_skill1 = 3.5f;
 			bossData.damage_skill2 = 2.0f;
 			bossData.actDelay = 2000;
-			break;
-		case Difficulty::Normal:
-			bossData.hp = 3000;
-			bossData.damage = 1.8f;
-			bossData.damage_skill1 = 4.5f;
-			bossData.damage_skill2 = 2.5f;
-			bossData.actDelay = 1750;
-			break;
-		case Difficulty::Hard:
-			bossData.hp = 4000;
-			bossData.damage = 2.4f;
-			bossData.damage_skill1 = 5.0f;
-			bossData.damage_skill2 = 3.0f;
-			bossData.actDelay = 1250;
 			break;
 		default:
 			assert(0);
@@ -317,20 +289,6 @@ void BossDataInit(BossData& bossData,Type type, Difficulty difficulty)
 			bossData.damage_skill2 = 9.5f;
 			bossData.actDelay = 1750;
 			break;
-		case Difficulty::Normal:
-			bossData.hp = 4000;
-			bossData.damage = 2.2f;
-			bossData.damage_skill1 = 7.5f;
-			bossData.damage_skill2 = 15.0f;
-			bossData.actDelay = 1500;
-			break;
-		case Difficulty::Hard:
-			bossData.hp = 5000;
-			bossData.damage = 2.75f;
-			bossData.damage_skill1 = 9.0f;
-			bossData.damage_skill2 = 16.0f;
-			bossData.actDelay = 1250;
-			break;
 		default:
 			assert(0);
 			break;
@@ -352,20 +310,6 @@ void BossDataInit(BossData& bossData,Type type, Difficulty difficulty)
 			bossData.damage_skill1 = 5.5f;
 			bossData.damage_skill2 = 6.5f;
 			bossData.actDelay = 1500;
-			break;
-		case Difficulty::Normal:
-			bossData.hp = 6000;
-			bossData.damage = 4.75f;
-			bossData.damage_skill1 = 6.5f;
-			bossData.damage_skill2 = 7.5f;
-			bossData.actDelay = 1150;
-			break;
-		case Difficulty::Hard:
-			bossData.hp = 7500;
-			bossData.damage = 5.25f;
-			bossData.damage_skill1 = 8.0f;
-			bossData.damage_skill2 = 9.0f;
-			bossData.actDelay = 950;
 			break;
 		default:
 			assert(0);

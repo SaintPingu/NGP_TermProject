@@ -352,3 +352,35 @@ float CalculateDamage(float damage, Type destType, Type srcType)
 
 	return damage;
 }
+
+
+CommandList::CommandList()
+{
+}
+
+CommandList::~CommandList()
+{
+
+}
+
+void CommandList::CommandPush(BYTE& cmd, void* data, size_t size)
+{
+	buffer.push_back(&cmd);
+	if (size != 0) {
+		BYTE* pData = new BYTE[size];
+		memcpy(pData, data, size);
+		buffer.push_back(pData);
+	}
+}
+
+
+std::vector<BYTE> CommandList::GetCmdList()
+{
+	std::vector<BYTE> copyBuffer;
+	for (int i = 0; i < buffer.size();++i) {
+		copyBuffer.emplace_back(*buffer[i]);
+	}
+	buffer.clear();
+
+	return copyBuffer;
+}

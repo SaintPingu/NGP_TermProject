@@ -13,6 +13,9 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{29722402-b83b-44a8-b41e-6de800d3e954}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DataBase">
+      <UniqueIdentifier>{dc35b781-1a48-4423-8831-ea4d7a23e600}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="..\Common.cpp">
       <Filter>PCH</Filter>
+    </ClCompile>
+    <ClCompile Include="DataBase.cpp">
+      <Filter>DataBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="ClientMgr.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBase.h">
+      <Filter>DataBase</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

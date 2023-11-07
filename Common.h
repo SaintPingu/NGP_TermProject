@@ -349,3 +349,18 @@ void ScaleRect(FRECT& rect, float scaleX, float scaleY);
 FRECT GetRect(const Vector2& posCenter, float radius);
 bool IntersectRect2(const RECT& rect1, const RECT& rect2);
 float CalculateDamage(float damage, Type destType, Type srcType);
+
+
+class CommandList
+{
+public:
+	CommandList();
+	~CommandList();
+
+	std::vector<BYTE*> buffer;
+
+	void CommandPush(BYTE& cmd, void* data, size_t size);
+
+	std::vector<BYTE> GetCmdList();
+};
+
