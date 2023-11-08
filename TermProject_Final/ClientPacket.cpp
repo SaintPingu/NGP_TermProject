@@ -25,20 +25,23 @@ ClientLobbyPacket PacketGenerator::GenLobbyPacket()
 
 bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
 {
-	if (LobbyPacketbuffer) {
-		//cmd = LobbyPacketbuffer->Command; // 서버에서 커맨드는 하나씩만 옴
+	//if (로비)
+	{ // 로비일경우 커맨드는 하나
+		static int cnt = 0;
+		if (cnt == 0) { //dataLen remove
+			buffer->erase(buffer->begin());
+			++cnt;
+			return true;
+		}
 
-		//GoMenu 명령이 들어 왔다면? char 1바이트 추가
-
-		return true;
-	}
-	else if (StagePacketbuffer) {
-
-		return true;
-	}
-	else if (BattlePacketbuffer) {
-
-		return true;
+		cmd = (BYTE)(*buffer->begin()); // 1byte
+		buffer->erase(buffer->begin());
+		if ((int)cmd == (int)ServerLobbyCmd::GoMenu) {
+			cmdList.push_back((BYTE)(*buffer->begin())); // 1byte StageElement
+			buffer->erase(buffer->begin(), buffer->begin() + 3); // [0],[1],[2] erase
+			cnt = 0;
+			return true;
+		}
 	}
 
 	return false;
@@ -46,13 +49,9 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
 
 std::vector<BYTE> PacketLoader::PopData()
 {
-	if (LobbyPacketbuffer) {
-		//LobbyPacketbuffer->LobbyData
+	std::vector<BYTE> pData;
+	for (auto data = buffer->begin();data != buffer->end(); ++data) {
+		pData.push_back(*data);
 	}
-	else if (StagePacketbuffer) {
-	}
-	else if (BattlePacketbuffer) {
-
-	}
-	return std::vector<BYTE>();
+	return pData;
 }

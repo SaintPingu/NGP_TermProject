@@ -9,8 +9,6 @@ struct ClientLobbyPacket {
 	ClientLobbyCmd* cmds;
 };
 
-class PacketBuffer : LobbyPacket, StagePacket, BattlePacket {};
-// PacketBuffer 구현시 제거
 
 class PacketGenerator
 {
@@ -20,10 +18,7 @@ class PacketGenerator
 
 class PacketLoader
 {
-	LobbyPacket* LobbyPacketbuffer   = NULL;
-	StagePacket* StagePacketbuffer   = NULL;
-	BattlePacket* BattlePacketbuffer = NULL;
-
+	PacketBuffer* buffer             = NULL;
 	bool PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList);
 	std::vector<BYTE> PopData();
 };

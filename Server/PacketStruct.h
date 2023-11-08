@@ -5,6 +5,8 @@
 // 2023-11-08-WED (장재문) : CMD enum 추가 
 
 #include "Data.h"
+using PacketBuffer = std::vector<BYTE>;
+using Packet = std::vector<BYTE>;
 
 /// +--------------
 ///	    LOBBY
