@@ -13,8 +13,13 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{29722402-b83b-44a8-b41e-6de800d3e954}</UniqueIdentifier>
     </Filter>
+<<<<<<< Updated upstream
     <Filter Include="DataBase">
       <UniqueIdentifier>{dc35b781-1a48-4423-8831-ea4d7a23e600}</UniqueIdentifier>
+=======
+    <Filter Include="Framework\Log">
+      <UniqueIdentifier>{c8a84c42-5e1e-47bc-b6c2-a358ff0d48d6}</UniqueIdentifier>
+>>>>>>> Stashed changes
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,8 +50,16 @@
     <ClCompile Include="..\Common.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+<<<<<<< Updated upstream
     <ClCompile Include="DataBase.cpp">
       <Filter>DataBase</Filter>
+=======
+    <ClCompile Include="Log.cpp">
+      <Filter>Framework\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleLog.cpp">
+      <Filter>Framework\Log</Filter>
+>>>>>>> Stashed changes
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,8 +102,19 @@
     <ClInclude Include="ClientMgr.h">
       <Filter>Framework</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="DataBase.h">
       <Filter>DataBase</Filter>
+=======
+    <ClInclude Include="Log.h">
+      <Filter>Framework\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="conmanip.h">
+      <Filter>Framework\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleLog.h">
+      <Filter>Framework\Log</Filter>
+>>>>>>> Stashed changes
     </ClInclude>
   </ItemGroup>
 </Project>
