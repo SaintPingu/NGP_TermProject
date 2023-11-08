@@ -1,8 +1,8 @@
 #pragma once
 
+
+
 #define SERVER_FRAMEWORK ServerFramework::Inst()
-
-
 
 #define SAFE_DELETE(p) if(nullptr != p) delete p; p = nullptr;
 

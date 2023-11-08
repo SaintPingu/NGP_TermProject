@@ -4,7 +4,7 @@
 
 bool TCPNetwork::Init()
 {
-	return false;
+	return true;
 }
 
 TResult TCPNetwork::CreateSocket()
