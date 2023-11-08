@@ -65,6 +65,8 @@ class SceneIntro : public Scene {
 	Menu menu{};
 	Cloud clouds[4];
 
+	void MoveClouds();
+	void MoveLogo();
 public:
 	virtual void Init() override;
 	virtual void Render(HDC hdc, const RECT& rectWindow) override;

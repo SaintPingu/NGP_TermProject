@@ -195,6 +195,33 @@ void Menu::fingerController(const HWND& hWnd)
 
 
 
+void SceneIntro::MoveClouds()
+{
+	//const RECT rectWindow = sceneManager->GetRectDisplay();
+	RECT rectWindow = { 0, 0, WINDOWSIZE_X , WINDOWSIZE_Y };
+	// 구름마다 속도 다르게 제어
+	clouds[0].Move(4, 0, rectWindow);
+	clouds[1].Move(2, 0, rectWindow);
+	clouds[2].Move(1, 0, rectWindow);
+	clouds[3].Move(4, 0, rectWindow);
+}
+
+void SceneIntro::MoveLogo()
+{
+	static bool thiscnt = false;
+
+	// 로고가 얼마나 움직였는지를 확인한 후 값에 따라 다시 반대로 움직이기
+	if (logo.logoMovingCnt > 10)
+		thiscnt = true;
+	else if (logo.logoMovingCnt == 0)
+		thiscnt = false;
+
+	if (thiscnt == true)
+		logo.logoMovingCnt--;
+	else
+		logo.logoMovingCnt++;
+}
+
 void SceneIntro::Init()
 {
 	clouds[0].Init(L"images\\intro\\Instruction_Cloud1.bmp", FIRSTCLOUD_X, FIRSTCLOUD_Y);
@@ -218,5 +245,7 @@ void SceneIntro::Render(HDC hdc, const RECT& rectWindow)
 
 void SceneIntro::Animate()
 {
-
+	menu.finger_twinkle_cnt++;
+	MoveClouds();
+	MoveLogo();
 }

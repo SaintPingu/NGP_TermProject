@@ -2,11 +2,14 @@
 #include "resource.h"
 #include "Timer.h"
 #include "InputManager.h"
+#include "SceneIntro.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 
+RECT rectWindow;
+SceneIntro* sceneIntro{};
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow){
 	srand((unsigned int)time(NULL));
 
@@ -47,6 +50,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		hInstance,
 		NULL);
 
+	sceneIntro = new SceneIntro();
+	sceneIntro->Init();
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -54,12 +59,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 	Timer::Inst()->Reset();
 	InputManager::Inst()->Init();
+	GetClientRect(hWnd, &rectWindow);
 
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);
 		DispatchMessage(&Message);
 	}
+	delete sceneIntro;
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	return Message.wParam;
@@ -83,23 +90,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 	{
 		hdc = BeginPaint(hWnd, &ps);
-		Rectangle(hdc, 0, 0, rect.right, rect.bottom);
-
-		Timer::Inst()->GetFrameRate(frameRate);
-		DrawText(hdc, frameRate.c_str(), _tcslen(frameRate.c_str()), &rect, DT_TOP | DT_LEFT);
-
-		if (KEY_TAP('Q')) {
-			std::wstring text = L"Q Tapped.";
-			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_RIGHT);
-		}
-		if (KEY_PRESSED('Q')) {
-			std::wstring text = L"Q Pressed.";
-			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_CENTER);
-		}
-		if (KEY_AWAY('Q')) {
-			std::wstring text = L"Q Away.";
-			DrawText(hdc, text.c_str(), _tcslen(text.c_str()), &rect, DT_RIGHT);
-		}
+		Rectangle(hdc, 0, 0, rectWindow.right, rectWindow.bottom);
+		sceneIntro->Render(hdc, rectWindow);
 		EndPaint(hWnd, &ps);
 	}
 	break;
@@ -121,4 +113,5 @@ void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 	Timer::Inst()->Tick(60.f);
 	InputManager::Inst()->Update();
 	InvalidateRect(hWnd, NULL, TRUE);
+	sceneIntro->Animate();
 }
