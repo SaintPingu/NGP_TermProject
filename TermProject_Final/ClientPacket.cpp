@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ClientPacket.h"
 
-Packet PacketGenerator::GenPacket()
+Packet PacketGenerator::GeneratePacket()
 {
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 

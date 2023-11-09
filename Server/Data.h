@@ -132,3 +132,30 @@ namespace Battle
 		BossSkillBattleData		BossEffectData;
 	};
 };
+
+
+enum class ClientLobbyCmd : BYTE {
+	Terminate = 0,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown
+};
+
+enum class ClientStageCmd : BYTE {
+	Terminate=0,
+	EnterStage,
+	ExitStage,
+	GoTown
+};
+
+enum class ClientBattleCmd : BYTE {
+	Terminate = 0,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown,
+	SkillQ,
+	SkillW,
+	SkillE
+};
