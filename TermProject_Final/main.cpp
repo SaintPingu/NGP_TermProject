@@ -2,14 +2,12 @@
 #include "resource.h"
 #include "Timer.h"
 #include "InputManager.h"
-#include "SceneIntro.h"
+#include "SceneManager.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime);
 
-RECT rectWindow;
-SceneIntro* sceneIntro{};
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow){
 	srand((unsigned int)time(NULL));
 
@@ -50,8 +48,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		hInstance,
 		NULL);
 
-	sceneIntro = new SceneIntro();
-	sceneIntro->Init();
+	SceneManager::Inst()->Init(hWnd);
+
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -59,14 +57,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 	Timer::Inst()->Reset();
 	InputManager::Inst()->Init();
-	GetClientRect(hWnd, &rectWindow);
 
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);
 		DispatchMessage(&Message);
 	}
-	delete sceneIntro;
+
+	SceneManager::Inst()->Destroy();
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	return Message.wParam;
@@ -74,11 +72,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	HDC hdc;
-	PAINTSTRUCT ps;
-	static std::wstring frameRate{};
-	RECT rect = { 0, 0, 300, 300 };
-
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -89,10 +82,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return FALSE;
 	case WM_PAINT:
 	{
-		hdc = BeginPaint(hWnd, &ps);
-		Rectangle(hdc, 0, 0, rectWindow.right, rectWindow.bottom);
-		sceneIntro->Render(hdc, rectWindow);
-		EndPaint(hWnd, &ps);
+		SceneManager::Inst()->RenderScene(hWnd);
 	}
 	break;
 	case WM_KEYDOWN:
@@ -109,9 +99,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
-	static int count = 0;
 	Timer::Inst()->Tick(60.f);
+
 	InputManager::Inst()->Update();
+	SceneManager::Inst()->AnimateScene();
+
 	InvalidateRect(hWnd, NULL, TRUE);
-	sceneIntro->Animate();
 }

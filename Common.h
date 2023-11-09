@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <cassert>
+#include <memory>
 
 #define WINDOWSIZE_X 500
 #define WINDOWSIZE_Y 750

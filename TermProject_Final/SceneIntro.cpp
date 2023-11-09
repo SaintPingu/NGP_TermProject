@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SceneIntro.h"
+#include "SceneManager.h"
 #include "InputManager.h"
+#include "Timer.h"
 
 #define CLOUD_NUM 4
 #define FIRSTCLOUD_X 125
@@ -20,7 +22,7 @@
 
 #define LOGO_SIZE 106
 
-#define MENUsize 31
+#define MENU_SIZE 31
 
 #define TIMERID_LODING 5
 #define ELAPSE_LOADING 100
@@ -29,7 +31,7 @@
 
 enum MI_Menu { start = 0, producer, finish };
 
-void MainIntro::Init(const wchar_t* imgfile, int posX, int posY)
+void MainIntro::Init(const wchar_t* imgfile, float posX, float posY)
 {
 	img.Load(imgfile);
 
@@ -44,7 +46,7 @@ void MainIntro::Init(const wchar_t* imgfile, int posX, int posY)
 	rectImage = { 0, 0, size.x, size.y };
 }
 
-void MainIntro::Paint(HDC hdc, const RECT& rectWindow)
+void MainIntro::Paint(HDC hdc)
 {
 	// 사이즈에 따른 위치 렉트값
 	rectDraw = { pos.x, pos.y, size.x + pos.x, size.y + pos.y };
@@ -54,10 +56,10 @@ void MainIntro::Paint(HDC hdc, const RECT& rectWindow)
 }
 
 // 메인 화면 구름 움직임
-void Cloud::Move(int MoveX, int MoveY, const RECT& rectWindow)
+void Cloud::Move(float MoveX, float MoveY)
 {
-	pos.x += MoveX;
-	pos.y += MoveY;
+	pos.x += MoveX * DeltaTime();
+	pos.y += MoveY * DeltaTime();
 
 	// 윈도우 벗어날 시 왼쪽의 일정 위치부터 시작
 	if (rectDraw.left > rectWindow.right)
@@ -90,7 +92,7 @@ void Logo::Paint(HDC hdc)
 // 처음 메인 화면 start, finish, finish등 메인 메뉴 설정
 void Menu::Paint(HDC hdc)
 {
-	HFONT hFont = CreateFont(MENUsize, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ARCADECLASSIC"));
+	HFONT hFont = CreateFont(MENU_SIZE, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ARCADECLASSIC"));
 	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
 
 	SetBkMode(hdc, TRANSPARENT);
@@ -144,7 +146,7 @@ void Menu::Paint(HDC hdc)
 	}
 
 	// 화살표의 깜빡거리는 부분 설정으로 1.5초에 한번씩 깜빡거림
-	if (finger_twinkle_cnt % 3 != 0 && !isProducer)
+	if (static_cast<int>(finger_twinkle) & 1 && !isProducer)
 		TextOut(hdc, fingerPos.x, fingerPos.y, L"▶", 1);
 
 	SelectObject(hdc, oldFont);
@@ -197,13 +199,11 @@ void Menu::fingerController(const HWND& hWnd)
 
 void SceneIntro::MoveClouds()
 {
-	//const RECT rectWindow = sceneManager->GetRectDisplay();
-	RECT rectWindow = { 0, 0, WINDOWSIZE_X , WINDOWSIZE_Y };
 	// 구름마다 속도 다르게 제어
-	clouds[0].Move(4, 0, rectWindow);
-	clouds[1].Move(2, 0, rectWindow);
-	clouds[2].Move(1, 0, rectWindow);
-	clouds[3].Move(4, 0, rectWindow);
+	clouds[0].Move(40, 0);
+	clouds[1].Move(30, 0);
+	clouds[2].Move(20, 0);
+	clouds[3].Move(50, 0);
 }
 
 void SceneIntro::MoveLogo()
@@ -213,13 +213,13 @@ void SceneIntro::MoveLogo()
 	// 로고가 얼마나 움직였는지를 확인한 후 값에 따라 다시 반대로 움직이기
 	if (logo.logoMovingCnt > 10)
 		thiscnt = true;
-	else if (logo.logoMovingCnt == 0)
+	else if (logo.logoMovingCnt < 0)
 		thiscnt = false;
 
 	if (thiscnt == true)
-		logo.logoMovingCnt--;
+		logo.logoMovingCnt -= DeltaTime() * 10.f;
 	else
-		logo.logoMovingCnt++;
+		logo.logoMovingCnt += DeltaTime() * 10.f;
 }
 
 void SceneIntro::Init()
@@ -230,12 +230,12 @@ void SceneIntro::Init()
 	clouds[3].Init(L"images\\intro\\Instruction_Cloud4.bmp", FOURTHCLOUD_X, FOURTHCLOUD_Y);
 }
 
-void SceneIntro::Render(HDC hdc, const RECT& rectWindow)
+void SceneIntro::Render(HDC hdc)
 {
-	intro.Paint(hdc, rectWindow);
+	intro.Paint(hdc);
 	for (int i = 0; i < CLOUD_NUM; i++)
 	{
-		clouds[i].Paint(hdc, rectWindow);
+		clouds[i].Paint(hdc);
 	}
 
 	logo.Paint(hdc);
@@ -245,7 +245,7 @@ void SceneIntro::Render(HDC hdc, const RECT& rectWindow)
 
 void SceneIntro::Animate()
 {
-	menu.finger_twinkle_cnt++;
+	menu.finger_twinkle += DeltaTime() * 2.f;
 	MoveClouds();
 	MoveLogo();
 }

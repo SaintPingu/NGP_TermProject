@@ -4,11 +4,11 @@
 class MainIntro
 {
 public:
-	POINT pos = { 0, };
-	RECT rectDraw = { 0, };
+	Vector2 pos = { 0, };
+	FRECT rectDraw = { 0, };
 
-	void Init(const wchar_t* imgfile, int posX, int posY);
-	virtual void Paint(HDC hdc, const RECT& rectWindow);
+	void Init(const wchar_t* imgfile, float posX, float posY);
+	virtual void Paint(HDC hdc);
 
 private:
 	CImage img;
@@ -28,13 +28,13 @@ public:
 class Cloud : public MainIntro
 {
 public:
-	void Move(int MoveX, int MoveY, const RECT& rectWindow);
+	void Move(float MoveX, float MoveY);
 };
 
 class Logo : public MainIntro
 {
 public:
-	int logoMovingCnt = 0;
+	float logoMovingCnt = 0;
 public:
 	void Paint(HDC hdc);
 };
@@ -44,7 +44,7 @@ class Menu : public MainIntro
 public:
 	CImage background;
 	int finger = 0;
-	int finger_twinkle_cnt = 0;
+	float finger_twinkle = 0;
 	int finger_difficulty = 0;
 	bool isProducer = false;
 	POINT fingerPos = { 0, };
@@ -69,6 +69,6 @@ class SceneIntro : public Scene {
 	void MoveLogo();
 public:
 	virtual void Init() override;
-	virtual void Render(HDC hdc, const RECT& rectWindow) override;
+	virtual void Render(HDC hdc) override;
 	virtual void Animate() override;
 };
