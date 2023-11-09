@@ -1,7 +1,7 @@
 #pragma once
 #include "../Server/PacketStruct.h"
 
-enum class ClientLobbyCmd { Terminate = 0, MoveLeft, MoveRight, MoveUp, MoveDown };
+enum class ClientLobbyCmd : BYTE { Terminate = 0, MoveLeft, MoveRight, MoveUp, MoveDown };
 
 struct ClientLobbyPacket {
 	BYTE dataLen;
@@ -13,7 +13,7 @@ struct ClientLobbyPacket {
 class PacketGenerator
 {
 	CommandList* cmdList;
-	ClientLobbyPacket GenLobbyPacket();
+	Packet GenPacket();
 };
 
 class PacketLoader
