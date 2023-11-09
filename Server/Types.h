@@ -38,7 +38,7 @@ enum class TResult : short
 /// +------------------
 ///	 SERVER LOBBY CMD
 /// ------------------+	
-enum class ServerLobbyCmd
+enum class ServerLobbyCmd :BYTE
 {
 	GoMenu,
 	GoStage,
@@ -49,7 +49,7 @@ enum class ServerLobbyCmd
 /// +------------------
 ///	 SERVER STAGE CMD
 /// ------------------+	
-enum class ServerStageCmd
+enum class ServerStageCmd :BYTE
 {
 	GoTown,
 	GoBattle,
@@ -58,7 +58,7 @@ enum class ServerStageCmd
 /// +------------------
 ///	 SERVER BATTLE CMD
 /// ------------------+	
-enum class ServerBattleCmd
+enum class ServerBattleCmd :BYTE
 {
 	Loss,
 	Win,

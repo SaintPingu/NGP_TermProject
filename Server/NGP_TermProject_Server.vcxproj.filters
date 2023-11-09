@@ -48,6 +48,9 @@
     <ClCompile Include="DataBase.cpp">
       <Filter>DataBase</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleLog.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="ServerPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -92,5 +95,9 @@
     <ClInclude Include="DataBase.h">
       <Filter>DataBase</Filter>
     </ClInclude>
+    <ClInclude Include="conmanip.h" />
+    <ClInclude Include="ConsoleLog.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="ServerPacket.h" />
   </ItemGroup>
 </Project>

@@ -158,6 +158,7 @@
     <ClCompile Include="PacketNetwork.cpp" />
     <ClCompile Include="ServerFramework.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
+    <ClCompile Include="ServerPacket.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -181,6 +182,7 @@
     <ClInclude Include="PacketStruct.h" />
     <ClInclude Include="ServerFramework.h" />
     <ClInclude Include="ServerNetwork.h" />
+    <ClInclude Include="ServerPacket.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TCPListenNetwork.h" />
     <ClInclude Include="TCPNetwork.h" />
