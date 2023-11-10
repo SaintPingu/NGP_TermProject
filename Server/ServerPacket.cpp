@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "ServerPacket.h"
+#include "ClientMgr.h"
+#include "ServerFramework.h"
 
 //////////////////////////////////////////////////////////
 /// 구현시 제거
-#include <map>
 struct GameData {
 	bool isBattleStart;
 	StageElement crntStageType;
@@ -113,36 +113,43 @@ Packet PacketGenerator::GeneratePacket(CommandList* cmdList, DataType type)
 
 void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
 {
-	// buffer[crntBufferIndex]의 내용만 옮기고 비운다.
-	*packetBuffers[clientID] = std::move(buffer[crntBufferIndex]);
+	packetBuffers[clientID] = buffer;
 }
 
-int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
+int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 {
-	//client ID를 어떻게 알지?
-	//클라이언트가 보내는 패킷을 항상 cmdCnt와 cmdlist뿐.
-	
-	//항상 cmdList는 비운다.
-	cmdList.clear();
+	if (packetBuffers.empty()) {
+		return crntClientID;
+	}
 
-	//if (로비 || 배틀)
+	if (crntClientID == -1) {
+		crntClientID = packetBuffers.begin()->first;
+	}
+	//클라이언트가 보내는 패킷을 항상 cmdCnt와 data뿐.
+	//항상 data는 비운다.
+
+	data.clear();
+
+	//map<int, SceneType> clientLocation
+
+	SceneType type = SceneType::Intro;
+	//type = SERVER_FRAMEWORK.sceneManager.gameData.clientLocation[crntClientID]; // scenmanager 구현시 주석 해제
+
+	if (type == SceneType::Town|| type == SceneType::Battle)
 	{
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
 		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin());
-		
-		return true;
 	}
-	//else if (스테이지)
+	else if (type == SceneType::Stage)
 	{
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
 		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin()+1);
 
 		if (cmd == (BYTE)ClientStageCmd::EnterStage) {
-			cmdList.push_back(*(packetBuffers[crntClientID]->begin() + 1)); // ClientStageData
+			data.push_back(*(packetBuffers[crntClientID]->begin() + 1)); // ClientStageData
 			packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 		}
-		return true;
 	}
 
-	return false;
+	return crntClientID;
 }

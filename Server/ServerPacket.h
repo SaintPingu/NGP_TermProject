@@ -27,6 +27,6 @@ public:
 	int crntBufferIndex;
 
 	void SetPacketBuffer(int clientID, std::vector<BYTE>* buffer);
-	int PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList);
+	int PopCommand(BYTE& cmd, std::vector<BYTE>& data);
 };
 
