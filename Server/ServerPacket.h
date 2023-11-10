@@ -1,8 +1,6 @@
 #pragma once
-#include <unordered_map>
-#include "../Server/PacketStruct.h"
-
-enum DataType : BYTE { Lobby = 0, Stage, Battle };
+#include "PacketStruct.h"
+enum class DataType : BYTE { Lobby = 0, Stage, Battle };
 
 class PacketGenerator
 {
