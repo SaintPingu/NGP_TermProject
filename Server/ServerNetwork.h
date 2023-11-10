@@ -9,7 +9,16 @@
 /// --------------+	
 class ServerNetwork : public PacketNetwork
 {
+
 private:
+	bool	IsTerminated{};
+	bool    IsReceived{};
+
+public:
+	virtual TResult Init() override;
+
+public:
+
 
 public:
 	ServerNetwork();

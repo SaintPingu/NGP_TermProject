@@ -1,6 +1,7 @@
 #pragma once
 
 // 2023-11-05-SUN (장재문) : 큰 틀을 잡기 위해서 미리 생성되었습니다.
+// 2023-11-10-SUN (장재문) : 내부 구현 시작 CreateSocket(), CloseSocket()
 
 /* +-----------------------------
 	TCPNetwork ←←← ListenNetwork
@@ -16,13 +17,14 @@
 
 class TCPNetwork
 {
-private:
+
+protected:
 	SOCKET		TCP_Socket;
 	SOCKADDR_IN TCP_SockAddr;
 
 
 public:
-	virtual bool Init();
+	virtual TResult Init() = 0;
 
 public:
 	TResult CreateSocket(); // 윈도우 소켓 초기화 및 생성 

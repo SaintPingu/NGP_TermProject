@@ -6,7 +6,7 @@
 
 #include "Data.h"
 using PacketBuffer = std::vector<BYTE>;
-using Packet = std::vector<BYTE>;
+using Packet       = std::vector<BYTE>;
 
 /// +--------------
 ///	    LOBBY

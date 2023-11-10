@@ -3,6 +3,9 @@
 
 
 #define SERVER_FRAMEWORK ServerFramework::Inst()
+#define CLIENT_MGR ClientMgr::Inst()
+
+#define MAX_IP_LEN 32
 
 #define SAFE_DELETE(p) if(nullptr != p) delete p; p = nullptr;
 

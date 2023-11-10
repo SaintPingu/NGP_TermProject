@@ -16,9 +16,7 @@ class ServerFramework
 	
 private:
 	bool				ExecuteFramework{};	// ±¸µ¿
-
 	TCPListenNetwork*	ListenNet{};
-	ServerNetwork*		ServerNet{};
 
 public:
 	bool Init();

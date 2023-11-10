@@ -6,13 +6,14 @@
 #include "PacketNetwork.h"
 #include "ServerNetwork.h"
 
+#include "ClientMgr.h"
+
 
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
 
 ServerFramework::ServerFramework()
 	: ExecuteFramework(false)
 	, ListenNet(nullptr)
-	, ServerNet(nullptr)
 {
 
 }
@@ -25,12 +26,21 @@ bool ServerFramework::Init()
 {
 	bool Result = true;
 	TResult Res{};
+
+/// +-------------------------
+///	  Window Socket 초기화
+/// -------------------------+	
+	//WSADATA wsa{};
+	//if((::WSAStartup(MAKEWORD(2,2), &wsa)) == 0)
+	//	return false;
+		
+
 /// +-------------------------
 ///	  TCPListenNetwork 초기화
 /// -------------------------+	
 
 	ListenNet = new TCPListenNetwork();
-	if (ListenNet->Init())
+	if (ListenNet->Init() == TResult::SUCCESS)
 	{
 		Res = ListenNet->CreateSocket();
 		Res = ListenNet->BindListen(9000); // 임시 포트번호  
@@ -39,15 +49,10 @@ bool ServerFramework::Init()
 		return false;
 
 
-/// +-------------------------
-///	   ServerNetwork 초기화
-/// -------------------------+	
-	ServerNet = new ServerNetwork();
-	if (ServerNet->Init())
-	{
-
-	}
-	else
+/// +--------------------------------------------
+///	   CLIENT MGR ( ServerNetwork 관리 ) 초기화
+/// --------------------------------------------+	
+	if (!CLIENT_MGR->Init())
 		return false;
 
 /// +-------------------------
@@ -75,14 +80,7 @@ void ServerFramework::Execute()
 				});
 			Listen.join();
 		}
-		/// +-------------------------
-		///	  Thread For Each Client.
-		/// -------------------------+			
-		{
-			// ClientMgr 에서 수행 
-
-		}
-
+		
 		/// +-------------------------
 		///	    Thread For Server.
 		/// -------------------------+			

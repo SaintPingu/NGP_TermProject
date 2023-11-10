@@ -14,9 +14,13 @@ enum class TResult : short
 {
 	NONE = 0,
 	SUCCESS,
+	SOCKET_EXISTED,
+	ERROR_CLOSE_SOCKET,
+	MAX_CLIENT_CAN_NOT_ACCEPT_ANYMORE_NOT_ERROR,
 
 // SOCKET ฐüทร FAIL
 	SERVER_SOCKET_CREATE_FAIL,
+	SERVER_SOCKET_CONNECT_FAIL,
 	SERVER_SOCKET_BIND_FAIL  ,
 	SERVER_SOCKET_LISTEN_FAIL,
 	ACCEPT_API_ERROR	,
@@ -38,7 +42,7 @@ enum class TResult : short
 /// +------------------
 ///	 SERVER LOBBY CMD
 /// ------------------+	
-enum class ServerLobbyCmd :BYTE
+enum class ServerLobbyCmd : BYTE
 {
 	GoMenu,
 	GoStage,
@@ -49,7 +53,7 @@ enum class ServerLobbyCmd :BYTE
 /// +------------------
 ///	 SERVER STAGE CMD
 /// ------------------+	
-enum class ServerStageCmd :BYTE
+enum class ServerStageCmd : BYTE
 {
 	GoTown,
 	GoBattle,
@@ -58,7 +62,7 @@ enum class ServerStageCmd :BYTE
 /// +------------------
 ///	 SERVER BATTLE CMD
 /// ------------------+	
-enum class ServerBattleCmd :BYTE
+enum class ServerBattleCmd : BYTE
 {
 	Loss,
 	Win,

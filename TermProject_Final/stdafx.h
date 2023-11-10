@@ -1,6 +1,15 @@
 #pragma once
 #pragma warning(disable:28251)
 #pragma warning(disable:4244)
+
+
+// 2023-11-10-FRI (장재문) : 소켓 관련 헤더 삽입 + ** timeproc 에러나고 있습니다! **
+#include <WinSock2.h>
+#include <MSWSock.h>
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+
+
 #include <Windows.h>
 #include <gdiplus.h>
 #include <time.h>
