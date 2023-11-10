@@ -1,5 +1,6 @@
 #pragma once
 class Scene;
+class Loading;
 
 class SceneManager {
 	SINGLETON_PATTERN(SceneManager)
@@ -7,6 +8,7 @@ class SceneManager {
 private:
 	RECT rectClientWindow{};
 	std::shared_ptr<Scene> crntScene{};
+	std::shared_ptr<Loading> loading{};
 
 	void StartRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap);
 	void FinishRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap);

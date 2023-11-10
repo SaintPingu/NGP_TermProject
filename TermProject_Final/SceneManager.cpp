@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneManager.h"
 #include "SceneIntro.h"
+#include "Loading.h"
 
 SINGLETON_PATTERN_DEFINITION(SceneManager)
 
@@ -8,6 +9,7 @@ void SceneManager::Init(const HWND& hWnd)
 {
 	GetClientRect(hWnd, &rectClientWindow);
 	LoadScene(SceneType::Intro);
+	loading = std::make_shared<Loading>();
 }
 
 void SceneManager::StartRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap)
@@ -53,10 +55,12 @@ void SceneManager::RenderScene(const HWND& hWnd)
 
 	StartRender(hWnd, ps, hdc, memDC, hBitmap);
 	crntScene->Render(memDC);
+	loading->Render(memDC);
 	FinishRender(hWnd, ps, hdc, memDC, hBitmap);
 }
 
 void SceneManager::AnimateScene()
 {
 	crntScene->Animate();
+	loading->Animate();
 }
