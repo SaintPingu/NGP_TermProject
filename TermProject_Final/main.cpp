@@ -2,7 +2,7 @@
 #include "resource.h"
 #include "Timer.h"
 #include "InputManager.h"
-#include "SceneManager.h"
+#include "Framework.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -48,7 +48,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		hInstance,
 		NULL);
 
-	SceneManager::Inst()->Init(hWnd);
+	framework->Start(hWnd);
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		DispatchMessage(&Message);
 	}
 
-	SceneManager::Inst()->Destroy();
+	framework->Terminate();
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	return Message.wParam;
@@ -82,7 +82,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return FALSE;
 	case WM_PAINT:
 	{
-		SceneManager::Inst()->RenderScene(hWnd);
+		framework->Render();
 	}
 	break;
 	case WM_KEYDOWN:
@@ -102,7 +102,7 @@ void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 	Timer::Inst()->Tick(60.f);
 
 	InputManager::Inst()->Update();
-	SceneManager::Inst()->AnimateScene();
+	framework->Update();
 
 	InvalidateRect(hWnd, NULL, TRUE);
 }

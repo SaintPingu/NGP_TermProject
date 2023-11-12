@@ -2,17 +2,15 @@
 #include "SceneManager.h"
 #include "SceneIntro.h"
 #include "Loading.h"
+#include "Framework.h"
 
-SINGLETON_PATTERN_DEFINITION(SceneManager)
-
-void SceneManager::Init(const HWND& hWnd)
+void SceneManager::Init(HWND hWnd)
 {
-	GetClientRect(hWnd, &rectClientWindow);
 	LoadScene(SceneType::Intro);
 	loading = std::make_shared<Loading>();
 }
 
-void SceneManager::StartRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap)
+void SceneManager::StartRender(HWND hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap)
 {
 	hdc = BeginPaint(hWnd, &ps);
 	memDC = CreateCompatibleDC(hdc);
@@ -24,7 +22,7 @@ void SceneManager::StartRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC&
 	SetStretchBltMode(memDC, COLORONCOLOR);
 }
 
-void SceneManager::FinishRender(const HWND& hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap)
+void SceneManager::FinishRender(HWND hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC, HBITMAP& hBitmap)
 {
 	BitBlt(hdc, 0, 0, rectWindow.right, rectWindow.bottom, memDC, 0, 0, SRCCOPY);
 	ValidateRect(hWnd, NULL);
@@ -47,7 +45,7 @@ void SceneManager::LoadScene(SceneType scene)
 	crntScene->Init();
 }
 
-void SceneManager::RenderScene(const HWND& hWnd)
+void SceneManager::RenderScene(HWND hWnd)
 {
 	PAINTSTRUCT ps{};
 	HDC hdc{}, memDC{};

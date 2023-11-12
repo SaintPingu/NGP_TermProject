@@ -176,6 +176,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Common.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ClientPacket.cpp" />
+    <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Loading.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="..\Common.h" />
     <ClInclude Include="ClientPacket.h" />
     <ClInclude Include="ClientStructs.h" />
+    <ClInclude Include="Framework.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Loading.h" />

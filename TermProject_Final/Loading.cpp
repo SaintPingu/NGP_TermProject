@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Loading.h"
-#include "SceneManager.h"
+#include "Framework.h"
 #include "Timer.h"
 
 
