@@ -9,6 +9,7 @@ struct GameData {
 	StageElement crntStageType;
 	std::map<int, SceneType> clientLocatio;
 };
+
 class Scene {
 public:
 };
