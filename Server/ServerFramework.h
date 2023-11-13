@@ -2,6 +2,7 @@
 
 // 2023-11-05-SUN (장재문) : 큰 틀을 잡기 위해서 미리 생성되었습니다.
 // 2023-11-08-WED (장재문) : 서버 프레임워크 로직 생성  
+// 2023-11-13-MON (민동현) : SceneMgr 구현 
 
 /// +------------------
 ///	 SERVER FRAMEWORK
@@ -9,6 +10,7 @@
 
 class TCPListenNetwork;
 class ServerNetwork;
+class SceneMgr;
 
 class ServerFramework
 {
@@ -17,6 +19,7 @@ class ServerFramework
 private:
 	bool				ExecuteFramework{};	// 구동
 	TCPListenNetwork*	ListenNet{};
+	std::shared_ptr<SceneMgr> sceneMgr{};
 
 public:
 	bool Init();

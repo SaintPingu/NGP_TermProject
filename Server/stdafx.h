@@ -19,7 +19,6 @@
 #include "Windows.h"
 #include "define.h"
 #include "Types.h"
-#include "../Common.h" 
 
 
 
@@ -37,3 +36,5 @@
 #include <unordered_set>
 
 
+
+#include "../Common.h" 

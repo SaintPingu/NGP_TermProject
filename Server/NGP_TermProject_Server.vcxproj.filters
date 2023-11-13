@@ -60,6 +60,9 @@
     <ClCompile Include="Log.cpp">
       <Filter>Log</Filter>
     </ClCompile>
+    <ClCompile Include="SceneMgr.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMgr.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -156,6 +156,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PacketNetwork.cpp" />
+    <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="ServerFramework.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="ServerPacket.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="PacketNetwork.h" />
     <ClInclude Include="PacketStruct.h" />
+    <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="ServerFramework.h" />
     <ClInclude Include="ServerNetwork.h" />
     <ClInclude Include="ServerPacket.h" />

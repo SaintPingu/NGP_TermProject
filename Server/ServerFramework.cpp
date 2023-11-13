@@ -7,6 +7,7 @@
 #include "ServerNetwork.h"
 
 #include "ClientMgr.h"
+#include "SceneMgr.h"
 
 
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
@@ -54,6 +55,12 @@ bool ServerFramework::Init()
 /// --------------------------------------------+	
 	if (!CLIENT_MGR->Init())
 		return false;
+
+/// +--------------------------------------------
+///	   SceneMgr √ ±‚»≠
+/// --------------------------------------------+	
+	sceneMgr = std::make_shared<SceneMgr>();
+	sceneMgr->Init();
 
 /// +-------------------------
 ///	  Server Framework Start
@@ -120,7 +127,7 @@ void ServerFramework::Logic()
 
 TResult ServerFramework::Start()
 {
-
+	
 
 
 	return TResult();
