@@ -19,5 +19,7 @@ private:
 public:
 	virtual void Init() override;
 	virtual void ProcessCommand(int clientID, Command command, void* data) override;
+
 	void Update();
+	const std::unordered_map<int, std::shared_ptr<LobbyPlayer>>& GetPlayers() const { return players; }
 };

@@ -4,6 +4,7 @@
 
 #define SERVER_FRAMEWORK ServerFramework::Inst()
 #define CLIENT_MGR ClientMgr::Inst()
+#define SCENE_MGR SERVER_FRAMEWORK->GetSceneMgr()
 
 #define MAX_IP_LEN 32
 

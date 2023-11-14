@@ -45,6 +45,6 @@ public:
 	ServerFramework();
 	~ServerFramework();
 
-
+	const std::shared_ptr<SceneMgr>& GetSceneMgr() const { return sceneMgr; }
 };
 

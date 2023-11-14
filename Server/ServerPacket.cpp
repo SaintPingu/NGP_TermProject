@@ -2,53 +2,32 @@
 #include "ClientMgr.h"
 #include "ServerFramework.h"
 
-//////////////////////////////////////////////////////////
-/// 구현시 제거
-struct GameData {
-	bool isBattleStart;
-	StageElement crntStageType;
-	std::map<int, SceneType> clientLocatio;
-};
+#include "SceneMgr.h"
+#include "LobbyScene.h"
 
-class Scene {
-public:
-};
-
-struct LobbyPlayer {
-	Vector2 pos;
-	Dir dir;
-	bool isMoving;
-};
-
-class LobbyScene : Scene {
-public:
-	std::map<int, LobbyPlayer> players;
-	RECT building[18];
-};
-
-class SceneManager {
-public:
-	GameData gameData;
-	LobbyScene lobbyScene;
-	//StageScene stageScene;
-	//BattleScene	battleScene;
-};
-SceneManager sceneManager;
 //////////////////////////////////////////////////////////
 
 void PacketGenerator::GenerateData()
 { // GenerateData
-
 	{// 로비 생성
-		LobbyScene& lobby = sceneManager.lobbyScene;
+		auto& lobby = SCENE_MGR->Lobby();
+		auto& players = lobby->GetPlayers();
 
-		Lobby::PlayerLobbyData* playerlobbydata = new Lobby::PlayerLobbyData[lobby.players.size()];
-		for (int i = 0;i < lobby.players.size();++i) {
-			playerlobbydata[i].Pid_Mov_Dir = (i << 3) + (lobby.players[i].isMoving << 2) + BYTE(lobby.players[i].dir);
-			playerlobbydata[i].Pos.x = lobby.players[i].pos.x;
-			playerlobbydata[i].Pos.y = lobby.players[i].pos.y;
+		Lobby::PlayerLobbyData* playerlobbydata = new Lobby::PlayerLobbyData[players.size()];
+		int i{};
+		for(const auto& [clientID, player] : players) {
+			std::bitset<5> pid(clientID);
+			std::bitset<1> mov(players.at(clientID)->isMoving);
+			std::bitset<2> dir(static_cast<int>(players.at(clientID)->dir) - 1);
+			std::bitset<8> byte(pid.to_string() + mov.to_string() + dir.to_string());
+
+			playerlobbydata[i].Pid_Mov_Dir = static_cast<BYTE>(byte.to_ulong());
+			playerlobbydata[i].Pos.x = players.at(clientID)->pos.x;
+			playerlobbydata[i].Pos.x = players.at(clientID)->pos.y;
+			++i;
 		}
-		lobbyData.PlayerCnt = lobby.players.size();
+
+		lobbyData.PlayerCnt = players.size();
 		lobbyData.PlayersData = playerlobbydata;
 	}
 
