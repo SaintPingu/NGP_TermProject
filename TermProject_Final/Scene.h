@@ -16,7 +16,7 @@ struct LobbyPlayer {
 };
 
 struct NPC {
-	//Image image; 어떤 이미지?
+	ObjectImage image;
 	Vector2 pos;
 };
 
@@ -25,7 +25,7 @@ private:
 	std::map<int, LobbyPlayer> lobbyPlayers;
 
 	RECT building[18];
-	//Image background; 어떤 이미지?
+	CImage background;
 	NPC npc[4];
 public:
 	LobbyScene();

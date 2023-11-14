@@ -150,6 +150,7 @@
     <ClCompile Include="ClientMgr.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
     <ClCompile Include="DataBase.cpp" />
+    <ClCompile Include="LobbyScene.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -178,9 +179,11 @@
     <ClInclude Include="DataBase.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="func.h" />
+    <ClInclude Include="LobbyScene.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="PacketNetwork.h" />
     <ClInclude Include="PacketStruct.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="ServerFramework.h" />
     <ClInclude Include="ServerNetwork.h" />

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "resource.h"
-#include "Timer.h"
 #include "InputManager.h"
 #include "Framework.h"
 

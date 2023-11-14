@@ -117,7 +117,7 @@ void ServerFramework::Stop()
 
 void ServerFramework::Logic()
 {
-
+	Timer::Inst()->Tick(30.f);
 	SetPacketBuffer();
 	ProcessCommand();
 	UpdateScene();
@@ -127,7 +127,7 @@ void ServerFramework::Logic()
 
 TResult ServerFramework::Start()
 {
-	
+	Timer::Inst()->Reset();
 
 
 	return TResult();

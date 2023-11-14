@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <memory>
+#include <string>
 
 #define WINDOWSIZE_X 500
 #define WINDOWSIZE_Y 750
@@ -43,6 +44,8 @@ using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
+// 2023-11-14-TUE (민동현) - Common.h 에 추가 -> Command
+using Command = BYTE;
 
 
 enum class SceneType { Intro = 0, Town, Stage, Phase, Battle };
@@ -365,3 +368,132 @@ public:
 	std::vector<BYTE> GetCmdList();
 };
 
+
+// 2023-11-14-TUE (민동현) - Types.h -> Common.h로 이동
+/// +------------------
+///	 SERVER LOBBY CMD
+/// ------------------+	
+enum class ServerLobbyCmd : BYTE
+{
+	GoMenu,
+	GoStage,
+	Quit,
+	None,
+
+};
+/// +------------------
+///	 SERVER STAGE CMD
+/// ------------------+	
+enum class ServerStageCmd : BYTE
+{
+	GoTown,
+	GoBattle,
+
+};
+/// +------------------
+///	 SERVER BATTLE CMD
+/// ------------------+	
+enum class ServerBattleCmd : BYTE
+{
+	Loss,
+	Win,
+	AcceptSkillQ,
+	Hit,
+	UpdateMP,
+	CreateEffect,
+
+};
+
+/// +------------------
+///	 CLIENT LOBBY CMD
+/// ------------------+	
+enum class ClientLobbyCmd : BYTE
+{
+	Terminate,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown,
+
+};
+/// +------------------
+///	 CLIENT STAGE CMD
+/// ------------------+	
+enum class ClientStageCmd : BYTE
+{
+	Terminate,
+	EnterStage,
+	ExitStage,
+	GoTown,
+
+};
+/// +------------------
+///	 CLIENT BATTLE CMD
+/// ------------------+	
+enum class ClientBattleCmd : BYTE
+{
+	Terminate,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown,
+	SkillQ,
+	SkillW,
+	SkillE,
+
+};
+
+
+
+
+
+
+
+
+
+
+const ULONG MAX_SAMPLE_COUNT = 50; // Maximum frame time sample count
+
+class Timer
+{
+	SINGLETON_PATTERN(Timer)
+
+public:
+	Timer();
+	virtual ~Timer();
+
+	void Tick(float lockFPS = 0.0f);
+	void Start();
+	void Stop();
+	void Reset();
+
+	unsigned long GetFrameRate(std::wstring& string);
+	float GetTimeElapsed() const { return mTimeElapsed; }
+	float GetTotalTime();
+
+private:
+	double							mTimeScale{};
+	float							mTimeElapsed{};
+
+	__int64							mBasePerfCount{};
+	__int64							mPausedPerfCount{};
+	__int64							mStopPerfCount{};
+	__int64							mCurrentPerfCount{};
+	__int64							m_nLastPerfCount{};
+
+	__int64							mPerfFreqPerSec{};
+
+	float							mFrameTime[MAX_SAMPLE_COUNT]{};
+	ULONG							m_nSampleCount{};
+
+	unsigned long					mCrntFrameRate{};
+	unsigned long					mFPS{};
+	float							mFPSTimeElapsed{};
+
+	bool							mIsStopped{};
+};
+
+inline float DeltaTime()
+{
+	return Timer::Inst()->GetTimeElapsed();
+}

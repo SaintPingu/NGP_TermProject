@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Loading.h"
 #include "Framework.h"
-#include "Timer.h"
 
 
 #define LOADING_POKEMON_X 150

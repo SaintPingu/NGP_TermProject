@@ -2,7 +2,6 @@
 #include "SceneIntro.h"
 #include "Framework.h"
 #include "InputManager.h"
-#include "Timer.h"
 
 #define CLOUD_NUM 4
 #define FIRSTCLOUD_X 125

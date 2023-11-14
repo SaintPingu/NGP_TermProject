@@ -19,6 +19,9 @@
     <Filter Include="Log">
       <UniqueIdentifier>{2c985de6-b295-4449-8423-3a804b869666}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{458944ab-7081-49ca-bb0e-5182c0f22d3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,8 +63,11 @@
     <ClCompile Include="Log.cpp">
       <Filter>Log</Filter>
     </ClCompile>
+    <ClCompile Include="LobbyScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
     <ClCompile Include="SceneMgr.cpp">
-      <Filter>Framework</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,8 +125,14 @@
     <ClInclude Include="Log.h">
       <Filter>Log</Filter>
     </ClInclude>
+    <ClInclude Include="LobbyScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
     <ClInclude Include="SceneMgr.h">
-      <Filter>Framework</Filter>
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
