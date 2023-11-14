@@ -13,14 +13,16 @@
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
 
 ServerFramework::ServerFramework()
-	: ExecuteFramework(false)
-	, ListenNet(nullptr)
+	: executeFramework(false)
+	, listenNet(nullptr)
 {
 
 }
 
 ServerFramework::~ServerFramework()
 {
+	SAFE_DELETE(listenNet);
+	CLIENT_MGR->Destroy();
 }
 
 bool ServerFramework::Init()
@@ -31,24 +33,17 @@ bool ServerFramework::Init()
 /// +-------------------------
 ///	  Window Socket 초기화
 /// -------------------------+	
-	//WSADATA wsa{};
-	//if((::WSAStartup(MAKEWORD(2,2), &wsa)) == 0)
-	//	return false;
+	WSADATA wsa{};
+	if((::WSAStartup(MAKEWORD(2,2), &wsa)) != 0)
+		return false;
 		
 
 /// +-------------------------
 ///	  TCPListenNetwork 초기화
 /// -------------------------+	
-
-	ListenNet = new TCPListenNetwork();
-	if (ListenNet->Init() == TResult::SUCCESS)
-	{
-		Res = ListenNet->CreateSocket();
-		Res = ListenNet->BindListen(9000); // 임시 포트번호  
-	}
-	else
+	listenNet = new TCPListenNetwork();
+	if (listenNet->Init() != TResult::SUCCESS)
 		return false;
-
 
 /// +--------------------------------------------
 ///	   CLIENT MGR ( ServerNetwork 관리 ) 초기화
@@ -66,7 +61,7 @@ bool ServerFramework::Init()
 ///	  Server Framework Start
 /// -------------------------+	
 	ServerFramework::Start();
-	ExecuteFramework = true;
+	executeFramework = true;
 	return Result;
 }
 
@@ -74,30 +69,24 @@ bool ServerFramework::Init()
 
 void ServerFramework::Execute()
 {
-	while (ExecuteFramework)
-	{
-		std::cout << "-> Hello Server" << std::endl;
-		
-		/// +-------------------------
-		///	    Thread For Listen.
-		/// -------------------------+	
-		{
-			std::thread Listen([&]() {
-				ListenNet->Logic(); 
-				});
-			Listen.join();
-		}
-		
-		/// +-------------------------
-		///	    Thread For Server.
-		/// -------------------------+			
-		{
-			ServerFramework::Logic();
-		}
+	std::cout << "-> Server Execute\n";
 
-		// TEST 
-		SERVER_FRAMEWORK->Stop();
-	}
+	/// +-------------------------
+	///	    Thread For Listen.
+	/// -------------------------+	
+	std::thread Listen([&]() {
+		listenNet->Logic();
+		});
+
+	/// +-------------------------
+	///	    Thread For Server.
+	/// -------------------------+			
+	ServerFramework::Logic();
+
+
+	Listen.join();
+	std::cout << "-> Server Exit\n";
+
 }
 
 
@@ -112,16 +101,29 @@ void ServerFramework::Exit()
 
 void ServerFramework::Stop()
 {
-	ExecuteFramework = false;
+	executeFramework = false;
+	listenNet->Stop();
+
 }
 
 void ServerFramework::Logic()
 {
-	Timer::Inst()->Tick(30.f);
-	SetPacketBuffer();
-	ProcessCommand();
-	UpdateScene();
-	SendPakcet();
+
+	std::cout << "\t-> Server Logic 구동 중 ...\n";
+	while (executeFramework)
+	{
+		Timer::Inst()->Tick(30.f);
+		SetPacketBuffer();
+		ProcessCommand();
+		UpdateScene();
+		SendPakcet();
+
+		// 아래 코드를 삭제하면 서버 프레임 워크가 동작한다.  
+		SERVER_FRAMEWORK->Stop();
+
+	}
+
+	std::cout << "\t-> Server Logic Exit\n";
 
 }
 

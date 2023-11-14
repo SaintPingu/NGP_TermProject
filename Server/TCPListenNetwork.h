@@ -12,6 +12,7 @@
 
 struct AcceptInfo
 {
+	int			ID;
 	TResult		Result{};
 	std::string IP;
 	SOCKET		Socket;
@@ -22,10 +23,11 @@ struct AcceptInfo
 class TCPListenNetwork : public TCPNetwork
 {
 private:
-	short					ServerPort;
-
-	std::vector<SOCKET*>	NewClientSocks; // 새로 접속한 클라이언트 관리 ( 동기화 문제 )  -->  ClientMgr 
-	Mutex					Mute;
+	short					serverPort;
+	bool					executeListen;
+	
+	std::vector<SOCKET*>	newClientSocks; // 새로 접속한 클라이언트 관리 ( 동기화 문제 )  -->  ClientMgr 
+	Mutex					mute;
 
 public:
 	virtual TResult Init() override;
@@ -35,10 +37,12 @@ public:
 	TResult		BindListen(short PortNum);
 	AcceptInfo	Accept();
 	void		InsertSocket(SOCKET& socket);
+	void		Stop() { executeListen = false; TCPNetwork::CloseSocket();}
+	void		Execute() { executeListen = true; }
 
 
 public:
-	void SetPortNum(short port) { ServerPort = port; }
+	void SetPortNum(short port) { serverPort = port; }
 
 public:
 

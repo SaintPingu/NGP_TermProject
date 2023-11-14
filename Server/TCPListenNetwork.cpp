@@ -9,6 +9,7 @@
 
 
 TCPListenNetwork::TCPListenNetwork()
+    : executeListen(true)
 {
 }
 
@@ -22,17 +23,23 @@ TResult TCPListenNetwork::Init()
         return TResult::SOCKET_EXISTED;
 
 
+    CreateSocket();
+    BindListen(9000); // 임시 포트번호  
+    
     return TResult::SUCCESS;    
 }
 
 TResult TCPListenNetwork::Logic()
 {
-    while (true)
-    {
-        std::cout << "\t-> Hello Listen Network\n";
+    std::cout << "\t-> Listen Network 구동 중...\n";
+    std::cout << "\t\t-> Accept()...wait\n";
 
-//#define _EXECUTE_SERVER_
-#ifdef _EXECUTE_SERVER_
+    serverPort = 0;
+    while (executeListen)
+    {
+       
+#define _EXECUTE_SERVER_
+#ifdef  _EXECUTE_SERVER_
         /// +-------------
         ///	  4. Accept
         /// -------------+
@@ -43,26 +50,27 @@ TResult TCPListenNetwork::Logic()
         /// -------------------------+	
         TResult Res = CLIENT_MGR->RegisterConnectedClient(acceptinfo.IP, acceptinfo.Socket);
         if (Res == TResult::SUCCESS)
-            CLIENT_MGR->ExecuteClientThread(acceptinfo.Socket);
+            CLIENT_MGR->CreateClientThread(acceptinfo.Socket, 0);
 #endif
-        break;
+
     }
+    std::cout << "\t-> Listen Network 종료...\n";
     return TResult();
 
 }
 
 TResult TCPListenNetwork::BindListen(short PortNum)
 {
-    ServerPort = PortNum;
+    serverPort = PortNum;
 
     /// +--------------
     ///	  2. Bind
     /// --------------+
     memset(&TCP_SockAddr, 0, sizeof(TCP_SockAddr));
 
-    TCP_SockAddr.sin_family      = AF_INET;            // IPv4
-    TCP_SockAddr.sin_addr.s_addr = htonl(INADDR_ANY);  // host to network long
-    TCP_SockAddr.sin_port        = htons(PortNum);  // host to network short
+    TCP_SockAddr.sin_family      = AF_INET;             // IPv4
+    TCP_SockAddr.sin_addr.s_addr = htonl(INADDR_ANY);   // host to network long
+    TCP_SockAddr.sin_port        = htons(PortNum);      // host to network short
     int retval                   = ::bind(TCP_Socket, (SOCKADDR*)&TCP_SockAddr, sizeof(TCP_SockAddr));
     if (retval == SOCKET_ERROR)
         return TResult::SERVER_SOCKET_BIND_FAIL;
@@ -118,4 +126,5 @@ AcceptInfo TCPListenNetwork::Accept()
 void TCPListenNetwork::InsertSocket(SOCKET& socket)
 {
 }
+
 

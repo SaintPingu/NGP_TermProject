@@ -17,9 +17,9 @@ class ServerFramework
 	SINGLETON_PATTERN(ServerFramework);
 	
 private:
-	bool				ExecuteFramework{};	// 구동
-	TCPListenNetwork*	ListenNet{};
-	std::shared_ptr<SceneMgr> sceneMgr{};
+	bool						executeFramework{};	// 구동
+	TCPListenNetwork*			listenNet{};
+	std::shared_ptr<SceneMgr>	sceneMgr{};
 
 public:
 	bool Init();

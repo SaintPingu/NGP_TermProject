@@ -40,9 +40,13 @@ TResult TCPNetwork::CreateSocket()
 
 TResult TCPNetwork::CloseSocket()
 {
+	if (TCP_Socket == NULL) // 소켓이 이미 닫혀있습니다. 
+		return TResult::ERROR_CLOSE_SOCKET;
+
 	int retval = ::closesocket(TCP_Socket);
 	if (retval == SOCKET_ERROR)
 		return TResult::ERROR_CLOSE_SOCKET;
 
+	//TCP_Socket = NULL;
 	return TResult::SUCCESS;
 }

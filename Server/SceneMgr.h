@@ -6,6 +6,7 @@ class LobbyScene;
 class StageScene;
 class BattleScene;
 
+
 class SceneMgr {
 	struct GameData {
 		bool isBattleStart{ false };
@@ -16,6 +17,7 @@ class SceneMgr {
 private:
 	GameData gameData;
 	std::shared_ptr<LobbyScene> lobbyScene{};
+
 	//std::shared_ptr<StageScene> stageScene{};
 	//std::shared_ptr<BattleScene> battleScene{};
 

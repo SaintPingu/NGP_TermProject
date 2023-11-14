@@ -7,11 +7,16 @@
 
 struct ClientInfo
 {
-	int				ID = -1;
-	ServerNetwork*  ServerNet{};
+	int					ID = -1;
+	ServerNetwork*		ServerNet{};
 
 	bool IsConnected()	{ return ServerNet->GetSocket() != 0 ? true : false; }
-	void Clear()		{ ID = -1; if(ServerNet->GetSocket() != 0) ServerNet->CloseSocket(); ServerNet = nullptr; }
+	void Clear()		{ ID = -1; if(ServerNet != nullptr and ServerNet->GetSocket() != 0) ServerNet->CloseSocket(); ServerNet = nullptr; }
+	void ClientThreadLogic()
+	{
+
+	}
+
 };
 
 class ClientMgr
@@ -21,17 +26,18 @@ class ClientMgr
 private:
 	std::vector<ClientInfo>		ClientPool;		// 접속 클라이언트 관리 
     PacketGenerator				PacketGen;		// 패킷 관리
-	Mutex						Mute;			// 동기화 처리 
+	
+	Mutex						clientRegisterMutex; // 클라이언트 등록 동기화 처리용 뮤텍스
 
 public:
-	void CreateClientThread();
+
 	bool SetPacketBuffer();
 	bool SendPacket();
 	bool CheckInsertedSocket(); 
 	void PushCommand();
 
 	TResult RegisterConnectedClient(std::string clientIP, SOCKET& sock); // 접속된 클라이언트 ClientPool 에 등록 ( 해당 인덱스는 곧 본인의 ID ) 
-	TResult ExecuteClientThread(SOCKET& sock);
+	TResult CreateClientThread(SOCKET& sock, int ID);
 
 
 public:

@@ -28,3 +28,5 @@ void Safe_Delete_Vector(std::vector<T*> _vec)
 		SAFE_DELETE(_vec[i]);
 	}
 }
+
+

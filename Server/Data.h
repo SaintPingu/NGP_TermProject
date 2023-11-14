@@ -36,7 +36,7 @@ namespace Lobby
 	/// +--------------
 	///	  LOBBY DATA
 	/// --------------+	
-	struct LobbyData // 1 + ( 9 * n BYTE )
+	struct LobbyData        // 1 + ( 9 * n BYTE )
 	{
 		BYTE						 PlayerCnt;		// 2
 		PlayerLobbyData*			 PlayersData;   // [Player1-LobbyData][Player2-LobbyData] 동적 생성  
