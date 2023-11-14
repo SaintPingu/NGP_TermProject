@@ -112,11 +112,11 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	//map<int, SceneType> clientLocation
 
 	SceneType type = SceneType::Intro;
-	//type = SERVER_FRAMEWORK.sceneManager.gameData.clientLocation[crntClientID]; // scenmanager 구현시 주석 해제
-
+	//type = SERVER_FRAMEWORK->Inst()->sceneMgr.gameData.clientLocation[crntClientID]; // scenmanager 구현시 주석 해제
+	
 	if (type == SceneType::Town || type == SceneType::Battle) {
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
-		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin());
+		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 	}
 	else if (type == SceneType::Stage) {
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
