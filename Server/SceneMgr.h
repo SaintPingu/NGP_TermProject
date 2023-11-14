@@ -25,4 +25,6 @@ public:
 	const std::shared_ptr<LobbyScene>& Lobby() const { return lobbyScene; }
 	//const std::shared_ptr<StageScene>& Stage() const { return stageScene; }
 	//const std::shared_ptr<BattleScene>& Battle() const { return battleScene; }
+
+	GameData& GetGameData() { return gameData; }
 };
