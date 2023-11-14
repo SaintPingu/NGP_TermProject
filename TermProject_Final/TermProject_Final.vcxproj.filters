@@ -48,7 +48,7 @@
     <ClCompile Include="Sound.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LobbyScene.cpp">
+    <ClCompile Include="SceneLobby.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Framework.cpp">
@@ -93,6 +93,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneLobby.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneManager.h"
 #include "SceneIntro.h"
+#include "SceneLobby.h"
 #include "Loading.h"
 #include "Framework.h"
 
