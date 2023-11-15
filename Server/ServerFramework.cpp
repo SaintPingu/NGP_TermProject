@@ -8,6 +8,7 @@
 
 #include "ClientMgr.h"
 #include "SceneMgr.h"
+#include "ServerPacket.h"
 
 
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
@@ -23,6 +24,8 @@ ServerFramework::~ServerFramework()
 {
 	SAFE_DELETE(listenNet);
 	CLIENT_MGR->Destroy();
+	SAFE_DELETE(packetGenerator);
+	SAFE_DELETE(packetLoader);
 }
 
 bool ServerFramework::Init()
@@ -34,7 +37,7 @@ bool ServerFramework::Init()
 ///	  Window Socket 초기화
 /// -------------------------+	
 	WSADATA wsa{};
-	if((::WSAStartup(MAKEWORD(2,2), &wsa)) != 0)
+	if((::WSAStartup(MAKEWORD(2,2), &wsa)) != 0) // Exit() 에서 WSACleanup
 		return false;
 		
 
@@ -45,17 +48,20 @@ bool ServerFramework::Init()
 	if (listenNet->Init() != TResult::SUCCESS)
 		return false;
 
+
 /// +--------------------------------------------
 ///	   CLIENT MGR ( ServerNetwork 관리 ) 초기화
 /// --------------------------------------------+	
 	if (!CLIENT_MGR->Init())
 		return false;
 
+
 /// +--------------------------------------------
 ///	   SceneMgr 초기화
 /// --------------------------------------------+	
 	sceneMgr = std::make_shared<SceneMgr>();
 	sceneMgr->Init();
+
 
 /// +-------------------------
 ///	  Server Framework Start
@@ -78,9 +84,9 @@ void ServerFramework::Execute()
 		listenNet->Logic();
 		});
 
-	/// +-------------------------
-	///	    Thread For Server.
-	/// -------------------------+			
+	/// +----------------------------------------
+	///	    Thread For Server. ( main Thread )
+	/// ----------------------------------------+			
 	ServerFramework::Logic();
 
 
@@ -89,37 +95,23 @@ void ServerFramework::Execute()
 
 }
 
-
-
-void ServerFramework::Exit()
-{
-	SERVER_FRAMEWORK->Stop();
-
-	// TODO : ServerFramework 삭제 전 수행 
-
-}
-
-void ServerFramework::Stop()
-{
-	executeFramework = false;
-	listenNet->Stop();
-
-}
-
 void ServerFramework::Logic()
 {
 
-	std::cout << "\t-> Server Logic 구동 중 ...\n";
+	std::cout << "\t-> Server Logic 구동 중 ... [ENTER : 종료]\n";
+
 	while (executeFramework)
 	{
+		CLIENT_MGR->ExecuteTerminateIdEvents();
 		Timer::Inst()->Tick(30.f);
+
 		SetPacketBuffer();
 		ProcessCommand();
 		UpdateScene();
 		SendPakcet();
 
-		// 아래 코드를 삭제하면 서버 프레임 워크가 동작한다.  
-		SERVER_FRAMEWORK->Stop();
+		if(GetAsyncKeyState(VK_RETURN) & 0x8000)
+			SERVER_FRAMEWORK->Exit();
 
 	}
 
@@ -158,5 +150,29 @@ TResult ServerFramework::SendPakcet()
 {
 
 	return TResult();
+}
+
+
+
+void ServerFramework::Exit()
+{
+	if (!executeFramework)
+		return;
+
+	// TODO : ServerFramework 삭제 전 수행 
+	executeFramework = false;
+
+	listenNet->Exit();
+	CLIENT_MGR->Exit();
+
+	// 윈속 종료
+	WSACleanup();
+}
+
+void ServerFramework::Stop()
+{
+	listenNet->Stop();
+	CLIENT_MGR->Stop();
+
 }
 

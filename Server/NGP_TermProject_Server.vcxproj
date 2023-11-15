@@ -149,6 +149,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Common.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientMgr.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
     <ClCompile Include="DataBase.cpp" />
@@ -174,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common.h" />
+    <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientMgr.h" />
     <ClInclude Include="conmanip.h" />
     <ClInclude Include="ConsoleLog.h" />

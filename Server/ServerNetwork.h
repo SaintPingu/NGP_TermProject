@@ -18,7 +18,7 @@ public:
 	virtual TResult Init() override;
 
 public:
-
+	bool IsTerminate() { return IsTerminated; }
 
 public:
 	ServerNetwork();

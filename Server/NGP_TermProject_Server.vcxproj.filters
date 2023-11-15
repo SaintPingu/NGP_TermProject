@@ -22,6 +22,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{458944ab-7081-49ca-bb0e-5182c0f22d3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{56c230d3-1075-4c8b-a98f-2ad992d5907c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,9 +48,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
-    <ClCompile Include="ClientMgr.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
@@ -68,6 +68,12 @@
     </ClCompile>
     <ClCompile Include="SceneMgr.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientInfo.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientMgr.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +113,6 @@
     <ClInclude Include="Data.h">
       <Filter>Packet</Filter>
     </ClInclude>
-    <ClInclude Include="ClientMgr.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="DataBase.h">
       <Filter>DataBase</Filter>
     </ClInclude>
@@ -133,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientMgr.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInfo.h">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

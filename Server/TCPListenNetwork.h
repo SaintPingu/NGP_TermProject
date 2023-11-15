@@ -29,6 +29,8 @@ private:
 	std::vector<SOCKET*>	newClientSocks; // 새로 접속한 클라이언트 관리 ( 동기화 문제 )  -->  ClientMgr 
 	Mutex					mute;
 
+	bool					active = true;
+
 public:
 	virtual TResult Init() override;
 
@@ -37,7 +39,8 @@ public:
 	TResult		BindListen(short PortNum);
 	AcceptInfo	Accept();
 	void		InsertSocket(SOCKET& socket);
-	void		Stop() { executeListen = false; TCPNetwork::CloseSocket();}
+	void		Stop() { active = false; }
+	void		Exit() { executeListen = false; TCPNetwork::CloseSocket(); }
 	void		Execute() { executeListen = true; }
 
 

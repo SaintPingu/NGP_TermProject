@@ -37,7 +37,9 @@ TResult TCPListenNetwork::Logic()
     serverPort = 0;
     while (executeListen)
     {
-       
+        if (active == false)
+            continue;
+
 #define _EXECUTE_SERVER_
 #ifdef  _EXECUTE_SERVER_
         /// +-------------
@@ -48,13 +50,17 @@ TResult TCPListenNetwork::Logic()
         /// +-------------------------
         ///	  Thread For Each Client.
         /// -------------------------+	
-        TResult Res = CLIENT_MGR->RegisterConnectedClient(acceptinfo.IP, acceptinfo.Socket);
-        if (Res == TResult::SUCCESS)
-            CLIENT_MGR->CreateClientThread(acceptinfo.Socket, 0);
+        if (acceptinfo.Result == TResult::SUCCESS)
+        {
+            std::pair<int, TResult> result = CLIENT_MGR->RegisterConnectedClient(acceptinfo.IP, acceptinfo.Socket); // pair( id, TResult )
+            if (result.second == TResult::SUCCESS)
+                CLIENT_MGR->CreateClientThread(acceptinfo.Socket, result.first);
+        }
+
 #endif
 
     }
-    std::cout << "\t-> Listen Network Á¾·á...\n";
+    std::cout << "\t-> Listen Network Exit\n";
     return TResult();
 
 }
@@ -114,7 +120,6 @@ AcceptInfo TCPListenNetwork::Accept()
 
     char clientIP[MAX_IP_LEN] = { 0, };
     inet_ntop(AF_INET, &(ClientAddr.sin_addr), clientIP, MAX_IP_LEN - 1);
-
 
     Result.Result = TResult::SUCCESS;
     Result.IP     = clientIP;
