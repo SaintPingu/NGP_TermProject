@@ -139,7 +139,7 @@ void ClientMgr::ExecuteTerminateIdEvents()
 int ClientMgr::CreateID()
 {	
 	// 동기화 처리  
-	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
+	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::createID]);
 
 	// 순차탐색
 	for (int i = 0; i < clientPool.size(); ++i)

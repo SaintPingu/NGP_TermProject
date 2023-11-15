@@ -40,7 +40,7 @@ TResult ClientInfo::Logic()
 
 	}
 
-	CLIENT_MGR->RegisterTerminateClientID(ID);
+	CLIENT_MGR->RegisterTerminateClientID(ID); // 클라이언트 매니저에게 자신이 종료 됐다는 것을 알린다. 이후 이벤트 처리 할 것임 
 	std::cout << "\t\t-> Client [" << ID << "] 종료... -> ClientMgr 에서 이벤트 처리\n";
 
 	return TResult::CLIENT_DISCONNECT;

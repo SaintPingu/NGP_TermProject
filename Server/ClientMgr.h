@@ -14,6 +14,7 @@
 enum class mutexType
 {
 	accessClientPool,	// 클라이언트 정보 접근 동기화 뮤텍스
+	createID,			// 클라이언트 정보 접근 ID 생성 뮤텍스
 	terminateID_event,	// 클라이언트 접속 종료 처리 동기화 뮤텍스
 	END,
 };
@@ -24,8 +25,10 @@ class ClientMgr
 	SINGLETON_PATTERN(ClientMgr);
 
 private:
-	std::vector<ClientInfo*>	clientPool;						// 접속 클라이언트 관리 - clientPool 에 접근하는 함수는 mutex[accessClientPool] 뮤텍스를 꼭 lock 걸어야합니다. 
-    PacketGenerator				packetGen;						// 패킷 관리
+	/// -clientPool 에 접근하는 함수는 mutex[accessClientPool]를 꼭 lock 걸어야합니다.
+	std::vector<ClientInfo*>	clientPool;						// 접속 클라이언트 관리 
+    
+	PacketGenerator				packetGen;						// 패킷 관리
 	Mutex						mutex[(UINT)mutexType::END]{};	// 뮤텍스 관리
 
 	std::queue<int>				terminatedID_events;

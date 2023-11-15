@@ -111,6 +111,9 @@ void ServerFramework::Logic()
 
 	while (executeFramework)
 	{
+		std::cout << "\t\t\t-> server logic �͢͢͢͢� \n";
+		::Sleep(500);
+
 		CLIENT_MGR->ExecuteTerminateIdEvents();
 		Timer::Inst()->Tick(30.f);
 

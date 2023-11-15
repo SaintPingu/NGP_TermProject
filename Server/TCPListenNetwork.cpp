@@ -40,6 +40,9 @@ TResult TCPListenNetwork::Logic()
         if (active == false)
             continue;
 
+        std::cout << "\t\t\t-> Listen logic �ϢϢϢϢ� Accept waiting �΢΢΢΢� \n";
+        ::Sleep(500);
+
 #define _EXECUTE_SERVER_
 #ifdef  _EXECUTE_SERVER_
         /// +-------------

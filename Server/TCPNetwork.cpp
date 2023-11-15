@@ -49,7 +49,9 @@ TResult TCPNetwork::CloseSocket()
 		int retval = ::closesocket(TCP_Socket);
 		if (retval == SOCKET_ERROR)
 			return TResult::ERROR_CLOSE_SOCKET;
-		TCP_Socket = NULL;
+		TCP_Socket   = NULL;
+		TCP_SockAddr = SOCKADDR_IN();
+
 	}
 	else
 	{
