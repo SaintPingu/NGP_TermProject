@@ -2,9 +2,11 @@
 #include "stdafx.h"
 #include "DataBase.h"
 
+SINGLETON_PATTERN_DEFINITION(DataBase);
+
 DataBase::DataBase()
 {
-	Init();
+
 }
 
 DataBase::~DataBase()

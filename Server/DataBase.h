@@ -76,9 +76,9 @@ typedef struct EnemyData {
 	int frameNum_AtkRev  = 0;
 }EnemyData;
 
-#include "windef.h"
 class DataBase
 {
+	SINGLETON_PATTERN(DataBase);
 public:
 	DataBase();
 	~DataBase();

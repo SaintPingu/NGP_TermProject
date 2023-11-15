@@ -9,6 +9,7 @@
 #include "ClientMgr.h"
 #include "SceneMgr.h"
 #include "ServerPacket.h"
+#include "DataBase.h"
 
 
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
@@ -63,12 +64,20 @@ bool ServerFramework::Init()
 	sceneMgr->Init();
 
 
+/// +--------------------------------------------
+///	   DATABASE ÃÊ±âÈ­
+/// --------------------------------------------+	
+	DATABASE->Init();
+
+
 /// +-------------------------
 ///	  Server Framework Start
 /// -------------------------+	
 	ServerFramework::Start();
 	executeFramework = true;
 	return Result;
+
+
 }
 
 
