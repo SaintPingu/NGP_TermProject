@@ -7,7 +7,8 @@
 
 void SceneManager::Init(HWND hWnd)
 {
-	LoadScene(SceneType::Intro);
+	//LoadScene(SceneType::Intro);
+	LoadScene(SceneType::Lobby);
 	loading = std::make_shared<Loading>();
 }
 
@@ -38,6 +39,9 @@ void SceneManager::LoadScene(SceneType scene)
 	case SceneType::Intro:
 		crntScene = std::make_shared<SceneIntro>();
 		break;
+	case SceneType::Lobby:
+		crntScene = std::make_shared<SceneLobby>();
+		break;
 	default:
 		assert(0);
 		break;
@@ -54,7 +58,7 @@ void SceneManager::RenderScene(HWND hWnd)
 
 	StartRender(hWnd, ps, hdc, memDC, hBitmap);
 	crntScene->Render(memDC);
-	loading->Render(memDC);
+	//loading->Render(memDC);
 	FinishRender(hWnd, ps, hdc, memDC, hBitmap);
 }
 

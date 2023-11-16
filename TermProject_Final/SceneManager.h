@@ -15,4 +15,6 @@ public:
 	void LoadScene(SceneType scene);
 	void RenderScene(HWND hWnd);
 	void AnimateScene();
+
+	std::shared_ptr<Scene> GetCurrentScene() { return crntScene; }
 };

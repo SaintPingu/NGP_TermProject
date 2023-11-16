@@ -1,11 +1,16 @@
 #include "stdafx.h"
 #include "ClientPacket.h"
 
+
+bool isGenPacket = false;
+
 Packet PacketGenerator::GeneratePacket()
 {
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 
 	Packet packet;
+	isGenPacket = true;
+
 	if (pCommandList.size() == 0) {
 		packet.push_back(0);
 		return packet;

@@ -40,6 +40,7 @@ Difficulty GetDifficulty()
 {
 	return gameData.difficulty;
 }
+
 void CheckKeyDown(const HWND& hWnd, const WPARAM& wParam)
 {
 	if (sceneManager->GetScene() == Scene::Town || sceneManager->GetScene() == Scene::Stage)
@@ -162,6 +163,7 @@ void CheckKeyDown(const HWND& hWnd, const WPARAM& wParam)
 		}
 	}
 }
+
 void CheckKeyUp(const HWND& hWnd, const WPARAM& wParam)
 {
 	if (sceneManager->GetScene() == Scene::Town)

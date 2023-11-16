@@ -30,7 +30,7 @@ class SceneLobby : public Scene {
 	public:
 		POINT aboutMapPos;
 		CImage img;
-		//POINT pos = { 0, };
+		POINT pos = { 0, };
 		RECT rectDraw = { 0, };
 		RECT rectImage = { 0, };
 		RECT cam = { 0, };
@@ -40,12 +40,14 @@ class SceneLobby : public Scene {
 private:
 	std::map<int, LobbyPlayer> lobbyPlayers;
 
-	RECT building[18]; // 서버에서 충돌체크 하므로 필요 없는거 아닌가?
+	RECT building[18];
 	CImage background;
 	NPC npc[4];
 
+	//23-11-16 최정일 : 플레이어 데이타는 들어와있는 플레이어의 개수만큼 조정한다.
+	std::vector<Player> playerdata;
+	CImage masterPlayerData; // 이미지 로딩을 위한 데이터이다.
 
-	Player playerdata;
 	CImage exits;
 	CImage glowing_black;
 	bool lobbyexit = false;
@@ -65,4 +67,9 @@ public:
 
 	int GetCamSizeX();
 	int GetCamSizeY();
+
+
+	void NpcAnimate();
+	void PlayerAnimate();
+	void StopPlayer(int idx);
 };
