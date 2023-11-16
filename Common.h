@@ -48,7 +48,7 @@ using uint64 = unsigned __int64;
 using Command = BYTE;
 
 
-enum class SceneType { Intro = 0, Town, Stage, Phase, Battle };
+enum class SceneType { Intro = 0, Lobby, Stage, Phase, Battle };
 enum class Action { Idle = 0, Attack, Hurt, Death };
 
 enum class Pokemon { Null = 0, Moltres, Articuno, Thunder };
@@ -56,7 +56,7 @@ enum class SubPokemon { Null = 0, Pikachu = 0, Squirtle, Charmander };
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
 enum class Skill { Empty = 0, Identity, Sector, Circle };
 
-enum class StageElement { Water = 0, Fire, Elec, Dark, Town, Null };
+enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
 
 
 enum class Dir { Empty = 0, Left, Right, Up, Down, LD, LU, RD, RU };
@@ -386,7 +386,7 @@ enum class ServerLobbyCmd : BYTE
 /// ------------------+	
 enum class ServerStageCmd : BYTE
 {
-	GoTown,
+	GoLobby,
 	GoBattle,
 
 };
@@ -424,7 +424,7 @@ enum class ClientStageCmd : BYTE
 	Terminate,
 	EnterStage,
 	ExitStage,
-	GoTown,
+	GoLobby,
 
 };
 /// +------------------

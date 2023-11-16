@@ -36,58 +36,57 @@ void PacketGenerator::GenerateData()
 	}
 }
 
-Packet PacketGenerator::GeneratePacket(CommandList* cmdList, DataType type)
+void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
 {
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 
-	Packet packet;
+	buffer.clear();
+	buffer.reserve(100);
 
 	if (type == DataType::Lobby) {
 		BYTE len = pCommandList.size() + sizeof(lobbyData);
-		packet.push_back(len); // Datalen
+		buffer.push_back(len); // Datalen
 
 		for (int i = 0;i < pCommandList.size();++i) {
-			packet.push_back(pCommandList[i]); //ServerLobbyCmd
+			buffer.push_back(pCommandList[i]); //ServerLobbyCmd
 		}
 
 		BYTE bytes[sizeof(lobbyData)];
 		std::memcpy(bytes, &lobbyData, sizeof(lobbyData));
 
-		for (int i = 0;i < sizeof(lobbyData);++i) {
-			packet.push_back(bytes[i]); //ServerLobbyCmd
+		for (int i = 0; i < sizeof(lobbyData); ++i) {
+			buffer.push_back(bytes[i]); //ServerLobbyCmd
 		}
 	}
 	else if (type == DataType::Stage) {
 		BYTE len = pCommandList.size();
-		packet.push_back(len); // Datalen
+		buffer.push_back(len); // Datalen
 
-		for (int i = 0;i < pCommandList.size();++i) {
-			packet.push_back(pCommandList[i]); //ServerStageCmd
+		for (int i = 0; i < pCommandList.size(); ++i) {
+			buffer.push_back(pCommandList[i]); //ServerStageCmd
 		}
 
 	}
 	else if (type == DataType::Battle) {
 		int len = pCommandList.size() + sizeof(battleData); // battle씬은 int 4바이트의 datalen을 보낸다.
 		void* vlen = &len;
-		for (int i = 0;i < sizeof(int);++i) {
-			packet.push_back(((BYTE*)vlen)[i]); // Datalen	
+		for (int i = 0; i < sizeof(int); ++i) {
+			buffer.push_back(((BYTE*)vlen)[i]); // Datalen	
 		}
 
-		packet.push_back(pCommandList.size()); // cmdCnt
+		buffer.push_back(pCommandList.size()); // cmdCnt
 
-		for (int i = 0;i < pCommandList.size();++i) {
-			packet.push_back(pCommandList[i]); //ServerBattleCmd
+		for (int i = 0; i < pCommandList.size(); ++i) {
+			buffer.push_back(pCommandList[i]); //ServerBattleCmd
 		}
 
 		BYTE bytes[sizeof(battleData)];
 		std::memcpy(bytes, &battleData, sizeof(battleData));
 
-		for (int i = 0;i < sizeof(battleData);++i) {
-			packet.push_back(bytes[i]); //battleData
+		for (int i = 0; i < sizeof(battleData); ++i) {
+			buffer.push_back(bytes[i]); //battleData
 		}
 	}
-
-	return packet;
 }
 
 void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
@@ -111,7 +110,7 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 
 	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
 
-	if (type == SceneType::Town || type == SceneType::Battle) {
+	if (type == SceneType::Lobby || type == SceneType::Battle) {
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
 		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 	}

@@ -18,11 +18,12 @@ public:
 	virtual TResult Init() override;
 
 public:
-	TResult SendPacket();
-	TResult RecvPacket();
+	virtual TResult SendPacket();
+	virtual TResult RecvPacket();
 
 public:
-	PacketBuffer* GetPacketBuffer();
+	PacketBuffer& GetPacketBuffer() { return PacketBuf; }
+	void SetPacketBuffer(const Packet& packet);
 
 
 public:

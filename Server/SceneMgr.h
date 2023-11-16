@@ -23,10 +23,12 @@ private:
 
 public:
 	void Init();
+	void InsertClient(int id) { gameData.clientLocations[id] = SceneType::Lobby; }
 
 	const std::shared_ptr<LobbyScene>& Lobby() const { return lobbyScene; }
 	//const std::shared_ptr<StageScene>& Stage() const { return stageScene; }
 	//const std::shared_ptr<BattleScene>& Battle() const { return battleScene; }
 
 	GameData& GetGameData() { return gameData; }
+	SceneType GetClientLocation(int id) const { return gameData.clientLocations.at(id); }
 };

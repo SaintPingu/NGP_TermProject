@@ -13,7 +13,7 @@ public:
 	Battle::BattleData battleData;
 	
 	void GenerateData();
-	Packet GeneratePacket(CommandList* cmdList, DataType type);
+	void GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type);
 };
 
 class PacketLoader

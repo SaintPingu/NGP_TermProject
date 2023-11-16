@@ -26,8 +26,11 @@ private:
 	bool				executeLogic{};			// 클라이언트 로직 구동 여부
 	bool				active = true;
 
+	CommandList			cmdList{};
 	PacketBuffer		packetBuffer{};
 	ConnectFlag			curConnectFlag{};		// 현재 연결해야할 상태 Recv/Send
+
+	HANDLE				sendEvent{};			// 패킷 전송 이벤트
 
 public:
 	TResult Logic();
@@ -38,12 +41,16 @@ private:
 
 public:
 	TResult SetServerNet(ServerNetwork* net) { if (!serverNet) { serverNet = net; return TResult::SUCCESS; } return TResult::ERROR_SYNC_ISSUE; }
-	void	SetID(int id) { ID = id; }
+	void	SetID(int id);
 	void	SetConnectFlag(ConnectFlag flag) { curConnectFlag = flag; }
+	void	Send() { SetEvent(sendEvent); }
 
 
+	ConnectFlag GetConnectFlag() const { return curConnectFlag; }
 	const ServerNetwork* GetServerNet() { return serverNet; }
+	PacketBuffer& GetPacketBuffer();
 	int					 GetID() { return ID; }
+	CommandList* GetCmdList() { return &cmdList; }
 
 	void Execute() { executeLogic = true; }
 	void Stop() { active = false; }

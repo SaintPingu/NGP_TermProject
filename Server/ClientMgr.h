@@ -26,7 +26,9 @@ class ClientMgr
 
 private:
 	/// -clientPool 에 접근하는 함수는 mutex[accessClientPool]를 꼭 lock 걸어야합니다.
+	//std::vector<ClientInfo*>	newClients;						// 신규 접속 클라이언트
 	std::vector<ClientInfo*>	clientPool;						// 접속 클라이언트 관리 
+	int							clientPoolIndex{};				// 현재 클라이언트 풀의 최대 index
     
 	PacketGenerator				packetGen;						// 패킷 관리
 	Mutex						mutex[(UINT)mutexType::END]{};	// 뮤텍스 관리
@@ -37,7 +39,7 @@ public:
 
 	bool SetPacketBuffer();
 	bool SendPacket();
-	bool CheckInsertedSocket(); 
+	void InsertNewSocket();
 	void PushCommand();
 
 	// 접속된 클라이언트의 아이디와 TResult 값을 반환한다.
@@ -47,6 +49,7 @@ public:
 	// 접속 종료된 클라이언트들을 처리한다 ( 이벤트 처리 )
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
 	void ExecuteTerminateIdEvents();
+	int GetPoolIndex() const { return clientPoolIndex; }
 
 
 public:

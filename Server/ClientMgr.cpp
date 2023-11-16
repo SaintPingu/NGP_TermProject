@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "ClientMgr.h"
 #include "ClientInfo.h"
+#include "ServerFramework.h"
+#include "SceneMgr.h"
 
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
+constexpr int invalidID = -1;
 
 bool ClientMgr::SetPacketBuffer()
 {
@@ -10,16 +13,52 @@ bool ClientMgr::SetPacketBuffer()
 	return false;
 }
 
-bool ClientMgr::SendPacket()
+DataType GetDataType(ClientInfo* client)
 {
+	switch (SCENE_MGR->GetClientLocation(client->GetID())) {
+	case SceneType::Lobby:
+		return DataType::Lobby;
+	case SceneType::Stage:
+		return DataType::Stage;
+	case SceneType::Battle:
+		return DataType::Battle;
+	}
 
-	return false;
+	assert(0);
+	return DataType::Lobby;
 }
 
-bool ClientMgr::CheckInsertedSocket()
+bool ClientMgr::SendPacket()
 {
+	//InsertNewSocket();
 
-	return false;
+	// Generate
+	packetGen.GenerateData();
+
+	// Send
+	for (int i = 0; i < GetPoolIndex() + 1; ++i)
+	{
+		auto& client = clientPool[i];
+		if (client == nullptr) {
+			continue;
+		}
+
+		if (client->GetConnectFlag() == ConnectFlag::recv) {
+			DataType dataType = GetDataType(client);
+			packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
+			client->Send();
+		}
+	}
+
+	return true;
+}
+
+void ClientMgr::InsertNewSocket()
+{
+	//for (auto& client : newClients) {
+	//	clientPool[client->GetID()] = client;
+	//}
+	//newClients.clear();
 }
 
 void ClientMgr::PushCommand()
@@ -32,9 +71,9 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 	// 동기화 처리  
 	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
 
-	int id = ClientMgr::CreateID();
-	if (id == -1)
-		return std::pair<int, TResult>(-1, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
+	int id = CreateID();
+	if (id == invalidID)
+		return std::pair<int, TResult>(invalidID, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
 
 	ClientInfo* NewUser = new ClientInfo;
 	NewUser->SetID(id);
@@ -47,7 +86,7 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 
 TResult ClientMgr::CreateClientThread(SOCKET& sock, int ID)
 {
-	if (clientPool[ID] == nullptr or ID == -1)
+	if (clientPool[ID] == nullptr or ID == invalidID)
 	{
 		CRASH("INVALID CLIENT ID - CreateClientThread()");
 		return TResult::CLIENT_NOT_CONNECTED;
@@ -66,8 +105,9 @@ TResult ClientMgr::CreateClientThread(SOCKET& sock, int ID)
 
 bool ClientMgr::Init()
 {
+	constexpr int maxClientSize = 256;
 
-	clientPool.resize(100);
+	clientPool.resize(maxClientSize);
 	std::fill(clientPool.begin(), clientPool.end(), nullptr);
 
 	return true;
@@ -144,10 +184,14 @@ int ClientMgr::CreateID()
 	// 순차탐색
 	for (int i = 0; i < clientPool.size(); ++i)
 	{
-		if (clientPool[i] == nullptr)
+		if (clientPool[i] == nullptr) {
+			if (clientPoolIndex < i) {
+				clientPoolIndex = i;
+			}
 			return i;
+		}
 	}
-	return -1;
+	return invalidID;
 }
 
 ClientMgr::~ClientMgr()

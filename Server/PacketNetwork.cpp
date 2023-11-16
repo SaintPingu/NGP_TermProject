@@ -8,17 +8,36 @@ TResult PacketNetwork::Init()
 
 TResult PacketNetwork::SendPacket()
 {
-    return TResult();
+    int retval = send(TCP_Socket, (const char*)PacketBuf.data(), PacketBuf.size(), 0);
+    if (retval == SOCKET_ERROR) {
+        return TResult::FAIL;
+    }
+    PacketBuf.clear();
+
+    return TResult::NONE;
 }
 
 TResult PacketNetwork::RecvPacket()
 {
-    return TResult();
+    int retval{};
+    char dataLen;
+    retval = recv(TCP_Socket, &dataLen, sizeof(char), MSG_WAITALL);
+    if (retval == SOCKET_ERROR) {
+        return TResult::FAIL;
+    }
+
+    PacketBuf.resize(dataLen);
+    retval = recv(TCP_Socket, (char*)PacketBuf.data(), dataLen, MSG_WAITALL);
+    if (retval == SOCKET_ERROR) {
+        return TResult::FAIL;
+    }
+    return TResult::NONE;
 }
 
-PacketBuffer* PacketNetwork::GetPacketBuffer()
+void PacketNetwork::SetPacketBuffer(const Packet& packet)
 {
-    return nullptr;
+    PacketBuf.resize(packet.size());
+    ::memcpy(PacketBuf.data(), packet.data(), packet.size());
 }
 
 PacketNetwork::PacketNetwork()
