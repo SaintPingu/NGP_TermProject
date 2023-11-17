@@ -3,18 +3,20 @@
 #include "SceneManager.h"
 #include "SceneIntro.h"
 #include "SceneLobby.h"
+#include "InputManager.h"
 
 SINGLETON_PATTERN_DEFINITION(Framework)
 
 extern bool isGenPacket;
-extern int keyList[];
 
 void Framework::Start(HWND hWnd)
 {
+	recvPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
+	wakeUpThreadForServer = CreateEvent(NULL, FALSE, FALSE, NULL);
+
 	GetClientRect(hWnd, &rectClientWindow);
 	sceneManager = std::make_shared<SceneManager>();
 	sceneManager->Init(hWnd);
-
 	this->hWnd = hWnd;
 }
 
@@ -26,13 +28,17 @@ void Framework::Update()
 void Framework::WaitForPacket()
 {
 	if (isGenPacket) {
-		//WaitForSingleObject(recvpacket?event,INFINITY);
+		WaitForSingleObject(recvPacket,INFINITY);
 		isGenPacket = false;
 	}
 }
 
 void Framework::ProcessCommand()
 {
+	//PacketDecoder를 통해 서버의 Command를 처리한다
+	BYTE cmd;
+
+	packetLoader.PopCommand(cmd, cmdList);
 }
 
 void Framework::WriteData()
@@ -46,21 +52,26 @@ void Framework::GetInput()
 
 	if (sceneManager->GetCurrentScene() == std::make_shared<SceneLobby>()) {
 
-		if (pKeysBuffer[VK_UP] & 0xF0) {
-			BYTE dir = int(Dir::Up) -1 ;
-			cmdList.CommandPush(dir, NULL, 0);
+		if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
+			BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
+			cmdList.CommandPush(cmd, NULL, 0);
 		}
-		else if (pKeysBuffer[VK_DOWN] & 0xF0) {
-			BYTE dir = int(Dir::Down) - 1;
-			cmdList.CommandPush(dir, NULL, 0);
+		else if (KEY_PRESSED(VK_DOWN) || KEY_TAP(VK_DOWN)) {
+			BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
+			cmdList.CommandPush(cmd, NULL, 0);
 		}
-		else if (pKeysBuffer[VK_LEFT] & 0xF0) {
-			BYTE dir = int(Dir::Left) - 1;
-			cmdList.CommandPush(dir, NULL, 0);
+		else if (KEY_PRESSED(VK_LEFT) || KEY_TAP(VK_LEFT)) {
+			BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
+			cmdList.CommandPush(cmd, NULL, 0);
 		}
-		else if (pKeysBuffer[VK_RIGHT] & 0xF0) {
-			BYTE dir = int(Dir::Right) - 1;
-			cmdList.CommandPush(dir, NULL, 0);
+		else if (KEY_PRESSED(VK_RIGHT) || KEY_TAP(VK_RIGHT)) {
+			BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
+			cmdList.CommandPush(cmd, NULL, 0);
+		}
+
+		if (KEY_TAP(VK_ESCAPE)) {
+			BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
+			cmdList.CommandPush(cmd, NULL, 0);
 		}
 
 	}
@@ -69,6 +80,10 @@ void Framework::GetInput()
 
 void Framework::SendPacket()
 {
+	//현재 씬이 IntroScene이 아니라면 thread for server를 깨운다
+	if (sceneManager->GetCurrentScene() == std::make_shared<SceneIntro>()) {
+		SetEvent(wakeUpThreadForServer);
+	}
 
 }
 
@@ -84,4 +99,6 @@ void Framework::Render()
 
 void Framework::Terminate()
 {
+	CloseHandle(recvPacket);
+	CloseHandle(wakeUpThreadForServer);
 }

@@ -14,7 +14,11 @@ private:
 	std::shared_ptr<SceneManager> sceneManager{};
 	//std::shared_ptr<ClientNetwork> clientNetwork{};
 
+	//패킷을 서버로부터 받았다는 이벤트, 인트로씬에서 로비로 넘어갈때 서버를 깨우는 이벤트
+	HANDLE recvPacket, wakeUpThreadForServer;
 	CommandList cmdList;
+
+	PacketLoader packetLoader;
 
 	void WaitForPacket();
 	void ProcessCommand();
