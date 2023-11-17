@@ -19,6 +19,13 @@ enum class mutexType
 	END,
 };
 
+enum class clientEventType
+{
+	terminateID,
+	registerNewID,
+	END,
+};
+
 class ClientInfo;
 class ClientMgr
 {
@@ -33,10 +40,11 @@ private:
 	PacketGenerator				packetGen;						// 패킷 관리
 	Mutex						mutex[(UINT)mutexType::END]{};	// 뮤텍스 관리
 
-	std::queue<int>				terminatedID_events;
+	std::queue<std::pair<clientEventType, PVOID>>				clientEvents; // eventtype, data type
 
 public:
 
+	bool Event();
 	bool SetPacketBuffer();
 	bool SendPacket();
 	void InsertNewSocket();
@@ -48,7 +56,7 @@ public:
 
 	// 접속 종료된 클라이언트들을 처리한다 ( 이벤트 처리 )
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
-	void ExecuteTerminateIdEvents();
+	
 	int GetPoolIndex() const { return clientPoolIndex; }
 
 
