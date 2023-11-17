@@ -37,8 +37,9 @@ void Framework::ProcessCommand()
 {
 	//PacketDecoder를 통해 서버의 Command를 처리한다
 	BYTE cmd;
+	PacketBuffer buffer;
 
-	packetLoader.PopCommand(cmd, cmdList);
+	packetLoader.PopCommand(cmd, buffer);
 }
 
 void Framework::WriteData()
