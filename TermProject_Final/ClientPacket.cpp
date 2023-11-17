@@ -28,12 +28,12 @@ Packet PacketGenerator::GeneratePacket()
 	return packet;
 }
 
-bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
+bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType scenetype)
 { //dataLen은 버퍼에 들어오지 않음.
 	//항상 cmdList는 비운다.
 	cmdList.clear();
 
-	//if (로비)
+	if (scenetype == SceneType::Lobby)
 	{
 		cmd = (BYTE)(*buffer->begin()); // 1byte
 		buffer->erase(buffer->begin());
@@ -42,9 +42,9 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
 			cmdList.push_back(*buffer->begin()); // 1byte StageElement
 			buffer->erase(buffer->begin()); 	
 		}
-		return true;
+		return false;
 	}
-	//else if (스테이지)
+	else if (scenetype == SceneType::Stage)
 	{
 		cmd = (BYTE)(*buffer->begin()); // 1byte
 		buffer->erase(buffer->begin());
@@ -56,9 +56,9 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList)
 		}
 		buffer->clear(); // stage는 data가 따로 없으므로 여기서 Clear
 
-		return true;
+		return false;
 	}
-	//else if (배틀)
+	else if (scenetype == SceneType::Battle)
 	{ // 배틀에서는 cmdCnt 는 buffer로 들어오기때문에 PopCommand 이전에 1바이트를 지우고 시작하자.
 		cmd = (BYTE)(*buffer->begin());
 		buffer->erase(buffer->begin());

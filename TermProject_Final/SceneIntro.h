@@ -71,4 +71,10 @@ public:
 	virtual void Init() override;
 	virtual void Render(HDC hdc) override;
 	virtual void Animate() override;
+
+	virtual SceneType Identify() override {
+		return SceneType::Intro;
+	}
+
+	virtual void WriteData(void* data) override {}
 };

@@ -35,23 +35,72 @@ void Framework::WaitForPacket()
 
 void Framework::ProcessCommand()
 {
-	//PacketDecoder를 통해 서버의 Command를 처리한다
+	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
+	//packetLoader를 통해 서버의 Command를 처리한다
 	BYTE cmd;
 	PacketBuffer buffer;
+	if (crntScene == SceneType::Lobby) {
+		// 로비는 명령이 항상 1개 이므로 바로 반복 필요x
+		packetLoader.PopCommand(cmd, buffer, SceneType::Lobby);
+		switch (cmd)
+		{
+		case (BYTE)ServerLobbyCmd::GoMenu:
+			sceneManager->LoadScene(SceneType::Intro);
+			break;
+		case (BYTE)ServerLobbyCmd::GoStage:
+			sceneManager->LoadScene(SceneType::Stage);
+			break;
+		case (BYTE)ServerLobbyCmd::None:
+			// 아무것도 하지 않는 명령어를 의미
+			break;
+		case (BYTE)ServerLobbyCmd::Quit:
+			PostQuitMessage(0);
+			// Terminate 명령
+			break;
+		default:
+			break;
+		}
+	}
+	/*else if (crntScene == SceneType::Stage) {
+		while (true) {
+			if (!packetLoader.PopCommand(cmd, buffer, SceneType::Stage)) {
+				break;
+			}
+		}
+	}
+	else if (crntScene == SceneType::Battle) {
+		while (true) {
+			if (!packetLoader.PopCommand(cmd, buffer, SceneType::Battle)) {
+				break;
+			}
+		}
+	}*/
 
-	packetLoader.PopCommand(cmd, buffer);
 }
 
 void Framework::WriteData()
 {
+	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
+
+	//packetLoader를 통해 서버의 Command를 처리한다
+	PacketBuffer buffer = packetLoader.PopData();
+
+	if (crntScene == SceneType::Lobby) {
+		sceneManager->GetCurrentScene()->WriteData(&buffer);
+	}
+	else if (crntScene == SceneType::Stage) {
+	
+	}
+	else if (crntScene == SceneType::Battle) {
+	
+	}
 }
 
 void Framework::GetInput()
 {
-	static UCHAR pKeysBuffer[256];
-	GetKeyboardState(pKeysBuffer);
+	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
 
-	if (sceneManager->GetCurrentScene() == std::make_shared<SceneLobby>()) {
+	if (crntScene == SceneType::Lobby) {
 
 		if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
@@ -76,13 +125,20 @@ void Framework::GetInput()
 		}
 
 	}
+	else if (crntScene == SceneType::Stage) {
+
+	}
+	else if (crntScene == SceneType::Battle) {
+
+	}
 
 }
 
 void Framework::SendPacket()
 {
+	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
 	//현재 씬이 IntroScene이 아니라면 thread for server를 깨운다
-	if (sceneManager->GetCurrentScene() == std::make_shared<SceneIntro>()) {
+	if (crntScene != SceneType::Intro) {
 		SetEvent(wakeUpThreadForServer);
 	}
 
@@ -90,6 +146,7 @@ void Framework::SendPacket()
 
 void Framework::AnimateScene()
 {
+	GetInput();
 	sceneManager->AnimateScene();
 }
 

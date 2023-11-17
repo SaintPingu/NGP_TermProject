@@ -18,7 +18,7 @@ public:
 	~PacketLoader(){}
 
 	PacketBuffer* buffer             = NULL;
-	bool PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList);
+	bool PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList,SceneType scenetype);
 	std::vector<BYTE> PopData();
 };
 

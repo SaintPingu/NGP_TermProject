@@ -252,6 +252,33 @@ void SceneLobby::Animate()
 
 }
 
+void SceneLobby::WriteData(void* data)
+{
+	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
+
+	Lobby::LobbyData lobbydata;
+	lobbydata.PlayersData = new Lobby::PlayerLobbyData[*buffer->begin()];
+	memcpy(&lobbydata, &(*buffer->begin()), sizeof(*buffer));
+
+	for (int i = 0 ; i < lobbydata.PlayerCnt; ++i) {
+		Lobby::PlayerLobbyData* pldata = &lobbydata.PlayersData[i];
+		//[ playerID(5) , isMoving(1) , dir(2) ]=> 1byte
+		int playerID = pldata->Pid_Mov_Dir >> 3; 
+		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 5) >> 5;
+
+		bool isMoving = pldata->Pid_Mov_Dir >> 2;
+		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 6) >> 6;
+
+		int dir = pldata->Pid_Mov_Dir;
+
+		lobbyPlayers[playerID].pos = pldata->Pos;
+		lobbyPlayers[playerID].isMoving = isMoving;
+
+		// +1 인 이유는 원래 empty 포함 0~4 표현인데 2비트에는 0~3까지 밖에 표현을 못하므로..
+		lobbyPlayers[playerID].dir = (Dir)(dir + 1); 
+	}
+}
+
 int SceneLobby::GetCamSizeX()
 {
 	return CAMSIZE_X;
