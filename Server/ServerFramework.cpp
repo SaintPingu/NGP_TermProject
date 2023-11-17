@@ -118,8 +118,8 @@ void ServerFramework::Logic()
 			cnt = 0;
 		}
 
-		CLIENT_MGR->ExecuteTerminateIdEvents();
-
+		
+		Event();
 		SetPacketBuffer();
 		ProcessCommand();
 		UpdateScene();
@@ -141,6 +141,12 @@ TResult ServerFramework::Start()
 
 	return TResult();
 
+}
+
+TResult ServerFramework::Event()
+{
+
+	return TResult();
 }
 
 TResult ServerFramework::SetPacketBuffer()

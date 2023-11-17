@@ -39,7 +39,8 @@ public:
 private:
 	void Logic();
 
-	TResult Start();			// 1. 시작
+	TResult Start();			// 0. 시작
+	TResult Event();			// 1. 이벤트 처리
 	TResult SetPacketBuffer();  // 2. 패킷 세팅		- 각 클라이언트의 패킷을 세팅한다. 
 	TResult ProcessCommand();   // 3. 패킷 해석		- 클라이언트로부터 받은 패킷을 해석하고 데이터 업데이트 
 	TResult UpdateScene();		// 4. 씬 갱신		- 씬 업데이트 

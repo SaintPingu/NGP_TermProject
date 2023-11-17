@@ -7,6 +7,42 @@
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
 constexpr int invalidID = -1;
 
+bool ClientMgr::Event()
+{
+	// 동기화 처리  
+	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
+
+	while (!clientEvents.empty())
+	{
+		std::pair<clientEventType, PVOID> event = clientEvents.front();
+		clientEvents.pop();
+
+		switch (event.first)
+		{
+		case clientEventType::terminateID:
+		{
+			int ID = *(int*)event.second;
+			TResult result = clientPool[ID]->Clear();
+			if (result == TResult::SUCCESS)
+				clientPool[ID] = nullptr;
+		}
+			break;
+		case clientEventType::registerNewID:
+		{
+			ClientInfo* newUser   = (ClientInfo*)event.second;
+			int			ID        = newUser->GetID();
+			clientPool[ID]        = newUser;
+
+		}
+			break;
+		}
+	}
+
+
+	return false;
+}
+
+
 bool ClientMgr::SetPacketBuffer()
 {
 
@@ -66,22 +102,7 @@ void ClientMgr::PushCommand()
 
 }
 
-std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP, SOCKET& sock)
-{
-	// 동기화 처리  
-	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
 
-	int id = CreateID();
-	if (id == invalidID)
-		return std::pair<int, TResult>(invalidID, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
-
-	ClientInfo* NewUser = new ClientInfo;
-	NewUser->SetID(id);
-	NewUser->SetServerNet(new ServerNetwork);
-
-	clientPool[id] = NewUser;
-	return std::pair<int, TResult>(id, TResult::SUCCESS);
-}
 
 
 TResult ClientMgr::CreateClientThread(SOCKET& sock, int ID)
@@ -155,25 +176,26 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	*/
 	// 동기화 처리  
 	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::terminateID_event]);
-	terminatedID_events.push(id);
-
+	
+	int				terminateID = id;
+	clientEventType type        = clientEventType::terminateID;
+	clientEvents.push(std::make_pair(type, &terminateID));
 }
 
-void ClientMgr::ExecuteTerminateIdEvents()
+std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP, SOCKET& sock)
 {
-	// 동기화 처리  
-	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
+	int id = CreateID();
+	if (id == invalidID)
+		return std::pair<int, TResult>(invalidID, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
 
-	while (!terminatedID_events.empty())
-	{
-		int ID = terminatedID_events.front();
-		terminatedID_events.pop();
+	ClientInfo* NewUser = new ClientInfo;
+	NewUser->SetID(id);
+	NewUser->SetServerNet(new ServerNetwork);
 
-		TResult result = clientPool[ID]->Clear();
-		if(result == TResult::SUCCESS)
-			clientPool[ID] = nullptr;
-	}
-	
+	clientEventType type = clientEventType::registerNewID;
+	clientEvents.push(std::make_pair(type, NewUser));
+
+	return std::pair<int, TResult>(id, TResult::SUCCESS);
 }
 
 int ClientMgr::CreateID()

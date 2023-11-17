@@ -61,3 +61,31 @@ TResult TCPNetwork::CloseSocket()
 
 	return TResult::SUCCESS;
 }
+
+bool TCPNetwork::SetLinger(uint16 onoff, uint16 linger)
+{
+	LINGER option;
+	option.l_onoff = onoff;
+	option.l_linger = linger;
+	return SOCKET_ERROR != ::setsockopt(TCP_Socket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&option), sizeof(LINGER));
+}
+
+bool TCPNetwork::SetReuseAddress(bool flag)
+{
+	return SOCKET_ERROR != ::setsockopt(TCP_Socket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&flag), sizeof(bool));
+}
+
+bool TCPNetwork::SetRecvBufferSize(int32 size)
+{
+	return SOCKET_ERROR != ::setsockopt(TCP_Socket, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<char*>(&size), sizeof(int32));
+}
+
+bool TCPNetwork::SetSendBufferSize(int32 size)
+{
+	return SOCKET_ERROR != ::setsockopt(TCP_Socket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&size), sizeof(int32));
+}
+
+bool TCPNetwork::SetTcpNoDelay(bool flag)
+{
+	return SOCKET_ERROR != ::setsockopt(TCP_Socket, SOL_SOCKET, TCP_NODELAY, reinterpret_cast<char*>(&flag), sizeof(bool));
+}
