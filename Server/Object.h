@@ -1,5 +1,5 @@
 #pragma once
-#include "Image.h"
+#include "image.h"
 
 class GameObject abstract {
 private:
@@ -43,6 +43,34 @@ public:
 	inline float GetBodyHeight() const
 	{
 		return rectBody.bottom - rectBody.top;
+	}
+};
+
+inline float GetRadius(float x, float y)
+{
+	return sqrtf((x * x) + (y * y));
+}
+
+class IControllable abstract {
+private:
+	virtual void SetPosDest() abstract;
+	bool isMove = false;
+public:
+	virtual void SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC& timerProc) abstract;
+	virtual void Move(const HWND& hWnd, int timerID) abstract;
+	virtual void Stop(Dir dir) abstract;
+
+	inline void StartMove()
+	{
+		isMove = true;
+	}
+	inline void StopMove()
+	{
+		isMove = false;
+	}
+	inline bool IsMove() const
+	{
+		return isMove;
 	}
 };
 
