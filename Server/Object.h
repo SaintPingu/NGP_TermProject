@@ -6,8 +6,8 @@ private:
 	ObjectImage* image;
 
 	Vector2 posCenter;
-	POINT bodySize = { 0, };
-	FRECT rectBody = { 0, };
+	POINT bodySize{};
+	FRECT rectBody{};
 
 protected:
 	Dir direction = Dir::Empty;
@@ -23,16 +23,15 @@ protected:
 	}
 
 public:
-	void Paint(const HDC& hdc, const RECT* rectImage = nullptr);
 	FRECT GetRectBody(const Vector2& pos) const;
 
 	bool IsCollide(const RECT& rectSrc, RECT* lprcDst = nullptr) const;
 
-	inline constexpr FRECT GetRectBody() const
+	inline FRECT GetRectBody() const
 	{
 		return rectBody;
 	}
-	inline constexpr Vector2 GetPosCenter() const
+	inline Vector2 GetPosCenter() const
 	{
 		return posCenter;
 	}

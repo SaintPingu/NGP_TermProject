@@ -23,7 +23,6 @@ protected:
 	}
 
 public:
-	void Paint(const HDC& hdc, const RECT* rectImage = nullptr);
 	FRECT GetRectBody(const Vector2& pos) const;
 
 	bool IsCollide(const RECT& rectSrc, RECT* lprcDst = nullptr) const;

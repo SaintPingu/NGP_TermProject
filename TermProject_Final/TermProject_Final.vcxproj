@@ -181,6 +181,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Loading.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="SceneLobby.cpp" />
     <ClCompile Include="SceneIntro.cpp" />
     <ClCompile Include="SceneManager.cpp" />

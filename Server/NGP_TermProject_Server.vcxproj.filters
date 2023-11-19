@@ -75,6 +75,15 @@
     <ClCompile Include="ClientMgr.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -141,6 +150,15 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="ClientInfo.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
