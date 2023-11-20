@@ -145,6 +145,7 @@ TResult ServerFramework::Start()
 
 TResult ServerFramework::Event()
 {
+	CLIENT_MGR->Event();
 
 	return TResult();
 }
