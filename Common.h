@@ -36,7 +36,7 @@ public:										\
 #define SINGLETON_PATTERN_DEFINITION(TYPE)  \
    TYPE* TYPE::mInst = nullptr;
 
-// 2023-11-06-MON (장재문) - Common.h 에 추가 -> 서버-클라이언트 ( 패킷을 송수신에 쓰일 자료형 )
+// 2023-11-06-MON (장재문) - Common.h 에 추가 -> 서버-클라이언트 ( 패킷 송수신에 쓰일 자료형 )
 using BYTE   = unsigned char;
 using int8   = __int8;
 using int16  = __int16;
@@ -90,6 +90,16 @@ enum class TResult : short
 	CLIENT_NOT_CONNECTED,
 	FORCING_CLOSE,
 };
+
+//  2023-11-19-SUN (장재문) 패킷 송수신 플래그
+enum class ConnectFlag
+{
+	none,
+	recv,
+	send,
+	END,
+};
+
 
 enum class SceneType { Intro = 0, Lobby, Stage, Phase, Battle };
 enum class Action { Idle = 0, Attack, Hurt, Death };

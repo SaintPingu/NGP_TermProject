@@ -10,14 +10,6 @@
 #include "PacketStruct.h"
 
 class ServerNetwork;
-enum class ConnectFlag
-{
-	none,
-	recv,
-	send,
-	END,
-};
-
 class ClientInfo
 {
 private:
