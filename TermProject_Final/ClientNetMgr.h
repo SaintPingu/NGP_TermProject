@@ -15,6 +15,7 @@ private:
 
 public:
 	TResult Init(short portnum);
+	void Execute();
 
 
 

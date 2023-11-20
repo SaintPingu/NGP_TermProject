@@ -13,6 +13,9 @@ class ServerNetwork;
 class ClientInfo
 {
 private:
+	std::thread thread{};
+
+private:
 	int					ID = -1;				// 클라이언트 아이디 ( ClientMgr 에서의 인덱스값이 곧 아이디이다 ) 
 	ServerNetwork*		serverNet{};			// 클라이언트 서버 네트워크
 	bool				executeLogic{};			// 클라이언트 로직 구동 여부
@@ -25,6 +28,7 @@ private:
 	HANDLE				sendEvent{};			// 패킷 전송 이벤트
 
 public:
+	void CreateThread();
 	TResult Logic();
 
 private:

@@ -107,13 +107,13 @@ void ServerFramework::Execute()
 void ServerFramework::Logic()
 {
 
-	std::cout << "\t-> Server Logic 구동 중 ... [ENTER : 종료]\n";
+	std::cout << "\t-> Server Logic 구동 중 ... [P : 종료]\n";
 	int cnt{};
 	while (executeFramework)
 	{
 		Timer::Inst()->Tick(30.f);
 
-		//std::cout << "\t\t\t-> server logic [" << ++cnt << "]\r";
+		std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
 		if (cnt >= 30) {
 			cnt = 0;
 		}
@@ -125,7 +125,7 @@ void ServerFramework::Logic()
 		UpdateScene();
 		SendPakcet();
 
-		if(GetAsyncKeyState(VK_RETURN) & 0x8000)
+		if(GetAsyncKeyState('P') & 0x8000)
 			SERVER_FRAMEWORK->Exit();
 
 	}

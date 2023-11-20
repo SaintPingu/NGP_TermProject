@@ -21,10 +21,13 @@ bool ClientMgr::Event()
 		{
 		case clientEventType::terminateID:
 		{
-			int ID = *(int*)event.second;
+			int  ID = *(int*)event.second;
 			TResult result = clientPool[ID]->Clear();
 			if (result == TResult::SUCCESS)
-				clientPool[ID] = nullptr;
+			{
+				SAFE_DELETE(clientPool[ID]);
+			}
+			SAFE_DELETE(event.second);
 		}
 			break;
 		case clientEventType::registerNewID:
@@ -32,7 +35,7 @@ bool ClientMgr::Event()
 			ClientInfo* newUser   = (ClientInfo*)event.second;
 			int			ID        = newUser->GetID();
 			clientPool[ID]        = newUser;
-
+			CLIENT_MGR->CreateClientThread(ID);
 		}
 			break;
 		}
@@ -105,20 +108,16 @@ void ClientMgr::PushCommand()
 
 
 
-TResult ClientMgr::CreateClientThread(SOCKET& sock, int ID)
+TResult ClientMgr::CreateClientThread(int ID)
 {
-	if (clientPool[ID] == nullptr or ID == invalidID)
+	if (ID == invalidID or clientPool[ID] == nullptr)
 	{
 		CRASH("INVALID CLIENT ID - CreateClientThread()");
 		return TResult::CLIENT_NOT_CONNECTED;
 	}
 
-	// 클라이언트 Thread 구동 
-	std::thread Client([&]() {
-		clientPool[ID]->Logic();
-		});
-	Client.join();
-
+	clientPool[ID]->CreateThread();
+	
 	return TResult::CLIENT_DISCONNECT;
 }
 
@@ -177,9 +176,9 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	// 동기화 처리  
 	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::terminateID_event]);
 	
-	int				terminateID = id;
+	int*			terminateID = new int(id);
 	clientEventType type        = clientEventType::terminateID;
-	clientEvents.push(std::make_pair(type, &terminateID));
+	clientEvents.push(std::make_pair(type, terminateID));
 }
 
 std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP, SOCKET& sock)

@@ -15,9 +15,24 @@ ClientNetMgr::~ClientNetMgr()
 
 }
 
+void ClientNetMgr::Execute()
+{
+	if (Init(9000) == TResult::SUCCESS)
+	{
+		clientNet->Logic();
+	}
+}
 
 TResult ClientNetMgr::Init(short portnum)
 {
+	// 콘솔창 띄우기 
+	AllocConsole();
+	// 표준 입력, 출력 및 오류를 콘솔로 설정합니다.
+	FILE* consoleIn, * consoleOut, * consoleErr;
+	freopen_s(&consoleIn, "CONIN$", "r", stdin);
+	freopen_s(&consoleOut, "CONOUT$", "w", stdout);
+	freopen_s(&consoleErr, "CONOUT$", "w", stderr);
+
 	TResult result = TResult::SUCCESS;
 
 	// 윈속 초기화
@@ -39,4 +54,6 @@ TResult ClientNetMgr::Init(short portnum)
 
 	return result;
 }
+
+
 
