@@ -27,7 +27,7 @@ void Framework::Start(HWND hWnd)
 
 void Framework::Update()
 {
-	std::cout << "update" << std::endl;
+	//std::cout << "update" << std::endl;
 	//WaitForPacket();
 	//ProcessCommand();
 	//WriteData();
