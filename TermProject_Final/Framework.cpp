@@ -4,8 +4,13 @@
 #include "SceneIntro.h"
 #include "SceneLobby.h"
 #include "InputManager.h"
+#include "ClientNetMgr.h"
+#include "ClientNetwork.h"
 
 SINGLETON_PATTERN_DEFINITION(Framework)
+
+//패킷을 서버로부터 받았다는 이벤트, 인트로씬에서 로비로 넘어갈때 서버를 깨우는 이벤트
+HANDLE recvPacket, wakeUpThreadForServer;
 
 extern bool isGenPacket;
 
@@ -22,6 +27,12 @@ void Framework::Start(HWND hWnd)
 
 void Framework::Update()
 {
+	std::cout << "update" << std::endl;
+	//WaitForPacket();
+	//ProcessCommand();
+	//WriteData();
+	//GetInput();
+	//SendPacket();
 	AnimateScene();
 }
 
@@ -29,6 +40,7 @@ void Framework::WaitForPacket()
 {
 	if (isGenPacket) {
 		WaitForSingleObject(recvPacket,INFINITY);
+		packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetClientNetwork()->GetPacketBuffer());
 		isGenPacket = false;
 	}
 }
@@ -82,7 +94,7 @@ void Framework::WriteData()
 {
 	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
 
-	//packetLoader를 통해 서버의 Command를 처리한다
+	//packetLoader를 통해 서버의 Data를 처리한다
 	PacketBuffer buffer = packetLoader.PopData();
 
 	if (crntScene == SceneType::Lobby) {
@@ -94,34 +106,37 @@ void Framework::WriteData()
 	else if (crntScene == SceneType::Battle) {
 	
 	}
+
+
 }
 
 void Framework::GetInput()
 {
 	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
+	CommandList* cmdList = CLIENT_NETWORK->GetClientNetwork()->GetPacketGenerator().GetCommandList();
 
 	if (crntScene == SceneType::Lobby) {
 
 		if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
-			cmdList.CommandPush(cmd, NULL, 0);
+			cmdList->CommandPush(cmd, NULL, 0);
 		}
 		else if (KEY_PRESSED(VK_DOWN) || KEY_TAP(VK_DOWN)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
-			cmdList.CommandPush(cmd, NULL, 0);
+			cmdList->CommandPush(cmd, NULL, 0);
 		}
 		else if (KEY_PRESSED(VK_LEFT) || KEY_TAP(VK_LEFT)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
-			cmdList.CommandPush(cmd, NULL, 0);
+			cmdList->CommandPush(cmd, NULL, 0);
 		}
 		else if (KEY_PRESSED(VK_RIGHT) || KEY_TAP(VK_RIGHT)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
-			cmdList.CommandPush(cmd, NULL, 0);
+			cmdList->CommandPush(cmd, NULL, 0);
 		}
 
 		if (KEY_TAP(VK_ESCAPE)) {
 			BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
-			cmdList.CommandPush(cmd, NULL, 0);
+			cmdList->CommandPush(cmd, NULL, 0);
 		}
 
 	}
@@ -138,15 +153,18 @@ void Framework::SendPacket()
 {
 	SceneType crntScene = sceneManager->GetCurrentScene()->Identify();
 	//현재 씬이 IntroScene이 아니라면 thread for server를 깨운다
-	if (crntScene != SceneType::Intro) {
-		SetEvent(wakeUpThreadForServer);
+	if (crntScene == SceneType::Intro) {
+		return;
 	}
+
+	SetEvent(wakeUpThreadForServer);
+
+	CLIENT_NETWORK->GetClientNetwork()->SendPacket();
 
 }
 
 void Framework::AnimateScene()
 {
-	GetInput();
 	sceneManager->AnimateScene();
 }
 
@@ -159,4 +177,9 @@ void Framework::Terminate()
 {
 	CloseHandle(recvPacket);
 	CloseHandle(wakeUpThreadForServer);
+}
+
+void Framework::DefaultPacketSend()
+{
+	CLIENT_NETWORK->GetClientNetwork()->SendPacket();
 }

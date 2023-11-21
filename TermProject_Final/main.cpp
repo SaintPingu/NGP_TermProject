@@ -64,6 +64,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 		CLIENT_NETWORK->Execute();
 		});
 
+	//framework->DefaultPacketSend();
+
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);

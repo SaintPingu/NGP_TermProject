@@ -17,6 +17,7 @@ public:
 	TResult Init(short portnum);
 	void Execute();
 
+	ClientNetwork* GetClientNetwork() { return clientNet; }
 
 
 	ClientNetMgr();

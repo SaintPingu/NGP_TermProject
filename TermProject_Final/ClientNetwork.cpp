@@ -3,6 +3,8 @@
 #include "TCPNetwork.h"
 #include "PacketNetwork.h"
 
+extern HANDLE recvPacket;
+
 ClientNetwork::ClientNetwork()
 {
 }
@@ -29,6 +31,26 @@ void ClientNetwork::Logic()
 		curConnectFlag = ConnectFlag::send;
 
 	}
+}
+
+// 23-11-21 최정일 SendPacket에서 패킷을 만들고 Send
+TResult ClientNetwork::SendPacket()
+{
+	Packet packet = packetGenerator.GeneratePacket();
+
+	SetPacketBuffer(packet);
+
+	PacketNetwork::SendPacket();
+	return TResult();
+}
+
+TResult ClientNetwork::RecvPacket()
+{
+	PacketNetwork::RecvPacket();
+
+	SetEvent(recvPacket);
+
+	return TResult();
 }
 
 
