@@ -84,6 +84,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -159,6 +162,9 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
       <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>

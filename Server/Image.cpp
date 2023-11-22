@@ -2,13 +2,16 @@
 #include "Image.h"
 
 
-void Image::Load()
+void Image::Load(const POINT& imgSize)
 {
-
+	this->rectImage = { 0, 0, imgSize.x, imgSize.y };
+	drawSize.x = rectImage.right - rectImage.left;
+	drawSize.y = rectImage.bottom - rectImage.top;
 }
 
-void ObjectImage::Load(const POINT& bodySize)
+void ObjectImage::Load(const POINT& imgSize, const POINT& bodySize)
 {
+	Image::Load(imgSize);
 	this->bodySize = bodySize;
 }
 

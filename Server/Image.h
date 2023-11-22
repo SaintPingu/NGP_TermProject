@@ -3,7 +3,8 @@
 class Image abstract {
 protected:
 	RECT rectImage = { 0, };
-	void Load();
+	POINT drawSize = { 0, };
+	void Load(const POINT& imgSize);
 	float scaleX = 1;
 	float scaleY = 1;
 
@@ -12,6 +13,10 @@ public:
 	inline RECT GetRectImage() const
 	{
 		return rectImage;
+	}
+	inline POINT GetDrawSize() const
+	{
+		return drawSize;
 	}
 	inline void GetScale(float& scaleX, float& scaleY) const
 	{
@@ -27,7 +32,7 @@ private:
 	bool isScaled = false;
 
 public:
-	void Load(const POINT& bodySize = { 0, 0 });
+	void Load(const POINT& imgSize, const POINT& bodySize = { 0, 0 });
 	void ScaleImage(float scaleX, float scaleY);
 
 	inline POINT GetBodySize() const

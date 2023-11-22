@@ -44,4 +44,3 @@ public:
 };
 
 #define framework Framework::Inst()
-#define rectWindow framework->GetRectWindow()

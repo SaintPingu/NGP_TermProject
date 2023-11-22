@@ -550,3 +550,7 @@ inline float DeltaTime()
 {
 	return Timer::Inst()->GetTimeElapsed();
 }
+
+
+// 2023-11-22-WED (민동현) - Common.h 에 추가 -> rectWindow를 상수값으로 표현
+constexpr RECT rectWindow{ 0, 0, 484, 711 };

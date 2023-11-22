@@ -153,6 +153,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientMgr.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
@@ -182,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientMgr.h" />
     <ClInclude Include="conmanip.h" />
