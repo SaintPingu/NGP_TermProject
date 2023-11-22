@@ -13,40 +13,43 @@
 #define TOWN_OBJECT_NUM 18
 
 struct LobbyPlayer {
-	Vector2 pos;
-	Dir dir;
-	bool isMoving;
+	Vector2 pos{};
+	Dir dir{};
+	bool isMoving{};
+	RECT rectImage{ 0, 0, TPLAYER_IMAGESIZE_X, TPLAYER_IMAGESIZE_Y };
 };
 
-struct NPC {
+class NPC {
+private:
+	int srcWidth{};
+	int srcHeight{};
+	int dstWidth{};
+	int dstHeight{};
+public:
+	bool isTransparent{};
 	CImage image;
 	Vector2 pos;
-	RECT rect;
+	Vector2 drawPos;
+
+	void Init(int srcWidth, int srcHeight, int dstWidth, int dstHeight);
+	void SetPosition(Vector2 pos) { this->pos = pos; }
+	void SetTransparent();
+	void Draw(HDC hdc, int camX);
 };
 
 class SceneLobby : public Scene {
-	class Player
+	struct PlayerData
 	{
 	public:
-		POINT aboutMapPos;
 		CImage img;
-		POINT pos = { 0, };
-		RECT rectDraw = { 0, };
-		RECT rectImage = { 0, };
-		RECT cam = { 0, };
-		//Dir dir = Dir::Down;
-		//bool keepGoing = false;
 	};
 private:
 	std::map<int, LobbyPlayer> lobbyPlayers;
 
-	RECT building[18];
 	CImage background;
 	NPC npc[4];
 
-	//23-11-16 최정일 : 플레이어 데이타는 들어와있는 플레이어의 개수만큼 조정한다.
-	std::vector<Player> playerdata;
-	CImage masterPlayerData; // 이미지 로딩을 위한 데이터이다.
+	CImage playerImage;
 
 	CImage exits;
 	CImage glowing_black;
@@ -71,5 +74,5 @@ public:
 
 	void NpcAnimate();
 	void PlayerAnimate();
-	void StopPlayer(int idx);
+	void StopPlayer(int id);
 };
