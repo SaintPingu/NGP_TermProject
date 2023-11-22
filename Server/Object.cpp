@@ -27,12 +27,6 @@ void GameObject::SetPos(const Vector2& pos)
 	rectBody.bottom = rectBody.top + bodySize.y;
 }
 
-void GameObject::Paint(const HDC& hdc, const RECT* rectImage)
-{
-	image->Paint(hdc, rectBody, rectImage);
-	
-}
-
 FRECT GameObject::GetRectBody(const Vector2& pos) const
 {
 	FRECT rectBody = { 0, };

@@ -49,15 +49,14 @@ TResult TCPListenNetwork::Logic()
         ///	  4. Accept
         /// -------------+
         AcceptInfo acceptinfo = TCPListenNetwork::Accept();
-      
+
         /// +-------------------------
         ///	  Thread For Each Client.
         /// -------------------------+	
         if (acceptinfo.Result == TResult::SUCCESS)
         {
+            std::cout << "\t\t\t" << acceptinfo.IP << " New Client Accept Success \n";
             std::pair<int, TResult> result = CLIENT_MGR->RegisterConnectedClient(acceptinfo.IP, acceptinfo.Socket); // pair( id, TResult )
-            if (result.second == TResult::SUCCESS)
-                CLIENT_MGR->CreateClientThread(acceptinfo.Socket, result.first);
         }
 
 #endif

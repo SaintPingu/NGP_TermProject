@@ -4,6 +4,9 @@
 #include <cassert>
 #include <memory>
 #include <string>
+// 2023-11-19-SUN (장재문) - 서버/클라이언트 네트워크를 위한 mutex/atomic 라이브러리 추가  
+#include <mutex>
+#include <atomic>
 
 #define WINDOWSIZE_X 500
 #define WINDOWSIZE_Y 750
@@ -33,7 +36,7 @@ public:										\
 #define SINGLETON_PATTERN_DEFINITION(TYPE)  \
    TYPE* TYPE::mInst = nullptr;
 
-// 2023-11-06-MON (장재문) - Common.h 에 추가 -> 서버-클라이언트 ( 패킷을 송수신에 쓰일 자료형 )
+// 2023-11-06-MON (장재문) - Common.h 에 추가 -> 서버-클라이언트 ( 패킷 송수신에 쓰일 자료형 )
 using BYTE   = unsigned char;
 using int8   = __int8;
 using int16  = __int16;
@@ -46,6 +49,56 @@ using uint64 = unsigned __int64;
 
 // 2023-11-14-TUE (민동현) - Common.h 에 추가 -> Command
 using Command = BYTE;
+
+template<typename T>
+using Atomic = std::atomic<T>;
+using Mutex = std::mutex;
+
+// 2023-11-06-MON (장재문) - Common.h 에 추가 -> 서버/클라이언트 네트워크에서 쓰일 TResult enum 
+/// +------------------
+///	 SERVER ERROR CODE 
+/// ------------------+	
+enum class TResult : short
+{
+	NONE = 0,
+	FAIL,
+	SUCCESS,
+
+	SOCKET_EXISTED,							// 소켓이 이미 존재함
+	ERROR_CLOSE_SOCKET,						// 소켓 닫기 에러
+	CLIENT_CAN_NOT_ACCEPT_ANYMORE,			// 클라이언트를 더이상 받을 수 없음
+	CLIENT_DISCONNECT,						// 클라이언트 연결 끊어짐 
+	ERROR_SYNC_ISSUE,						// 동기화 문제 오류
+
+	// SOCKET 관련 FAIL
+	SERVER_SOCKET_CREATE_FAIL,
+	SERVER_SOCKET_CONNECT_FAIL,
+	SERVER_SOCKET_BIND_FAIL,
+	SERVER_SOCKET_LISTEN_FAIL,
+	ACCEPT_API_ERROR,
+
+	// RECV 관련 FAIL 
+	RECV_API_ERROR,
+	RECV_REMOTE_CLOSE,
+
+	// SEND 관련 FAIL
+	SEND_REMOTE_CLOSE,
+	SEND_SIZE_ZERO,
+	SEND_ERROR,
+
+	// CLIENT 관련 FAIL
+	CLIENT_NOT_CONNECTED,
+	FORCING_CLOSE,
+};
+
+//  2023-11-19-SUN (장재문) 패킷 송수신 플래그
+enum class ConnectFlag
+{
+	none,
+	recv,
+	send,
+	END,
+};
 
 
 enum class SceneType { Intro = 0, Lobby, Stage, Phase, Battle };

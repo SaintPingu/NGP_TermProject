@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "Scene.h"
 
 #define TPLAYER_IMAGESIZE_X 64
@@ -67,6 +66,11 @@ public:
 	virtual void Init();
 	virtual void Render(HDC hdc);
 	virtual void Animate();
+
+	virtual SceneType Identify() {
+		return SceneType::Lobby;
+	}
+	void WriteData(void* data);
 
 	int GetCamSizeX();
 	int GetCamSizeY();

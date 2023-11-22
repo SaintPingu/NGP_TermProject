@@ -2,6 +2,8 @@
 #include "resource.h"
 #include "InputManager.h"
 #include "Framework.h"
+#include "ClientNetMgr.h"
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -57,6 +59,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	Timer::Inst()->Reset();
 	InputManager::Inst()->Init();
 
+	// 2023-11-20-MON (장재문) - 클라이언트 네트워크 구동 쓰레드 생성
+	std::thread ClientNetwork([&]() {
+		CLIENT_NETWORK->Execute();
+		});
+
+	//framework->DefaultPacketSend();
+
 	while (GetMessage(&Message, 0, 0, 0))
 	{
 		TranslateMessage(&Message);
@@ -64,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 	}
 
 	framework->Terminate();
-
+	ClientNetwork.join();
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	return Message.wParam;
 }
