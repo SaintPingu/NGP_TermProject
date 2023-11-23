@@ -2,8 +2,8 @@
 #include "image.h"
 //#include "interface.h"
 
-//extern GameData gameData;
-#define GameData // gameData 추가시 define 삭제
+bool isShowDrawBox = false;
+bool isShowHitbox = false;
 
 void Image::Load(const WCHAR* fileName, const POINT& imgSize, BYTE alpha)
 {
@@ -34,12 +34,10 @@ void Image::Paint(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) c
 
 	DeleteDC(memDC);
 
-#ifndef GameData
-	if (gameData.isShowDrawBox == true)
+	if (isShowDrawBox == true)
 	{
 		PaintHitbox(hdc, rectDraw);
 	}
-#endif // !GameData
 }
 void Image::PaintRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage) const
 {
@@ -76,15 +74,13 @@ void Image::PaintRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectIm
 	DeleteDC(memDC_Back);
 	DeleteDC(memDC_Object);
 
-#ifndef GameData
-	if (gameData.isShowHitbox == true)
+	if (isShowHitbox == true)
 	{
 		std::swap(points[0], points[1]);
 		SelectObject(hdc, (HBRUSH)GetStockObject(NULL_BRUSH));
 		Polygon(hdc, points, 4);
 		PaintHitbox(hdc, rectDraw);
 	}
-#endif // !GameData
 }
 void Image::SetAlpha(BYTE alpha)
 {
@@ -126,12 +122,10 @@ void ObjectImage::Paint(const HDC& hdc, const RECT& rectBody, const RECT* rectIm
 
 	Image::Paint(hdc, rectDraw, *rectImage);
 
-#ifndef GameData
-	if (gameData.isShowHitbox == true)
+	if (isShowHitbox == true)
 	{
 		PaintHitbox(hdc, rectBody);
 	}
-#endif // !GameData
 }
 void ObjectImage::Paint(const RECT& rectDest, const HDC& hdc) const
 {
