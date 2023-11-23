@@ -248,3 +248,12 @@ void SceneIntro::Animate()
 	MoveClouds();
 	MoveLogo();
 }
+
+void SceneIntro::GetInput(CommandList* cmdList)
+{
+}
+
+void SceneIntro::ProcessCommand()
+{
+	
+}

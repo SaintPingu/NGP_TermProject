@@ -66,10 +66,9 @@ public:
 	virtual void Init();
 	virtual void Render(HDC hdc);
 	virtual void Animate();
+	virtual void GetInput(CommandList* cmdList);
+	virtual void ProcessCommand();
 
-	virtual SceneType Identify() {
-		return SceneType::Lobby;
-	}
 	void WriteData(void* data);
 
 	int GetCamSizeX();

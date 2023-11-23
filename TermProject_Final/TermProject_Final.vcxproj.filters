@@ -72,6 +72,9 @@
     <ClCompile Include="ClientNetMgr.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="SceneStage.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="ClientNetMgr.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneStage.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

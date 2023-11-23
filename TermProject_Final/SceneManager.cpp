@@ -48,6 +48,7 @@ void SceneManager::LoadScene(SceneType scene)
 	}
 
 	crntScene->Init();
+	crntSceneType = scene;
 }
 
 void SceneManager::RenderScene(HWND hWnd)
@@ -66,4 +67,9 @@ void SceneManager::AnimateScene()
 {
 	crntScene->Animate();
 	loading->Animate();
+}
+
+bool SceneManager::IsLoading()
+{
+	return false;
 }

@@ -7,7 +7,8 @@ public:
 	virtual void Init() abstract;
 	virtual void Render(HDC hdc) abstract;
 	virtual void Animate() abstract;
+	virtual void GetInput(CommandList* cmdList) abstract;
 
-	virtual SceneType Identify() abstract;
 	virtual void WriteData(void* data) abstract;
+	virtual void ProcessCommand() abstract;
 };

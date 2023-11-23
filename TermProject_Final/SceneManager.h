@@ -4,6 +4,7 @@ class Loading;
 
 class SceneManager {
 private:
+	SceneType crntSceneType{};
 	std::shared_ptr<Scene> crntScene{};
 	std::shared_ptr<Loading> loading{};
 
@@ -17,4 +18,7 @@ public:
 	void AnimateScene();
 
 	std::shared_ptr<Scene> GetCurrentScene() { return crntScene; }
+	SceneType GetCurrentSceneType() { return crntSceneType; }
+
+	bool IsLoading();
 };

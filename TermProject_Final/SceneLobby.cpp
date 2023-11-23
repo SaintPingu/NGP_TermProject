@@ -99,15 +99,74 @@ void SceneLobby::Animate()
 {
 	// 테스트를 위한 임시값
 	if (KEY_PRESSED(VK_RIGHT)) {
-		lobbyPlayers[framework->client_ID].pos.x += DeltaTime() * 100;
+		lobbyPlayers[framework->client_ID].pos.x += DeltaTime() * 200;
 	}
 	if (KEY_PRESSED(VK_LEFT)) {
-		lobbyPlayers[framework->client_ID].pos.x -= DeltaTime() * 100;
+		lobbyPlayers[framework->client_ID].pos.x -= DeltaTime() * 200;
+	}
+	if (KEY_PRESSED(VK_UP)) {
+		lobbyPlayers[framework->client_ID].pos.y -= DeltaTime() * 200;
+	}
+	if (KEY_PRESSED(VK_DOWN)) {
+		lobbyPlayers[framework->client_ID].pos.y += DeltaTime() * 200;
 	}
 	//
 
 	NpcAnimate();
 	PlayerAnimate();
+}
+
+void SceneLobby::GetInput(CommandList* cmdList)
+{
+	if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
+		cmdList->CommandPush(cmd, NULL, 0);
+	}
+	else if (KEY_PRESSED(VK_DOWN) || KEY_TAP(VK_DOWN)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
+		cmdList->CommandPush(cmd, NULL, 0);
+	}
+	else if (KEY_PRESSED(VK_LEFT) || KEY_TAP(VK_LEFT)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
+		cmdList->CommandPush(cmd, NULL, 0);
+	}
+	else if (KEY_PRESSED(VK_RIGHT) || KEY_TAP(VK_RIGHT)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
+		cmdList->CommandPush(cmd, NULL, 0);
+	}
+
+	if (KEY_TAP(VK_ESCAPE)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
+		cmdList->CommandPush(cmd, NULL, 0);
+	}
+}
+
+void SceneLobby::ProcessCommand()
+{
+	BYTE cmd;
+	PacketBuffer buffer;
+	PacketLoader packetLoader = framework->GetPacketLoader();
+
+	// 로비는 명령이 항상 1개 이므로 바로 반복 필요x
+	packetLoader.PopCommand(cmd, buffer, SceneType::Lobby);
+	switch (cmd)
+	{
+	case (BYTE)ServerLobbyCmd::GoMenu:
+		SceneMgr->LoadScene(SceneType::Intro);
+		break;
+	case (BYTE)ServerLobbyCmd::GoStage:
+		SceneMgr->LoadScene(SceneType::Stage);
+		break;
+	case (BYTE)ServerLobbyCmd::None:
+		// 아무것도 하지 않는 명령어를 의미
+		break;
+	case (BYTE)ServerLobbyCmd::Quit:
+		PostQuitMessage(0);
+		// Terminate 명령
+		break;
+	default:
+		break;
+	}
 }
 
 void SceneLobby::WriteData(void* data)
@@ -148,7 +207,7 @@ int SceneLobby::GetCamSizeY()
 
 void SceneLobby::NpcAnimate()
 {
-	std::shared_ptr<Scene> scene = framework->GetSeceneMgr()->GetCurrentScene();
+	std::shared_ptr<Scene> scene = framework->GetSceneMgr()->GetCurrentScene();
 	static float npc1cnt = 0;
 	static float npc2cnt = 0;
 

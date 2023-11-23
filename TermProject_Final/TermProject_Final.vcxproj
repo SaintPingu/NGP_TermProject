@@ -188,6 +188,7 @@
     <ClCompile Include="SceneLobby.cpp" />
     <ClCompile Include="SceneIntro.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SceneStage.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -214,6 +215,7 @@
     <ClInclude Include="SceneIntro.h" />
     <ClInclude Include="SceneLobby.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SceneStage.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TCPNetwork.h" />

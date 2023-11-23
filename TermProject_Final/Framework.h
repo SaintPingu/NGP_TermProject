@@ -35,12 +35,15 @@ public:
 	
 	// 23-11-16 최정일 클라이언트 ID를 알아야 움직일 플레이어가 누구이고 화면에 표시할 중심 캐릭터를 알수있음.
 	int client_ID = 0;
-	SceneManager* GetSeceneMgr() { 	return sceneManager.get(); }
+	SceneManager* GetSceneMgr() { 	return sceneManager.get(); }
 
 	void SetPacketLoader() { packetLoader; }
+	PacketLoader& GetPacketLoader() { return packetLoader; }
 
 	// 23-11-21 최정일 시작시 아무것도 없는 데이터 통신필요
 	void DefaultPacketSend();
 };
 
 #define framework Framework::Inst()
+#define SceneMgr Framework::Inst()->GetSceneMgr()
+#define CrntScene SceneMgr->GetCurrentScene()
