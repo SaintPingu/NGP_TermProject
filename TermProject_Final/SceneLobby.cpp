@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SceneLobby.h"
+#include "SceneStage.h"
 #include "Framework.h"
 #include "SceneManager.h"
 #include "InputManager.h"
@@ -147,8 +148,13 @@ void SceneLobby::ProcessCommand()
 	PacketBuffer buffer;
 	PacketLoader packetLoader = framework->GetPacketLoader();
 
+	std::shared_ptr<SceneStage> scene;
+
+	StageElement element;
+
 	// 로비는 명령이 항상 1개 이므로 바로 반복 필요x
 	packetLoader.PopCommand(cmd, buffer, SceneType::Lobby);
+
 	switch (cmd)
 	{
 	case (BYTE)ServerLobbyCmd::GoMenu:
@@ -156,6 +162,12 @@ void SceneLobby::ProcessCommand()
 		break;
 	case (BYTE)ServerLobbyCmd::GoStage:
 		SceneMgr->LoadScene(SceneType::Stage);
+
+		scene = std::dynamic_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
+
+		element = (StageElement)(*buffer.begin());
+
+		scene->SetStageElement(element); // stageElement 1byte
 		break;
 	case (BYTE)ServerLobbyCmd::None:
 		// 아무것도 하지 않는 명령어를 의미

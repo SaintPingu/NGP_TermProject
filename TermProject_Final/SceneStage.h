@@ -71,4 +71,8 @@ public:
 	virtual void GetInput(CommandList* cmdList);
 	virtual void ProcessCommand();
 	virtual void WriteData(void* data);
+
+	void SetStageElement(StageElement stageElement) {
+		_phase = stageElement;
+	}
 };
