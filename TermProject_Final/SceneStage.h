@@ -3,6 +3,9 @@
 
 
 class SceneStage : public Scene {
+public:
+	SceneStage();
+	~SceneStage();
 private:
 	class Target
 	{
@@ -59,10 +62,13 @@ private:
 	Type airPokemon = Type::Empty;
 	Type landPokemon = Type::Empty;
 
+	bool _allHide = false;
+	int _select_pokemon_move = 0;
 public:
 	virtual void Init();
 	virtual void Render(HDC hdc);
 	virtual void Animate();
 	virtual void GetInput(CommandList* cmdList);
 	virtual void ProcessCommand();
+	virtual void WriteData(void* data);
 };

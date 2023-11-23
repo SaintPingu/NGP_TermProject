@@ -2,13 +2,15 @@
 #include "SceneManager.h"
 #include "SceneIntro.h"
 #include "SceneLobby.h"
+#include "SceneStage.h"
 #include "Loading.h"
 #include "Framework.h"
 
 void SceneManager::Init(HWND hWnd)
 {
 	//LoadScene(SceneType::Intro);
-	LoadScene(SceneType::Lobby);
+	//LoadScene(SceneType::Lobby);
+	LoadScene(SceneType::Stage);
 	loading = std::make_shared<Loading>();
 }
 
@@ -41,6 +43,9 @@ void SceneManager::LoadScene(SceneType scene)
 		break;
 	case SceneType::Lobby:
 		crntScene = std::make_shared<SceneLobby>();
+		break;
+	case SceneType::Stage:
+		crntScene = std::make_shared<SceneStage>();
 		break;
 	default:
 		assert(0);
