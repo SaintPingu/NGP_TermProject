@@ -242,6 +242,7 @@ void SceneStage::Render(HDC hdc)
 
 void SceneStage::Animate()
 {
+	FingerController();
 }
 
 void SceneStage::GetInput(CommandList* cmdList)
@@ -404,4 +405,94 @@ void SceneStage::ProcessCommand()
 
 void SceneStage::WriteData(void* data)
 {
+}
+
+void SceneStage::FingerController()
+{
+	if (_select_pokemon && SceneMgr->IsLoading() == false)
+	{
+		if (KEY_TAP(VK_RETURN) && _enter_select)
+		{
+			if (!_ready_Air_pokemon)
+			{
+				_play_Air_pokemon = _finger;
+				_finger = 3;
+				_ready_Air_pokemon = true;
+
+				switch (_play_Air_pokemon)
+				{
+				case 0:
+					airPokemon = Type::Elec;
+					//soundManager->PlayHitSound(HitSound::Elec);
+					break;
+				case 1:
+					airPokemon = Type::Fire;
+					//soundManager->PlayHitSound(HitSound::Fire);
+					break;
+				case 2:
+					airPokemon = Type::Water;
+					//soundManager->PlayHitSound(HitSound::Water);
+					break;
+				default:
+					assert(0);
+					break;
+				}
+			}
+			else if (!_ready_Land_pokemon)
+			{
+				_play_Land_pokemon = _finger;
+				_ready_Land_pokemon = true;
+
+				switch (_play_Land_pokemon)
+				{
+				case 3:
+				{
+					landPokemon = Type::Elec;
+
+					const int randSound = rand() % 2;
+					if (randSound != 0)
+					{
+						//soundManager->PlaySelectSound(SelectSound::Pikachu1);
+					}
+					else
+					{
+						//soundManager->PlaySelectSound(SelectSound::Pikachu2);
+					}
+				}
+				break;
+				case 4:
+					landPokemon = Type::Fire;
+					//soundManager->PlaySelectSound(SelectSound::Charmander);
+					break;
+				case 5:
+					landPokemon = Type::Water;
+					//soundManager->PlaySelectSound(SelectSound::Squirtle);
+					break;
+				default:
+					assert(0);
+					break;
+				}
+			}
+			else if (_ready_Air_pokemon && _ready_Land_pokemon)
+			{
+				moveX = 300;
+				// 여기에 배틀 입장 코드 추가...
+			}
+		}
+
+		if (!_ready_Air_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 0)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 2)
+				_finger += 1;
+		}
+		else if (!_ready_Land_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 3)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 5)
+				_finger += 1;
+		}
+	}
 }
