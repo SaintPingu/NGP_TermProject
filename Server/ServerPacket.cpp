@@ -123,6 +123,5 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 			packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 		}
 	}
-
 	return crntClientID;
 }

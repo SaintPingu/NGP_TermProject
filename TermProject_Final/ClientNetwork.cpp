@@ -25,10 +25,10 @@ void ClientNetwork::Logic()
 	while (executeClientNet)
 	{
 		// recv 구동 
-		curConnectFlag = ConnectFlag::recv;
+		curConnectFlag = ConnectFlag::RecvStart;
 
 		// send 구동 
-		curConnectFlag = ConnectFlag::send;
+		curConnectFlag = ConnectFlag::SendStart;
 
 	}
 }

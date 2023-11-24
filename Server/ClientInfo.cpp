@@ -8,7 +8,7 @@
 ClientInfo::ClientInfo()
 {
 	executeLogic = true;
-	SetConnectFlag(ConnectFlag::recv);
+	SetConnectFlag(ConnectFlag::none);
 	sendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
@@ -34,13 +34,15 @@ TResult ClientInfo::Logic()
 		WaitForSingleObject(sendEvent, INFINITE);
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
-		curConnectFlag = ConnectFlag::send;		// 전송 대기
+		curConnectFlag = ConnectFlag::SendStart;		// 전송 대기
 		SendPacket();
+		curConnectFlag = ConnectFlag::SendFinish;		// 전송 대기
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 완료 및 수신 대기\n";
 
+		curConnectFlag = ConnectFlag::RecvStart;		// 리시브 완료
 		RecvPacket();
-		curConnectFlag = ConnectFlag::recv;		// 리시브 완료
+		curConnectFlag = ConnectFlag::RecvFinish;		// 리시브 완료
 
 		//std::cout << "\t\t-> Client [" << ID << "] 수신 완료\n";
 

@@ -25,8 +25,7 @@ ServerFramework::~ServerFramework()
 {
 	SAFE_DELETE(listenNet);
 	CLIENT_MGR->Destroy();
-	SAFE_DELETE(packetGenerator);
-	SAFE_DELETE(packetLoader);
+
 }
 
 bool ServerFramework::Init()
@@ -108,28 +107,12 @@ void ServerFramework::Logic()
 {
 
 	std::cout << "\t-> Server Logic 구동 중 ... [P : 종료]\n";
-	int cnt{};
 	while (executeFramework)
 	{
-		Timer::Inst()->Tick(30.f);
-
-		std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
-		if (cnt >= 30) {
-			cnt = 0;
-		}
-
-		
 		Event();
-		SetPacketBuffer();
-		ProcessCommand();
-		UpdateScene();
+		Update();
 		SendPakcet();
-
-		if(GetAsyncKeyState('P') & 0x8000)
-			SERVER_FRAMEWORK->Exit();
-
 	}
-
 	std::cout << "\t-> Server Logic Exit\n";
 
 }
@@ -150,17 +133,26 @@ TResult ServerFramework::Event()
 	return TResult();
 }
 
-TResult ServerFramework::SetPacketBuffer()
+TResult ServerFramework::Update()
 {
+	Timer::Inst()->Tick(30.f);
+
+	static int cnt{};
+	std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
+	if (cnt >= 30) {
+		cnt = 0;
+	}
+
+	CLIENT_MGR->Update();
+	ServerFramework::UpdateScene();
+
+	if (GetAsyncKeyState('P') & 0x8000)
+		SERVER_FRAMEWORK->Exit();
+
 
 	return TResult();
 }
 
-TResult ServerFramework::ProcessCommand()
-{
-
-	return TResult();
-}
 
 TResult ServerFramework::UpdateScene()
 {

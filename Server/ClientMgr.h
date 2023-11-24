@@ -13,6 +13,7 @@
 
 enum class mutexType
 {
+	/// -clientPool 에 접근하는 함수는 mutex[accessClientPool]를 꼭 lock 걸어야합니다.
 	accessClientPool,	// 클라이언트 정보 접근 동기화 뮤텍스
 	createID,			// 클라이언트 정보 접근 ID 생성 뮤텍스
 	terminateID_event,	// 클라이언트 접속 종료 처리 동기화 뮤텍스
@@ -32,33 +33,39 @@ class ClientMgr
 	SINGLETON_PATTERN(ClientMgr);
 
 private:
-	/// -clientPool 에 접근하는 함수는 mutex[accessClientPool]를 꼭 lock 걸어야합니다.
-	//std::vector<ClientInfo*>	newClients;						// 신규 접속 클라이언트
-	std::vector<ClientInfo*>	clientPool;						// 접속 클라이언트 관리 
-	int							clientPoolIndex{};				// 현재 클라이언트 풀의 최대 index
+	std::vector<ClientInfo*>	clientPool;							// 접속 클라이언트 관리 
+	int							clientPoolIndex{};					// 현재 클라이언트 풀의 최대 index
     
-	PacketGenerator				packetGen;						// 패킷 관리
-	Mutex						mutex[(UINT)mutexType::END]{};	// 뮤텍스 관리
+	PacketGenerator				packetGen;							// 패킷 관리
+	Mutex						mutex[(UINT)mutexType::END]{};		// 뮤텍스 관리
 
-	std::queue<std::pair<clientEventType, PVOID>>				clientEvents; // eventtype, data type
+	std::queue<std::pair<clientEventType, PVOID>>	clientEvents;	// eventtype, data type
+
+	PacketGenerator				packetGenerator{};
+	PacketLoader				packetLoader{};
 
 public:
+	bool	Event();
+	TResult Update();
+	bool	SendPacket();
 
-	bool Event();
-	bool SetPacketBuffer();
-	bool SendPacket();
-	void InsertNewSocket();
-	void PushCommand();
+	TResult CreateClientThread(int ID);
+
+	TResult SetPacketBuffer(int ID);	// 2. 패킷 세팅		- ID 클라이언트의 패킷을 세팅한다. 
+	TResult ProcessCommand();			// 3. 패킷 해석		- 클라이언트로부터 받은 패킷을 해석하고 데이터 업데이트 
+
 
 	// 접속된 클라이언트의 아이디와 TResult 값을 반환한다.
 	std::pair<int, TResult> RegisterConnectedClient(std::string clientIP, SOCKET& sock); // 접속된 클라이언트 ClientPool 에 등록 ( 해당 인덱스는 곧 본인의 ID ) 
-	TResult CreateClientThread(int ID);
-
 	// 접속 종료된 클라이언트들을 처리한다 ( 이벤트 처리 )
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
-	
-	int GetPoolIndex() const { return clientPoolIndex; }
 
+	/// +-------------
+	///	    G E T 
+	/// -------------+
+	PacketGenerator		GetPacketGenerator()	const	{	return packetGenerator;		}
+	PacketLoader		GetPacketLoader()		const	{	return packetLoader;		}
+	int					GetPoolIndex()			const	{	return clientPoolIndex;		}
 
 public:
 	bool Init();

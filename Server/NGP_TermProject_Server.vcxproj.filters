@@ -25,6 +25,9 @@
     <Filter Include="Client">
       <UniqueIdentifier>{56c230d3-1075-4c8b-a98f-2ad992d5907c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{2b6ccd62-469e-482f-b823-412ccb78a034}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

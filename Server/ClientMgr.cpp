@@ -45,13 +45,6 @@ bool ClientMgr::Event()
 	return false;
 }
 
-
-bool ClientMgr::SetPacketBuffer()
-{
-
-	return false;
-}
-
 DataType GetDataType(ClientInfo* client)
 {
 	switch (SCENE_MGR->GetClientLocation(client->GetID())) {
@@ -69,8 +62,6 @@ DataType GetDataType(ClientInfo* client)
 
 bool ClientMgr::SendPacket()
 {
-	//InsertNewSocket();
-
 	// Generate
 	packetGen.GenerateData();
 
@@ -82,7 +73,7 @@ bool ClientMgr::SendPacket()
 			continue;
 		}
 
-		if (client->GetConnectFlag() == ConnectFlag::recv) {
+		if (client->GetConnectFlag() == ConnectFlag::RecvFinish) {
 			DataType dataType = GetDataType(client);
 			packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
 			client->Send();
@@ -92,20 +83,47 @@ bool ClientMgr::SendPacket()
 	return true;
 }
 
-void ClientMgr::InsertNewSocket()
+TResult ClientMgr::Update()
 {
-	//for (auto& client : newClients) {
-	//	clientPool[client->GetID()] = client;
-	//}
-	//newClients.clear();
+	ProcessCommand();
+
+	return TResult();
 }
 
-void ClientMgr::PushCommand()
+TResult ClientMgr::SetPacketBuffer(int ID)
 {
+	// 동기화 처리  
+	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
 
+	if (clientPool[ID] == nullptr)
+	{
+		CRASH("INVALID ID");
+		return TResult::FAIL;
+	}
+
+	
+	PacketBuffer buf = clientPool[ID]->GetPacketBuffer();
+	packetLoader.SetPacketBuffer(ID, &buf);
+
+	return TResult();
 }
 
 
+TResult ClientMgr::ProcessCommand()
+{
+	BYTE			cmd{};
+	PacketBuffer	buf{};
+	
+	while (packetLoader.PopCommand(cmd, buf) != -1)
+	{
+		// TODO : Process Command 클라이언트 처리  
+
+		break;
+	}
+	
+
+	return TResult();
+}
 
 
 TResult ClientMgr::CreateClientThread(int ID)

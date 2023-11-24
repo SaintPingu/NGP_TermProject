@@ -98,8 +98,12 @@ enum class TResult : short
 enum class ConnectFlag
 {
 	none,
-	recv,
-	send,
+
+	RecvStart,
+	RecvFinish,
+
+	SendStart,
+	SendFinish,
 	END,
 };
 
