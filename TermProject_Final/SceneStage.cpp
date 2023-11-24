@@ -401,6 +401,26 @@ void SceneStage::GetInput(CommandList* cmdList)
 
 void SceneStage::ProcessCommand()
 {
+	BYTE cmd;
+	PacketBuffer buffer;
+	PacketLoader packetLoader = framework->GetPacketLoader();
+
+	packetLoader.PopCommand(cmd, buffer, SceneType::Stage);
+
+	switch (cmd)
+	{
+	case (BYTE)ServerStageCmd::GoLobby:
+		SceneMgr->LoadScene(SceneType::Lobby);
+		break;
+	case (BYTE)ServerStageCmd::GoBattle:
+		SceneMgr->LoadScene(SceneType::Battle);
+		//typeFly(4)
+		//typeGnd(4)
+		// Battle 구현시 삽입해줘야함.
+		break;
+	default:
+		break;
+	}
 }
 
 void SceneStage::WriteData(void* data)
