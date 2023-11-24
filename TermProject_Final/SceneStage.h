@@ -72,6 +72,9 @@ public:
 	virtual void ProcessCommand();
 	virtual void WriteData(void* data);
 
+
+	void FingerController();
+
 	void SetStageElement(StageElement stageElement) {
 		_phase = stageElement;
 	}

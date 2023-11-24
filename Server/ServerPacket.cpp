@@ -96,6 +96,8 @@ void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
 
 int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 {
+	crntClientID = -1;
+
 	if (packetBuffers.empty()) {
 		return crntClientID;
 	}
@@ -103,7 +105,7 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	if (crntClientID == -1) {
 		crntClientID = packetBuffers.begin()->first;
 	}
-	//클라이언트가 보내는 패킷을 항상 cmdCnt와 data뿐.
+	//클라이언트가 보내는 패킷을 항상 cmdCnt와 commands뿐.
 	//항상 data는 비운다.
 
 	data.clear();
@@ -123,5 +125,10 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 			packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 		}
 	}
+
+	if (packetBuffers[crntClientID]->size() == 1) {
+		packetBuffers.erase(crntClientID);
+	}
+
 	return crntClientID;
 }
