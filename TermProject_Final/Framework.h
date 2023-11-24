@@ -9,6 +9,7 @@ class Framework {
 	SINGLETON_PATTERN(Framework)
 
 private:
+	std::thread clientNetwork{};
 	RECT rectClientWindow{};
 	HWND hWnd;
 	std::shared_ptr<SceneManager> sceneManager{};
@@ -32,6 +33,8 @@ public:
 	void Update();
 	void Render();
 	void Terminate();
+
+	void ConnectToServer();
 	
 	// 23-11-16 최정일 클라이언트 ID를 알아야 움직일 플레이어가 누구이고 화면에 표시할 중심 캐릭터를 알수있음.
 	int client_ID = 0;

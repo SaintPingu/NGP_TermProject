@@ -96,6 +96,14 @@ void Framework::Terminate()
 {
 	CloseHandle(recvPacket);
 	CloseHandle(wakeUpThreadForServer);
+	clientNetwork.join();
+}
+
+void Framework::ConnectToServer()
+{
+	clientNetwork = std::thread([&]() {
+		CLIENT_NETWORK->Execute();
+		});
 }
 
 void Framework::DefaultPacketSend()

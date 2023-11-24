@@ -119,19 +119,23 @@ void SceneLobby::Animate()
 
 void SceneLobby::GetInput(CommandList* cmdList)
 {
-	if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
+	if (!cmdList) {
+		return;
+	}
+
+	if (KEY_TAP(VK_UP)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
 		cmdList->CommandPush(cmd, NULL, 0);
 	}
-	else if (KEY_PRESSED(VK_DOWN) || KEY_TAP(VK_DOWN)) {
+	else if (KEY_TAP(VK_DOWN)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
 		cmdList->CommandPush(cmd, NULL, 0);
 	}
-	else if (KEY_PRESSED(VK_LEFT) || KEY_TAP(VK_LEFT)) {
+	else if (KEY_TAP(VK_LEFT)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
 		cmdList->CommandPush(cmd, NULL, 0);
 	}
-	else if (KEY_PRESSED(VK_RIGHT) || KEY_TAP(VK_RIGHT)) {
+	else if (KEY_TAP(VK_RIGHT)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
 		cmdList->CommandPush(cmd, NULL, 0);
 	}
