@@ -8,9 +8,9 @@
 
 void SceneManager::Init(HWND hWnd)
 {
-	//LoadScene(SceneType::Intro);
+	LoadScene(SceneType::Intro);
 	//LoadScene(SceneType::Lobby);
-	LoadScene(SceneType::Stage);
+	//LoadScene(SceneType::Stage);
 	loading = std::make_shared<Loading>();
 }
 

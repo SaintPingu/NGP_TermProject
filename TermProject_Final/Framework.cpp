@@ -60,13 +60,13 @@ void Framework::WriteData()
 
 void Framework::GetInput()
 {
-	ClientNetwork* network = CLIENT_NETWORK->GetClientNetwork();
-	if (!network) {
-		return;
-	}
+	//ClientNetwork* network = CLIENT_NETWORK->GetClientNetwork();
+	//if (!network) {
+	//	return;
+	//}
 
-	CommandList* cmdList = network->GetPacketGenerator().GetCommandList();
-	CrntScene->GetInput(cmdList);
+	//CommandList* cmdList = network->GetPacketGenerator().GetCommandList();
+	CrntScene->GetInput(nullptr);
 }
 
 void Framework::SendPacket()

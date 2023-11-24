@@ -17,10 +17,10 @@ ClientNetMgr::~ClientNetMgr()
 
 void ClientNetMgr::Execute()
 {
-	if (Init(9000) == TResult::SUCCESS)
-	{
-		clientNet->Logic();
-	}
+	//if (Init(9000) == TResult::SUCCESS)
+	//{
+	//	clientNet->Logic();
+	//}
 }
 
 TResult ClientNetMgr::Init(short portnum)

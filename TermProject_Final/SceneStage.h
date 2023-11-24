@@ -75,4 +75,5 @@ public:
 	void SetStageElement(StageElement stageElement) {
 		_phase = stageElement;
 	}
+	void FingerController();
 };

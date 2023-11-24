@@ -152,7 +152,7 @@ void Menu::Paint(HDC hdc)
 	DeleteObject(hFont);
 }
 
-void Menu::fingerController(const HWND& hWnd)
+void Menu::fingerController()
 {
 	if (KEY_TAP(VK_UP))
 	{
@@ -251,6 +251,7 @@ void SceneIntro::Animate()
 
 void SceneIntro::GetInput(CommandList* cmdList)
 {
+	menu.fingerController();
 }
 
 void SceneIntro::ProcessCommand()
