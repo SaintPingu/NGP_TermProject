@@ -58,7 +58,7 @@ bool ClientMgr::SetPacketBuffer()
 			continue;
 		}
 
-		if (client->GetConnectFlag() == ConnectFlag::recvFinish) {
+		if (client->GetConnectFlag() == ConnectFlag::RecvFinish) {
 			packetLoader.SetPacketBuffer(client->GetID(), &client->GetPacketBuffer());
 		}
 	}
@@ -84,7 +84,7 @@ DataType GetDataType(ClientInfo* client)
 bool ClientMgr::SendPacket()
 {
 	// Generate
-	packetGen.GenerateData();
+	packetGenerator.GenerateData();
 
 	// Send
 	for (auto& [clientID, packetBuffer] : packetLoader.packetBuffers) {
@@ -99,23 +99,13 @@ bool ClientMgr::SendPacket()
 		client->GetCmdList()->CommandPush(cmd, nullptr, 0);
 		
 		DataType dataType = GetDataType(client);
-		packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
+		packetGenerator.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
 		client->Send();
 	}
 
-	//packetGen.DeleteData();
+	//packetGenerator.DeleteData();
 
 	return true;
-}
-
-void ClientMgr::PushCommand()
-{
-
-		break;
-	}
-	
-
-	return TResult();
 }
 
 

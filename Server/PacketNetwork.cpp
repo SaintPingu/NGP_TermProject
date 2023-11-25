@@ -24,7 +24,7 @@ TResult PacketNetwork::SendPacket()
 
 TResult PacketNetwork::RecvPacket()
 {
-    std::cout << "수신 대기\n";
+    //std::cout << "수신 대기\n";
     int retval{};
     char dataLen;
     retval = recv(TCP_Socket, &dataLen, sizeof(char), MSG_WAITALL);
@@ -42,7 +42,7 @@ TResult PacketNetwork::RecvPacket()
     }
 
 
-    std::cout << "수신 완료 : 포트 번호 [" << ntohs(TCP_SockAddr.sin_port) << "] 데이터 길이[" << PacketBuf.size() << "]\n";
+    //std::cout << "수신 완료 : 포트 번호 [" << ntohs(TCP_SockAddr.sin_port) << "] 데이터 길이[" << PacketBuf.size() << "]\n";
 
     return TResult::NONE;
 }

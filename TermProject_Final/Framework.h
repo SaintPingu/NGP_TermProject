@@ -58,7 +58,7 @@ public:
 	// 23-11-21 최정일 시작시 아무것도 없는 데이터 통신필요
 	void DefaultPacketSend();
 
-	// 23-11-25 민동현 : WiatForPacket() 함수를 꺠우기 위한 함수
+	// 23-11-25 민동현 : WaitForPacket() 함수를 꺠우기 위한 함수
 	void WakeForPacket() { SetEvent(recvPacket); }
 
 private:

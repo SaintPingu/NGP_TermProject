@@ -13,7 +13,7 @@ TResult PacketNetwork::SendPacket()
         err_display("Send Error");
         return TResult::FAIL;
     }
-    std::cout << "송신한 패킷 길이 : " << PacketBuf.size() << std::endl;
+    //std::cout << "송신한 패킷 길이 : " << PacketBuf.size() << std::endl;
 
     PacketBuf.clear();
 

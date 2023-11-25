@@ -5,12 +5,13 @@
 
 void LobbyPlayer::Move()
 {
+	constexpr float speed = 200.f;
 	if (v != 0) {
-		pos.x += DeltaTime() * 100 * v;
+		pos.x += DeltaTime() * speed * v;
 
 	}
 	else if (h != 0) {
-		pos.y += DeltaTime() * 100 * h;
+		pos.y += DeltaTime() * speed * h;
 	}
 }
 

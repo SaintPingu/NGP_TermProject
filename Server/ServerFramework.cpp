@@ -132,14 +132,9 @@ TResult ServerFramework::Event()
 	return TResult();
 }
 
-TResult ServerFramework::SetPacketBuffer()
-{
-	CLIENT_MGR->SetPacketBuffer();
-	return TResult::NONE;
-}
 TResult ServerFramework::Update()
 {
-	Timer::Inst()->Tick(30.f);
+	Timer::Inst()->Tick(60.f);
 
 	static int cnt{};
 	std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
@@ -147,7 +142,8 @@ TResult ServerFramework::Update()
 		cnt = 0;
 	}
 
-	CLIENT_MGR->Update();
+	CLIENT_MGR->SetPacketBuffer();
+	CLIENT_MGR->ProcessCommand();
 	ServerFramework::UpdateScene();
 
 	if (GetAsyncKeyState('P') & 0x8000)
@@ -155,11 +151,6 @@ TResult ServerFramework::Update()
 
 
 	return TResult();
-}
-
-TResult ServerFramework::ProcessCommand()
-{
-	return CLIENT_MGR->ProcessCommand();
 }
 
 

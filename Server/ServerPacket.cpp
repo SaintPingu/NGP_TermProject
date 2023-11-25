@@ -19,7 +19,6 @@ void PacketGenerator::GenerateData()
 			std::bitset<5> pid(clientID);
 			std::bitset<1> mov(players.at(clientID)->IsMoving());
 			std::bitset<2> dir(static_cast<int>(players.at(clientID)->GetDir()));
-			std::cout << dir.to_ulong() << std::endl;
 			std::bitset<8> byte(pid.to_string() + mov.to_string() + dir.to_string());
 
 			playerlobbydata[i].Pid_Mov_Dir = static_cast<BYTE>(byte.to_ulong());
@@ -147,7 +146,7 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 		}
 	}
 
-	if (packetBuffers[crntClientID]->size() == 1) {
+	if (packetBuffer->empty()) {
 		packetBuffers.erase(crntClientID);
 	}
 

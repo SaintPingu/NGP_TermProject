@@ -219,7 +219,6 @@ void SceneLobby::WriteData(void* data)
 		int clientID = pid.to_ulong();
 		bool isMoving = mov.to_ulong();
 		Dir direction = static_cast<Dir>(dir.to_ulong());
-		std::cout << dir.to_ulong() << std::endl;
 
 		lobbyPlayers[clientID].isMoving = isMoving;
 		lobbyPlayers[clientID].dir = direction;

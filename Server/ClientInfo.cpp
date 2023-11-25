@@ -8,7 +8,7 @@
 ClientInfo::ClientInfo()
 {
 	executeLogic = true;
-	SetConnectFlag(ConnectFlag::none);
+	SetConnectFlag(ConnectFlag::RecvFinish);
 	sendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
@@ -31,10 +31,11 @@ TResult ClientInfo::Logic()
 // 2023-11-16-TUR (민동현) : 리시브 완료 시 외부에서 "Send() { SetEvent(sendEvent) }" 를 호출해 전송하도록 한다.
 	while(executeLogic)
 	{
+		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
+
 		WaitForSingleObject(sendEvent, INFINITE);
 
-		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
-		curConnectFlag = ConnectFlag::sendStart;		// 전송 대기
+		curConnectFlag = ConnectFlag::SendStart;		// 전송 대기
 		if (SendPacket() == TResult::FAIL) {
 			break;
 		}
