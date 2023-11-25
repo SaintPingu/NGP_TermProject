@@ -1,10 +1,12 @@
 #pragma once
 class Loading {
 private:
+	const int maxLoadCnt = 4;
+
 	CImage background;
 	CImage loadingPokemon;
 	CImage loadingBar[5];
-	float loadingBarCnt = 0;
+	float loadingBarCnt = maxLoadCnt;
 
 	void AnimateLoadingBar();
 	void AnimatePokemon();
@@ -19,7 +21,7 @@ public:
 	void Animate();
 	inline constexpr bool IsLoaded()
 	{
-		return (loadingBarCnt == 4) ? true : false;
+		return (loadingBarCnt >= maxLoadCnt) ? true : false;
 	}
 	inline constexpr void ResetLoading()
 	{

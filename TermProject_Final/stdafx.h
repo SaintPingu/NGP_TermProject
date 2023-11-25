@@ -19,6 +19,7 @@
 #include <mmsystem.h>
 #include <fmod.hpp>
 #include <algorithm>
+#include <functional>
 
 #include <string>
 #include <unordered_map>

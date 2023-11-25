@@ -466,10 +466,16 @@ enum class ServerBattleCmd : BYTE
 enum class ClientLobbyCmd : BYTE
 {
 	Terminate,
-	MoveLeft,
-	MoveRight,
-	MoveUp,
-	MoveDown,
+
+	MoveLeftTap,
+	MoveRightTap,
+	MoveUpTap,
+	MoveDownTap,
+
+	MoveLeftAway,
+	MoveRightAway,
+	MoveUpAway,
+	MoveDownAway,
 
 };
 /// +------------------
@@ -489,10 +495,17 @@ enum class ClientStageCmd : BYTE
 enum class ClientBattleCmd : BYTE
 {
 	Terminate,
-	MoveLeft,
-	MoveRight,
-	MoveUp,
-	MoveDown,
+
+	MoveLeftTap,
+	MoveRightTap,
+	MoveUpTap,
+	MoveDownTap,
+
+	MoveLeftAway,
+	MoveRightAway,
+	MoveUpAway,
+	MoveDownAway,
+
 	SkillQ,
 	SkillW,
 	SkillE,

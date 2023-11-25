@@ -1,21 +1,19 @@
 #pragma once
 #include "../Server/PacketStruct.h"
 
-class PacketGenerator
-{
+class PacketGenerator {
 private:
-	CommandList* cmdList = NULL;
+	CommandList cmdList;
 
 public:
 	PacketGenerator(){}
 	~PacketGenerator(){}
 
 	Packet GeneratePacket();
-	CommandList* GetCommandList() { return cmdList; }
+	CommandList& GetCommandList() { return cmdList; }
 };
 
-class PacketLoader
-{
+class PacketLoader {
 public:
 	PacketLoader(){}
 	~PacketLoader(){}

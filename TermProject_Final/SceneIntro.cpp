@@ -176,7 +176,6 @@ void Menu::fingerController()
 		{
 		case MI_Menu::start:
 			SceneMgr->LoadScene(SceneType::Lobby);
-			//framework->ConnectToServer();
 			break;
 		case MI_Menu::producer:
 			isProducer = !isProducer;

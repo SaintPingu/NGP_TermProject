@@ -1,7 +1,7 @@
-
 #include "stdafx.h"
 #include "ClientNetMgr.h"
 #include "ClientNetwork.h"
+#include "framework.h"
 
 SINGLETON_PATTERN_DEFINITION(ClientNetMgr);
 
@@ -17,9 +17,12 @@ ClientNetMgr::~ClientNetMgr()
 
 void ClientNetMgr::Execute()
 {
-	if (Init(9000) == TResult::SUCCESS)
-	{
+	if (Init(9000) == TResult::SUCCESS) {
 		clientNet->Logic();
+	}
+	else {
+		// 서버 연결 실패
+		framework->WakeForPacket();
 	}
 }
 

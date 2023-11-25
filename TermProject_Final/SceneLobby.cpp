@@ -119,30 +119,43 @@ void SceneLobby::Animate()
 
 void SceneLobby::GetInput(CommandList* cmdList)
 {
-	if (!cmdList) {
-		return;
-	}
-
 	if (KEY_TAP(VK_UP)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
-		cmdList->CommandPush(cmd, NULL, 0);
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveUpTap);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 	else if (KEY_TAP(VK_DOWN)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
-		cmdList->CommandPush(cmd, NULL, 0);
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveDownTap);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 	else if (KEY_TAP(VK_LEFT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
-		cmdList->CommandPush(cmd, NULL, 0);
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeftTap);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 	else if (KEY_TAP(VK_RIGHT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
-		cmdList->CommandPush(cmd, NULL, 0);
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveRightTap);
+		cmdList->CommandPush(cmd, nullptr, 0);
+	}
+
+	if (KEY_AWAY(VK_UP)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveUpAway);
+		cmdList->CommandPush(cmd, nullptr, 0);
+	}
+	else if (KEY_AWAY(VK_DOWN)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveDownAway);
+		cmdList->CommandPush(cmd, nullptr, 0);
+	}
+	else if (KEY_AWAY(VK_LEFT)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeftAway);
+		cmdList->CommandPush(cmd, nullptr, 0);
+	}
+	else if (KEY_AWAY(VK_RIGHT)) {
+		BYTE cmd = BYTE(ClientLobbyCmd::MoveRightAway);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 
 	if (KEY_TAP(VK_ESCAPE)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
-		cmdList->CommandPush(cmd, NULL, 0);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 }
 

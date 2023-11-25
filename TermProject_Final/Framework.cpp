@@ -9,15 +9,10 @@
 
 SINGLETON_PATTERN_DEFINITION(Framework)
 
-//패킷을 서버로부터 받았다는 이벤트, 인트로씬에서 로비로 넘어갈때 서버를 깨우는 이벤트
-HANDLE recvPacket, wakeUpThreadForServer;
-
-extern bool isGenPacket;
-
 void Framework::Start(HWND hWnd)
 {
 	recvPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
-	wakeUpThreadForServer = CreateEvent(NULL, FALSE, FALSE, NULL);
+	ResetEvent(recvPacket);
 
 	GetClientRect(hWnd, &rectClientWindow);
 	sceneManager = std::make_shared<SceneManager>();
@@ -25,24 +20,33 @@ void Framework::Start(HWND hWnd)
 	this->hWnd = hWnd;
 }
 
+void Framework::UpdateWithServer()
+{
+	WaitForPacket();
+	ProcessCommand();
+	WriteData();
+	GetInput();
+	SendPacket();
+	AnimateScene();
+}
+
+void Framework::UpdateSingle()
+{
+	GetInput();
+	AnimateScene();
+}
+
+
 void Framework::Update()
 {
-	//std::cout << "update" << std::endl;
-	//WaitForPacket();
-	//ProcessCommand();
-	//WriteData();
-	GetInput();
-	//SendPacket();
-	AnimateScene();
+	UpdateFunc();
+	
 }
 
 void Framework::WaitForPacket()
 {
-	if (isGenPacket) {
-		WaitForSingleObject(recvPacket,INFINITY);
-		packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetClientNetwork()->GetPacketBuffer());
-		isGenPacket = false;
-	}
+	WaitForSingleObject(recvPacket, INFINITE);
+	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
 }
 
 void Framework::ProcessCommand()
@@ -60,13 +64,13 @@ void Framework::WriteData()
 
 void Framework::GetInput()
 {
-	//ClientNetwork* network = CLIENT_NETWORK->GetClientNetwork();
-	//if (!network) {
-	//	return;
-	//}
+	if (!CLIENT_NETWORK) {
+		CrntScene->GetInput(nullptr);
+		return;
+	}
 
-	//CommandList* cmdList = network->GetPacketGenerator().GetCommandList();
-	CrntScene->GetInput(nullptr);
+	CommandList& cmdList = CLIENT_NETWORK->GetPacketGenerator().GetCommandList();
+	CrntScene->GetInput(&cmdList);
 }
 
 void Framework::SendPacket()
@@ -76,9 +80,7 @@ void Framework::SendPacket()
 		return;
 	}
 
-	SetEvent(wakeUpThreadForServer);
-
-	CLIENT_NETWORK->GetClientNetwork()->SendPacket();
+	CLIENT_NETWORK->Send();
 
 }
 
@@ -95,18 +97,29 @@ void Framework::Render()
 void Framework::Terminate()
 {
 	CloseHandle(recvPacket);
-	CloseHandle(wakeUpThreadForServer);
 	clientNetwork.join();
 }
 
 void Framework::ConnectToServer()
 {
 	clientNetwork = std::thread([&]() {
-		CLIENT_NETWORK->Execute();
+		CLIENT_NETWORK_MGR->Execute();
 		});
+
+	// 서버 연결 대기
+	WaitForSingleObject(recvPacket, INFINITE);
+	ResetEvent(recvPacket);
+
+	if (CLIENT_NETWORK->IsConnected() == false) {
+		MessageBox(hWnd, L"서버 연결에 실패하였습니다.", L"연결 에러", MB_ICONERROR | MB_OK);
+		PostQuitMessage(0);
+		return;
+	}
+
+	UpdateFunc = std::bind(&Framework::UpdateWithServer, this);
 }
 
 void Framework::DefaultPacketSend()
 {
-	CLIENT_NETWORK->GetClientNetwork()->SendPacket();
+	CLIENT_NETWORK->Send();
 }

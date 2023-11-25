@@ -30,7 +30,7 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		// 해당 클라이언트와 연결 종료 코드 추가 필요.
 		players.erase(clientID);
 		return;
-	case ClientLobbyCmd::MoveLeft:
+	case ClientLobbyCmd::MoveLeftTap:
 		if (player->dir == Dir::Right) {
 			player->dir = Dir::Empty;
 			player->isMoving = false;
@@ -41,7 +41,7 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		}
 
 		break;
-	case ClientLobbyCmd::MoveRight:
+	case ClientLobbyCmd::MoveRightTap:
 		if (player->dir == Dir::Left) {
 			player->dir = Dir::Empty;
 			player->isMoving = false;
@@ -52,7 +52,7 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		}
 
 		break;
-	case ClientLobbyCmd::MoveUp:
+	case ClientLobbyCmd::MoveUpTap:
 		if (player->dir == Dir::Down) {
 			player->dir = Dir::Empty;
 			player->isMoving = false;
@@ -63,7 +63,7 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		}
 
 		break;
-	case ClientLobbyCmd::MoveDown:
+	case ClientLobbyCmd::MoveDownTap:
 		if (player->dir == Dir::Up) {
 			player->dir = Dir::Empty;
 			player->isMoving = false;
