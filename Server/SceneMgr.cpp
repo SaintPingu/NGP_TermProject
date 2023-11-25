@@ -10,3 +10,8 @@ void SceneMgr::Init()
 	//stageScene = std::make_shared<StageScene>();
 	//battleScene = std::make_shared<BattleScene>();
 }
+
+void SceneMgr::UpdateScenes()
+{
+	lobbyScene->Update();
+}

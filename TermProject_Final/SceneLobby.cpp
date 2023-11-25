@@ -47,7 +47,7 @@ void SceneLobby::Init()
 	rectImage = rectBackground;
 	rectDraw = rectBackground;
 	
-	lobbyPlayers[0] = LobbyPlayer(Vector2(100, 100), Dir::Down, false);
+	//lobbyPlayers[0] = LobbyPlayer(Vector2(100, 100), Dir::Down, false);
 }
 
 void SceneLobby::Render(HDC hdc)
@@ -98,47 +98,64 @@ void SceneLobby::Render(HDC hdc)
 
 void SceneLobby::Animate()
 {
-	// 테스트를 위한 임시값
-	if (KEY_PRESSED(VK_RIGHT)) {
-		lobbyPlayers[framework->client_ID].pos.x += DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_LEFT)) {
-		lobbyPlayers[framework->client_ID].pos.x -= DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_UP)) {
-		lobbyPlayers[framework->client_ID].pos.y -= DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_DOWN)) {
-		lobbyPlayers[framework->client_ID].pos.y += DeltaTime() * 200;
-	}
-	//
-
 	NpcAnimate();
 	PlayerAnimate();
 }
 
 void SceneLobby::GetInput(CommandList* cmdList)
 {
-	if (KEY_PRESSED(VK_UP) || KEY_TAP(VK_UP)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveUp);
-		cmdList->CommandPush(cmd, NULL, 0);
+	if (KEY_TAP(VK_UP)) {
+		h -= 1;
 	}
-	else if (KEY_PRESSED(VK_DOWN) || KEY_TAP(VK_DOWN)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveDown);
-		cmdList->CommandPush(cmd, NULL, 0);
+	if (KEY_TAP(VK_DOWN)) {
+		h += 1;
 	}
-	else if (KEY_PRESSED(VK_LEFT) || KEY_TAP(VK_LEFT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeft);
-		cmdList->CommandPush(cmd, NULL, 0);
+	if (KEY_TAP(VK_LEFT)) {
+		v -= 1;
 	}
-	else if (KEY_PRESSED(VK_RIGHT) || KEY_TAP(VK_RIGHT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveRight);
-		cmdList->CommandPush(cmd, NULL, 0);
+	if (KEY_TAP(VK_RIGHT)) {
+		v += 1;
 	}
+
+	if (KEY_AWAY(VK_UP)) {
+		h += 1;
+	}
+	if (KEY_AWAY(VK_DOWN)) {
+		h -= 1;
+	}
+	if (KEY_AWAY(VK_LEFT)) {
+		v += 1;
+	}
+	if (KEY_AWAY(VK_RIGHT)) {
+		v -= 1;
+	}
+
+	BYTE cmd;
+	if (v != 0) {
+		if (v == -1) {
+			cmd = BYTE(ClientLobbyCmd::MoveLeft);
+		} 
+		else {
+			cmd = BYTE(ClientLobbyCmd::MoveRight);
+		}
+	}
+	else if (h != 0) {
+		if (h == -1) {
+			cmd = BYTE(ClientLobbyCmd::MoveUp);
+		}
+		else {
+			cmd = BYTE(ClientLobbyCmd::MoveDown);
+		}
+	}
+	else {
+		cmd = BYTE(ClientLobbyCmd::Stop);
+	}
+
+	cmdList->CommandPush(cmd, nullptr, 0);
 
 	if (KEY_TAP(VK_ESCAPE)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
-		cmdList->CommandPush(cmd, NULL, 0);
+		cmdList->CommandPush(cmd, nullptr, 0);
 	}
 }
 
@@ -162,7 +179,6 @@ void SceneLobby::ProcessCommand()
 		break;
 	case (BYTE)ServerLobbyCmd::GoStage:
 		SceneMgr->LoadScene(SceneType::Stage);
-
 		scene = std::dynamic_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
 
 		element = (StageElement)(*buffer.begin());
@@ -186,26 +202,35 @@ void SceneLobby::WriteData(void* data)
 	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 
 	Lobby::LobbyData lobbydata;
-	lobbydata.PlayersData = new Lobby::PlayerLobbyData[*buffer->begin()];
-	memcpy(&lobbydata, &(*buffer->begin()), sizeof(*buffer));
+	memcpy(&lobbydata.PlayerCnt, buffer->data(), sizeof(BYTE));
+	buffer->erase(buffer->begin(), buffer->begin() + sizeof(BYTE));
+	lobbydata.PlayersData = new Lobby::PlayerLobbyData[lobbydata.PlayerCnt];
 
 	for (int i = 0 ; i < lobbydata.PlayerCnt; ++i) {
-		Lobby::PlayerLobbyData* pldata = &lobbydata.PlayersData[i];
-		//[ playerID(5) , isMoving(1) , dir(2) ]=> 1byte
-		int playerID = pldata->Pid_Mov_Dir >> 3; 
-		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 5) >> 5;
+		memcpy(&lobbydata.PlayersData[i], buffer->data(), sizeof(Lobby::PlayerLobbyData));
 
-		bool isMoving = pldata->Pid_Mov_Dir >> 2;
-		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 6) >> 6;
+		Lobby::PlayerLobbyData* playersData = &lobbydata.PlayersData[i];
 
-		int dir = pldata->Pid_Mov_Dir;
+		std::bitset<8> byte(playersData->Pid_Mov_Dir);
+		std::bitset<5> pid(byte.to_string().substr(0, 5));
+		std::bitset<1> mov(byte.to_string().substr(5, 1));
+		std::bitset<2> dir(byte.to_string().substr(6, 2));
 
-		lobbyPlayers[playerID].pos = pldata->Pos;
-		lobbyPlayers[playerID].isMoving = isMoving;
+		int clientID = pid.to_ulong();
+		bool isMoving = mov.to_ulong();
+		Dir direction = static_cast<Dir>(dir.to_ulong());
+		std::cout << dir.to_ulong() << std::endl;
 
-		// +1 인 이유는 원래 empty 포함 0~4 표현인데 2비트에는 0~3까지 밖에 표현을 못하므로..
-		lobbyPlayers[playerID].dir = (Dir)(dir + 1); 
+		lobbyPlayers[clientID].isMoving = isMoving;
+		lobbyPlayers[clientID].dir = direction;
+
+		lobbyPlayers[clientID].pos.x = playersData->Pos.x;
+		lobbyPlayers[clientID].pos.y = playersData->Pos.y;
+
+		buffer->erase(buffer->begin(), buffer->begin() + sizeof(Lobby::PlayerLobbyData));
 	}
+
+	delete[] lobbydata.PlayersData;
 }
 
 int SceneLobby::GetCamSizeX()

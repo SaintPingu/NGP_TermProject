@@ -104,9 +104,6 @@
     <ClInclude Include="PacketNetwork.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ServerNetwork.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="ServerFramework.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -149,9 +146,6 @@
     <ClInclude Include="SceneMgr.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="ClientMgr.h">
       <Filter>Client</Filter>
     </ClInclude>
@@ -169,6 +163,12 @@
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNetwork.h">
+      <Filter>PCH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

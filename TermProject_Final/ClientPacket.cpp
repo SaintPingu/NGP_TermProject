@@ -6,7 +6,7 @@ bool isGenPacket = false;
 
 Packet PacketGenerator::GeneratePacket()
 {
-	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
+	std::vector<BYTE> pCommandList = cmdList.GetCmdList(); //cmdList를 비운다.
 
 	Packet packet;
 	isGenPacket = true;

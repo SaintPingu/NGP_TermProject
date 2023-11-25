@@ -6,18 +6,18 @@
 
 
 class ClientNetwork;
-class ClientNetMgr
-{
+class ClientNetMgr {
 	SINGLETON_PATTERN(ClientNetMgr);
+
 private:
-	ClientNetwork*	clientNet{};
+	std::shared_ptr<ClientNetwork>	clientNet{};
 
 
 public:
 	TResult Init(short portnum);
 	void Execute();
 
-	ClientNetwork* GetClientNetwork() { return clientNet; }
+	ClientNetwork* GetClientNetwork() { return clientNet.get(); }
 
 
 	ClientNetMgr();
@@ -26,6 +26,6 @@ public:
 };
 
 // 2023-11-20-MON (장재문) - 클라이언트 네트워크 매니저 가져오기 define 정의 
-#define CLIENT_NETWORK ClientNetMgr::Inst()
-
-
+#define CLIENT_NETWORK_MGR ClientNetMgr::Inst()
+#define CLIENT_NETWORK ClientNetMgr::Inst()->GetClientNetwork()
+#define PACKET_BUFFER CLIENT_NETWORK->GetPacketBuffer();

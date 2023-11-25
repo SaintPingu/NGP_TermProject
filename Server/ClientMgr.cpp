@@ -3,6 +3,7 @@
 #include "ClientInfo.h"
 #include "ServerFramework.h"
 #include "SceneMgr.h"
+#include "LobbyScene.h"
 
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
 constexpr int invalidID = -1;
@@ -45,6 +46,26 @@ bool ClientMgr::Event()
 	return false;
 }
 
+
+bool ClientMgr::SetPacketBuffer()
+{
+	packetLoader.Clear();
+
+	for (int i = 0; i < GetPoolIndex(); ++i)
+	{
+		auto& client = clientPool[i];
+		if (client == nullptr) {
+			continue;
+		}
+
+		if (client->GetConnectFlag() == ConnectFlag::recvFinish) {
+			packetLoader.SetPacketBuffer(client->GetID(), &client->GetPacketBuffer());
+		}
+	}
+
+	return true;
+}
+
 DataType GetDataType(ClientInfo* client)
 {
 	switch (SCENE_MGR->GetClientLocation(client->GetID())) {
@@ -66,57 +87,29 @@ bool ClientMgr::SendPacket()
 	packetGen.GenerateData();
 
 	// Send
-	for (int i = 0; i < GetPoolIndex() + 1; ++i)
-	{
-		auto& client = clientPool[i];
+	for (auto& [clientID, packetBuffer] : packetLoader.packetBuffers) {
+
+		auto& client = clientPool[clientID];
 		if (client == nullptr) {
 			continue;
 		}
 
-		if (client->GetConnectFlag() == ConnectFlag::RecvFinish) {
-			DataType dataType = GetDataType(client);
-			packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
-			client->Send();
-		}
+		// 테스트용 None 커맨드 전송
+		BYTE cmd = BYTE(ServerLobbyCmd::None);
+		client->GetCmdList()->CommandPush(cmd, nullptr, 0);
+		
+		DataType dataType = GetDataType(client);
+		packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
+		client->Send();
 	}
+
+	//packetGen.DeleteData();
 
 	return true;
 }
 
-TResult ClientMgr::Update()
+void ClientMgr::PushCommand()
 {
-	ProcessCommand();
-
-	return TResult();
-}
-
-TResult ClientMgr::SetPacketBuffer(int ID)
-{
-	// 동기화 처리  
-	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
-
-	if (clientPool[ID] == nullptr)
-	{
-		CRASH("INVALID ID");
-		return TResult::FAIL;
-	}
-
-	
-	PacketBuffer buf = clientPool[ID]->GetPacketBuffer();
-	packetLoader.SetPacketBuffer(ID, &buf);
-
-	return TResult();
-}
-
-
-TResult ClientMgr::ProcessCommand()
-{
-	BYTE			cmd{};
-	PacketBuffer	buf{};
-	
-	while (packetLoader.PopCommand(cmd, buf) != -1)
-	{
-		// TODO : Process Command 클라이언트 처리  
 
 		break;
 	}
@@ -199,6 +192,28 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	clientEvents.push(std::make_pair(type, terminateID));
 }
 
+TResult ClientMgr::ProcessCommand()
+{
+	Command cmd;
+	PacketBuffer data;
+	while (true) {
+		int clientID = packetLoader.PopCommand(cmd, data);
+		if (clientID == -1) {
+			break;
+		}
+
+		switch (SCENE_MGR->GetClientLocation(clientID)) {
+		case SceneType::Lobby:
+			SCENE_MGR->Lobby()->ProcessCommand(clientID, cmd, &data);	// data is nullptr in lobby
+			break;
+		default:
+			assert(0);
+			break;
+		}
+	}
+	return TResult();
+}
+
 std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP, SOCKET& sock)
 {
 	int id = CreateID();
@@ -206,11 +221,17 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 		return std::pair<int, TResult>(invalidID, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
 
 	ClientInfo* NewUser = new ClientInfo;
+	ServerNetwork* serverNet = new ServerNetwork();
+	serverNet->SetSocket(sock);
+
 	NewUser->SetID(id);
-	NewUser->SetServerNet(new ServerNetwork);
+	NewUser->SetServerNet(serverNet);
 
 	clientEventType type = clientEventType::registerNewID;
 	clientEvents.push(std::make_pair(type, NewUser));
+
+	++clientPoolIndex;
+	SCENE_MGR->Lobby()->AddPlayer(id);
 
 	return std::pair<int, TResult>(id, TResult::SUCCESS);
 }

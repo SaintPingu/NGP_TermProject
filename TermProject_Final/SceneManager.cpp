@@ -8,9 +8,7 @@
 
 void SceneManager::Init(HWND hWnd)
 {
-	//LoadScene(SceneType::Intro);
-	//LoadScene(SceneType::Lobby);
-	LoadScene(SceneType::Stage);
+	InitScene(SceneType::Intro);
 	loading = std::make_shared<Loading>();
 }
 
@@ -35,8 +33,12 @@ void SceneManager::FinishRender(HWND hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC
 	EndPaint(hWnd, &ps);
 }
 
-void SceneManager::LoadScene(SceneType scene)
+void SceneManager::InitScene(SceneType scene)
 {
+	if (crntSceneType == SceneType::Intro && scene != SceneType::Intro) {
+		framework->ConnectToServer();
+	}
+
 	switch (scene) {
 	case SceneType::Intro:
 		crntScene = std::make_shared<SceneIntro>();
@@ -56,6 +58,12 @@ void SceneManager::LoadScene(SceneType scene)
 	crntSceneType = scene;
 }
 
+void SceneManager::LoadScene(SceneType scene)
+{
+	loading->ResetLoading();
+	nextSceneType = scene;
+}
+
 void SceneManager::RenderScene(HWND hWnd)
 {
 	PAINTSTRUCT ps{};
@@ -64,17 +72,25 @@ void SceneManager::RenderScene(HWND hWnd)
 
 	StartRender(hWnd, ps, hdc, memDC, hBitmap);
 	crntScene->Render(memDC);
-	//loading->Render(memDC);
+	if (IsLoading()) {
+		loading->Render(memDC);
+	}
 	FinishRender(hWnd, ps, hdc, memDC, hBitmap);
 }
 
 void SceneManager::AnimateScene()
 {
 	crntScene->Animate();
-	loading->Animate();
+	if (IsLoading()) {
+		loading->Animate();
+
+		if (loading->IsLoaded()) {
+			InitScene(nextSceneType);
+		}
+	}
 }
 
 bool SceneManager::IsLoading()
 {
-	return false;
+	return !loading->IsLoaded();
 }

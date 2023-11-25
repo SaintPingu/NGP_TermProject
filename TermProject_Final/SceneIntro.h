@@ -54,7 +54,7 @@ public:
 		background.Load(L"images\\loading\\Loading_Black_background.bmp");
 	}
 	void Paint(HDC hdc);
-	void fingerController(const HWND& hWnd);
+	void fingerController();
 };
 
 
@@ -64,6 +64,8 @@ class SceneIntro : public Scene {
 	Logo logo{};
 	Menu menu{};
 	Cloud clouds[4];
+	int finger = 0;
+	bool isProducer = false;
 
 	void MoveClouds();
 	void MoveLogo();

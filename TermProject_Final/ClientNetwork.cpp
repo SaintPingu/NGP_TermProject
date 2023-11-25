@@ -2,11 +2,11 @@
 #include "ClientNetwork.h"
 #include "TCPNetwork.h"
 #include "PacketNetwork.h"
-
-extern HANDLE recvPacket;
+#include "framework.h"
 
 ClientNetwork::ClientNetwork()
 {
+	sendPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 ClientNetwork::~ClientNetwork()
@@ -22,15 +22,44 @@ TResult ClientNetwork::Init()
 
 void ClientNetwork::Logic()
 {
+	isConnected = true;
+	executeClientNet = true;
+	framework->CompleteServerConnect();
 	while (executeClientNet)
 	{
-		// recv 구동 
-		curConnectFlag = ConnectFlag::RecvStart;
+		//std::cout << "수신 대기\n";
+		// recv 구동
+		if (RecvPacket() == TResult::FAIL) {
+			break;
+		}
+		curConnectFlag = ConnectFlag::recvStart;
+		framework->WakeForPacket();
+		//std::cout << "수신 완료 및 송신 대기\n";
+		// send 대기
+		WaitForSingleObject(sendPacket, INFINITE);
+		ResetEvent(sendPacket);
 
-		// send 구동 
-		curConnectFlag = ConnectFlag::SendStart;
+		//std::cout << "송신 중\n";
+
+		// send 구동
+		curConnectFlag = ConnectFlag::sendStart;
+		if (SendPacket() == TResult::FAIL) {
+			break;
+		}
+		curConnectFlag = ConnectFlag::sendFinish;
+
+		//std::cout << "송신 완료\n";
 
 	}
+
+	// Terminate 명령 전달
+	// ...
+
+	std::cout << "서버 연결 종료\n";
+	// 연결 종료
+	CloseHandle(sendPacket);
+	WSACleanup();
+	isConnected = false;
 }
 
 // 23-11-21 최정일 SendPacket에서 패킷을 만들고 Send
@@ -47,8 +76,6 @@ TResult ClientNetwork::SendPacket()
 TResult ClientNetwork::RecvPacket()
 {
 	PacketNetwork::RecvPacket();
-
-	SetEvent(recvPacket);
 
 	return TResult();
 }

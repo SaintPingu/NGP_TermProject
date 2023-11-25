@@ -25,7 +25,6 @@ ServerFramework::~ServerFramework()
 {
 	SAFE_DELETE(listenNet);
 	CLIENT_MGR->Destroy();
-
 }
 
 bool ServerFramework::Init()
@@ -133,6 +132,11 @@ TResult ServerFramework::Event()
 	return TResult();
 }
 
+TResult ServerFramework::SetPacketBuffer()
+{
+	CLIENT_MGR->SetPacketBuffer();
+	return TResult::NONE;
+}
 TResult ServerFramework::Update()
 {
 	Timer::Inst()->Tick(30.f);
@@ -153,10 +157,15 @@ TResult ServerFramework::Update()
 	return TResult();
 }
 
+TResult ServerFramework::ProcessCommand()
+{
+	return CLIENT_MGR->ProcessCommand();
+}
+
 
 TResult ServerFramework::UpdateScene()
 {
-
+	SCENE_MGR->UpdateScenes();
 	return TResult();
 }
 

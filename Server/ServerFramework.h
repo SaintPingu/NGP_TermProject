@@ -11,8 +11,6 @@
 class TCPListenNetwork;
 class ServerNetwork;
 class SceneMgr;
-class PacketGenerator;
-class PacketLoader;
 
 class ServerFramework
 {
@@ -22,7 +20,6 @@ private:
 	bool						executeFramework{};	// 구동
 	TCPListenNetwork*			listenNet{};
 	std::shared_ptr<SceneMgr>	sceneMgr{};
-
 
 public:
 	bool Init();		// 초기화
@@ -43,9 +40,6 @@ private:
 
 private:
 	TResult UpdateScene();		// 씬 갱신		- 씬 업데이트 
-
-public:
-
 
 
 public:

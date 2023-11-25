@@ -34,15 +34,19 @@ TResult ClientInfo::Logic()
 		WaitForSingleObject(sendEvent, INFINITE);
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
-		curConnectFlag = ConnectFlag::SendStart;		// 전송 대기
-		SendPacket();
-		curConnectFlag = ConnectFlag::SendFinish;		// 전송 대기
+		curConnectFlag = ConnectFlag::sendStart;		// 전송 대기
+		if (SendPacket() == TResult::FAIL) {
+			break;
+		}
+		curConnectFlag = ConnectFlag::SendFinish;
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 완료 및 수신 대기\n";
 
-		curConnectFlag = ConnectFlag::RecvStart;		// 리시브 완료
-		RecvPacket();
-		curConnectFlag = ConnectFlag::RecvFinish;		// 리시브 완료
+		curConnectFlag = ConnectFlag::RecvStart;
+		if (RecvPacket() == TResult::FAIL) {
+			break;
+		}
+		curConnectFlag = ConnectFlag::RecvFinish;
 
 		//std::cout << "\t\t-> Client [" << ID << "] 수신 완료\n";
 

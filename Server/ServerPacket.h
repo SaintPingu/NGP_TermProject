@@ -28,5 +28,6 @@ public:
 
 	void SetPacketBuffer(int clientID, std::vector<BYTE>* buffer);
 	int PopCommand(BYTE& cmd, std::vector<BYTE>& data);
+	void Clear() { packetBuffers.clear(); }
 };
 

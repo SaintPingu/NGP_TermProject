@@ -16,6 +16,7 @@ private:
 
 public:
 	virtual TResult Init() override;
+	void SetSocket(SOCKET& sock);
 
 public:
 	bool IsTerminate() { return IsTerminated; }

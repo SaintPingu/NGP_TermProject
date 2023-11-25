@@ -90,7 +90,7 @@ enum class TResult : short
 	SEND_ERROR,
 
 	// CLIENT 관련 FAIL
-	CLIENT_NOT_CONNECTED,
+	CLIENT_NOT_CONNECTED,  
 	FORCING_CLOSE,
 };
 
@@ -119,7 +119,7 @@ enum class Skill { Empty = 0, Identity, Sector, Circle };
 enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
 
 
-enum class Dir { Empty = 0, Left, Right, Up, Down, LD, LU, RD, RU };
+enum class Dir { Left = 0, Right, Up, Down, LD, LU, RD, RU, Empty};
 
 // Direction 연산자 오버로딩
 // ex) Left - LD = LD - Left = Down
@@ -470,10 +470,12 @@ enum class ServerBattleCmd : BYTE
 enum class ClientLobbyCmd : BYTE
 {
 	Terminate,
+
 	MoveLeft,
 	MoveRight,
 	MoveUp,
 	MoveDown,
+	Stop,
 
 };
 /// +------------------
@@ -493,10 +495,18 @@ enum class ClientStageCmd : BYTE
 enum class ClientBattleCmd : BYTE
 {
 	Terminate,
-	MoveLeft,
-	MoveRight,
-	MoveUp,
-	MoveDown,
+
+	MoveLeftTap,
+	MoveRightTap,
+	MoveUpTap,
+	MoveDownTap,
+
+	MoveLeftAway,
+	MoveRightAway,
+	MoveUpAway,
+	MoveDownAway,
+	Stop,
+
 	SkillQ,
 	SkillW,
 	SkillE,
@@ -561,3 +571,13 @@ inline float DeltaTime()
 
 // 2023-11-22-WED (민동현) - Common.h 에 추가 -> rectWindow를 상수값으로 표현
 constexpr RECT rectWindow{ 0, 0, 484, 711 };
+
+
+
+
+
+
+
+
+// 소켓 함수 오류 출력
+void err_display(const char* msg);
