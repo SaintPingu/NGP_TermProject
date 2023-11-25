@@ -31,4 +31,6 @@ public:
 
 	GameData& GetGameData() { return gameData; }
 	SceneType GetClientLocation(int id) const { return gameData.clientLocations.at(id); }
+
+	void UpdateScenes();
 };

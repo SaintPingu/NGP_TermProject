@@ -57,6 +57,8 @@ private:
 	RECT rectImage = { 0, };
 	RECT rectDraw = { 0, };
 
+	int v{}, h{};
+
 public:
 	bool _allHide = false;
 

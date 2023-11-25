@@ -17,8 +17,9 @@ void PacketGenerator::GenerateData()
 		int i{};
 		for(const auto& [clientID, player] : players) {
 			std::bitset<5> pid(clientID);
-			std::bitset<1> mov(players.at(clientID)->isMoving);
-			std::bitset<2> dir(static_cast<int>(players.at(clientID)->dir) - 1);
+			std::bitset<1> mov(players.at(clientID)->IsMoving());
+			std::bitset<2> dir(static_cast<int>(players.at(clientID)->GetDir()));
+			std::cout << dir.to_ulong() << std::endl;
 			std::bitset<8> byte(pid.to_string() + mov.to_string() + dir.to_string());
 
 			playerlobbydata[i].Pid_Mov_Dir = static_cast<BYTE>(byte.to_ulong());
@@ -113,12 +114,14 @@ void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
 int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 {
 	if (packetBuffers.empty()) {
-		return crntClientID;
+		return -1;
 	}
 
 	if (crntClientID == -1) {
 		crntClientID = packetBuffers.begin()->first;
 	}
+	PacketBuffer* packetBuffer = packetBuffers[crntClientID];
+
 	//클라이언트가 보내는 패킷을 항상 cmdCnt와 data뿐.
 	//항상 data는 비운다.
 
@@ -126,9 +129,13 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 
 	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
 
+	if (packetBuffer->empty()) {
+		return -1; // error
+	}
+
 	if (type == SceneType::Lobby || type == SceneType::Battle) {
-		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
-		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
+		cmd = (BYTE)(packetBuffer->front()); // 1byte
+		packetBuffer->erase(packetBuffer->begin());
 	}
 	else if (type == SceneType::Stage) {
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte

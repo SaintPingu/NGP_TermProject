@@ -90,7 +90,7 @@ enum class TResult : short
 	SEND_ERROR,
 
 	// CLIENT 관련 FAIL
-	CLIENT_NOT_CONNECTED,
+	CLIENT_NOT_CONNECTED,  
 	FORCING_CLOSE,
 };
 
@@ -115,7 +115,7 @@ enum class Skill { Empty = 0, Identity, Sector, Circle };
 enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
 
 
-enum class Dir { Empty = 0, Left, Right, Up, Down, LD, LU, RD, RU };
+enum class Dir { Left = 0, Right, Up, Down, LD, LU, RD, RU, Empty};
 
 // Direction 연산자 오버로딩
 // ex) Left - LD = LD - Left = Down
@@ -467,15 +467,11 @@ enum class ClientLobbyCmd : BYTE
 {
 	Terminate,
 
-	MoveLeftTap,
-	MoveRightTap,
-	MoveUpTap,
-	MoveDownTap,
-
-	MoveLeftAway,
-	MoveRightAway,
-	MoveUpAway,
-	MoveDownAway,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown,
+	Stop,
 
 };
 /// +------------------
@@ -505,6 +501,7 @@ enum class ClientBattleCmd : BYTE
 	MoveRightAway,
 	MoveUpAway,
 	MoveDownAway,
+	Stop,
 
 	SkillQ,
 	SkillW,

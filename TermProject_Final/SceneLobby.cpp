@@ -98,21 +98,6 @@ void SceneLobby::Render(HDC hdc)
 
 void SceneLobby::Animate()
 {
-	// 테스트를 위한 임시값
-	if (KEY_PRESSED(VK_RIGHT)) {
-		lobbyPlayers[framework->client_ID].pos.x += DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_LEFT)) {
-		lobbyPlayers[framework->client_ID].pos.x -= DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_UP)) {
-		lobbyPlayers[framework->client_ID].pos.y -= DeltaTime() * 200;
-	}
-	if (KEY_PRESSED(VK_DOWN)) {
-		lobbyPlayers[framework->client_ID].pos.y += DeltaTime() * 200;
-	}
-	//
-
 	NpcAnimate();
 	PlayerAnimate();
 }
@@ -120,38 +105,53 @@ void SceneLobby::Animate()
 void SceneLobby::GetInput(CommandList* cmdList)
 {
 	if (KEY_TAP(VK_UP)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveUpTap);
-		cmdList->CommandPush(cmd, nullptr, 0);
+		h -= 1;
 	}
-	else if (KEY_TAP(VK_DOWN)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveDownTap);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_TAP(VK_DOWN)) {
+		h += 1;
 	}
-	else if (KEY_TAP(VK_LEFT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeftTap);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_TAP(VK_LEFT)) {
+		v -= 1;
 	}
-	else if (KEY_TAP(VK_RIGHT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveRightTap);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_TAP(VK_RIGHT)) {
+		v += 1;
 	}
 
 	if (KEY_AWAY(VK_UP)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveUpAway);
-		cmdList->CommandPush(cmd, nullptr, 0);
+		h += 1;
 	}
-	else if (KEY_AWAY(VK_DOWN)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveDownAway);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_AWAY(VK_DOWN)) {
+		h -= 1;
 	}
-	else if (KEY_AWAY(VK_LEFT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveLeftAway);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_AWAY(VK_LEFT)) {
+		v += 1;
 	}
-	else if (KEY_AWAY(VK_RIGHT)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::MoveRightAway);
-		cmdList->CommandPush(cmd, nullptr, 0);
+	if (KEY_AWAY(VK_RIGHT)) {
+		v -= 1;
 	}
+
+	BYTE cmd;
+	if (v != 0) {
+		if (v == -1) {
+			cmd = BYTE(ClientLobbyCmd::MoveLeft);
+		} 
+		else {
+			cmd = BYTE(ClientLobbyCmd::MoveRight);
+		}
+	}
+	else if (h != 0) {
+		if (h == -1) {
+			cmd = BYTE(ClientLobbyCmd::MoveUp);
+		}
+		else {
+			cmd = BYTE(ClientLobbyCmd::MoveDown);
+		}
+	}
+	else {
+		cmd = BYTE(ClientLobbyCmd::Stop);
+	}
+
+	cmdList->CommandPush(cmd, nullptr, 0);
 
 	if (KEY_TAP(VK_ESCAPE)) {
 		BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
@@ -218,7 +218,8 @@ void SceneLobby::WriteData(void* data)
 
 		int clientID = pid.to_ulong();
 		bool isMoving = mov.to_ulong();
-		Dir direction = static_cast<Dir>(dir.to_ulong() + 1);
+		Dir direction = static_cast<Dir>(dir.to_ulong());
+		std::cout << dir.to_ulong() << std::endl;
 
 		lobbyPlayers[clientID].isMoving = isMoving;
 		lobbyPlayers[clientID].dir = direction;

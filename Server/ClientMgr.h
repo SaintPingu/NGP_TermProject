@@ -37,7 +37,8 @@ private:
 	std::vector<ClientInfo*>	clientPool;						// 접속 클라이언트 관리 
 	int							clientPoolIndex{};				// 현재 클라이언트 풀의 최대 index
     
-	PacketGenerator				packetGen;						// 패킷 관리
+	PacketGenerator				packetGen;						// 패킷 생성
+	PacketLoader				packetLoader;					// 패킷 로드
 	Mutex						mutex[(UINT)mutexType::END]{};	// 뮤텍스 관리
 
 	std::queue<std::pair<clientEventType, PVOID>>				clientEvents; // eventtype, data type
@@ -47,7 +48,6 @@ public:
 	bool Event();
 	bool SetPacketBuffer();
 	bool SendPacket();
-	void InsertNewSocket();
 	void PushCommand();
 
 	// 접속된 클라이언트의 아이디와 TResult 값을 반환한다.
@@ -58,6 +58,8 @@ public:
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
 	
 	int GetPoolIndex() const { return clientPoolIndex; }
+
+	TResult ProcessCommand();
 
 
 public:

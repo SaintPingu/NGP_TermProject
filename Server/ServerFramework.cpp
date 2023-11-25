@@ -25,8 +25,6 @@ ServerFramework::~ServerFramework()
 {
 	SAFE_DELETE(listenNet);
 	CLIENT_MGR->Destroy();
-	SAFE_DELETE(packetGenerator);
-	SAFE_DELETE(packetLoader);
 }
 
 bool ServerFramework::Init()
@@ -152,19 +150,18 @@ TResult ServerFramework::Event()
 
 TResult ServerFramework::SetPacketBuffer()
 {
-
-	return TResult();
+	CLIENT_MGR->SetPacketBuffer();
+	return TResult::NONE;
 }
 
 TResult ServerFramework::ProcessCommand()
 {
-
-	return TResult();
+	return CLIENT_MGR->ProcessCommand();
 }
 
 TResult ServerFramework::UpdateScene()
 {
-	
+	SCENE_MGR->UpdateScenes();
 	return TResult();
 }
 

@@ -5,11 +5,43 @@
 
 void LobbyPlayer::Move()
 {
-	if (!isMoving) {
-		return;
+	if (v != 0) {
+		pos.x += DeltaTime() * 100 * v;
+
+	}
+	else if (h != 0) {
+		pos.y += DeltaTime() * 100 * h;
+	}
+}
+
+bool LobbyPlayer::IsMoving()
+{
+	if (v == 0 && h == 0) {
+		return false;
+	}
+	return true;
+}
+
+Dir LobbyPlayer::GetDir()
+{
+	switch (v) {
+	case -1:
+		return Dir::Left;
+	case 1:
+		return Dir::Right;
 	}
 
+	switch (h) {
+	case -1:
+		return Dir::Up;
+	case 1:
+		return Dir::Down;
+	}
+
+	return befDir;
 }
+
+
 
 
 
@@ -20,8 +52,7 @@ void LobbyScene::Init()
 
 void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 {
-	assert(players.count(clientID));
-	auto& player = players[clientID];
+	auto& player = players.at(clientID);
 
 	ClientLobbyCmd clientCmd = (ClientLobbyCmd)command;
 
@@ -30,49 +61,29 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		// 해당 클라이언트와 연결 종료 코드 추가 필요.
 		players.erase(clientID);
 		return;
-	case ClientLobbyCmd::MoveLeftTap:
-		if (player->dir == Dir::Right) {
-			player->dir = Dir::Empty;
-			player->isMoving = false;
-		}
-		else {
-			player->dir = Dir::Left;
-			player->isMoving = true;
-		}
-
+	case ClientLobbyCmd::MoveLeft:
+		player->v = -1;
+		player->h = 0;
+		player->befDir = Dir::Left;
 		break;
-	case ClientLobbyCmd::MoveRightTap:
-		if (player->dir == Dir::Left) {
-			player->dir = Dir::Empty;
-			player->isMoving = false;
-		}
-		else {
-			player->dir = Dir::Right;
-			player->isMoving = true;
-		}
-
+	case ClientLobbyCmd::MoveRight:
+		player->v = 1;
+		player->h = 0;
+		player->befDir = Dir::Right;
 		break;
-	case ClientLobbyCmd::MoveUpTap:
-		if (player->dir == Dir::Down) {
-			player->dir = Dir::Empty;
-			player->isMoving = false;
-		}
-		else {
-			player->dir = Dir::Up;
-			player->isMoving = true;
-		}
-
+	case ClientLobbyCmd::MoveUp:
+		player->v = 0;
+		player->h = -1;
+		player->befDir = Dir::Up;
 		break;
-	case ClientLobbyCmd::MoveDownTap:
-		if (player->dir == Dir::Up) {
-			player->dir = Dir::Empty;
-			player->isMoving = false;
-		}
-		else {
-			player->dir = Dir::Down;
-			player->isMoving = true;
-		}
-
+	case ClientLobbyCmd::MoveDown:
+		player->v = 0;
+		player->h = 1;
+		player->befDir = Dir::Down;
+		break;
+	case ClientLobbyCmd::Stop:
+		player->v = 0;
+		player->h = 0;
 		break;
 	default:
 		assert(0);

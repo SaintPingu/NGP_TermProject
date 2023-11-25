@@ -49,8 +49,21 @@ bool ClientMgr::Event()
 
 bool ClientMgr::SetPacketBuffer()
 {
+	packetLoader.Clear();
 
-	return false;
+	for (int i = 0; i < GetPoolIndex(); ++i)
+	{
+		auto& client = clientPool[i];
+		if (client == nullptr) {
+			continue;
+		}
+
+		if (client->GetConnectFlag() == ConnectFlag::recv) {
+			packetLoader.SetPacketBuffer(client->GetID(), &client->GetPacketBuffer());
+		}
+	}
+
+	return true;
 }
 
 DataType GetDataType(ClientInfo* client)
@@ -70,42 +83,29 @@ DataType GetDataType(ClientInfo* client)
 
 bool ClientMgr::SendPacket()
 {
-	//InsertNewSocket();
-
 	// Generate
 	packetGen.GenerateData();
 
 	// Send
-	for (int i = 0; i < GetPoolIndex(); ++i)
-	{
-		auto& client = clientPool[i];
+	for (auto& [clientID, packetBuffer] : packetLoader.packetBuffers) {
+
+		auto& client = clientPool[clientID];
 		if (client == nullptr) {
 			continue;
 		}
 
-		// 테스트
+		// 테스트용 None 커맨드 전송
 		BYTE cmd = BYTE(ServerLobbyCmd::None);
 		client->GetCmdList()->CommandPush(cmd, nullptr, 0);
 		
-
-		if (client->GetConnectFlag() == ConnectFlag::recv) {
-			DataType dataType = GetDataType(client);
-			packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
-			client->Send();
-		}
+		DataType dataType = GetDataType(client);
+		packetGen.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
+		client->Send();
 	}
 
 	//packetGen.DeleteData();
 
 	return true;
-}
-
-void ClientMgr::InsertNewSocket()
-{
-	//for (auto& client : newClients) {
-	//	clientPool[client->GetID()] = client;
-	//}
-	//newClients.clear();
 }
 
 void ClientMgr::PushCommand()
@@ -187,6 +187,28 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	int*			terminateID = new int(id);
 	clientEventType type        = clientEventType::terminateID;
 	clientEvents.push(std::make_pair(type, terminateID));
+}
+
+TResult ClientMgr::ProcessCommand()
+{
+	Command cmd;
+	PacketBuffer data;
+	while (true) {
+		int clientID = packetLoader.PopCommand(cmd, data);
+		if (clientID == -1) {
+			break;
+		}
+
+		switch (SCENE_MGR->GetClientLocation(clientID)) {
+		case SceneType::Lobby:
+			SCENE_MGR->Lobby()->ProcessCommand(clientID, cmd, &data);	// data is nullptr in lobby
+			break;
+		default:
+			assert(0);
+			break;
+		}
+	}
+	return TResult();
 }
 
 std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP, SOCKET& sock)

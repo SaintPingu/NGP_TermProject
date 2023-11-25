@@ -11,8 +11,6 @@
 class TCPListenNetwork;
 class ServerNetwork;
 class SceneMgr;
-class PacketGenerator;
-class PacketLoader;
 
 class ServerFramework
 {
@@ -22,9 +20,6 @@ private:
 	bool						executeFramework{};	// 구동
 	TCPListenNetwork*			listenNet{};
 	std::shared_ptr<SceneMgr>	sceneMgr{};
-
-	PacketGenerator*			packetGenerator{};
-	PacketLoader*				packetLoader{};
 
 public:
 	bool Init();		// 초기화
@@ -45,10 +40,6 @@ private:
 	TResult ProcessCommand();   // 3. 패킷 해석		- 클라이언트로부터 받은 패킷을 해석하고 데이터 업데이트 
 	TResult UpdateScene();		// 4. 씬 갱신		- 씬 업데이트 
 	TResult SendPakcet();		// 5. 패킷 송신		- 패킷을 각 클라이언트에게 송신  
-
-public:
-	PacketGenerator* GetPacketGenerator()	{ return packetGenerator; }
-	PacketLoader*	 GetPacketLoader()		{ return packetLoader; }
 
 
 public:
