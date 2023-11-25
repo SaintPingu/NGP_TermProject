@@ -46,7 +46,7 @@ TResult ClientNetMgr::Init(short portnum)
 	const char* serverIP = "127.0.0.1";
 
 	// 클라이언트 네트워크 초기화 
-	clientNet = new ClientNetwork{};
+	clientNet = std::make_shared<ClientNetwork>();
 	result = clientNet->Init(serverIP, portnum);
 	if (result == TResult::FAIL)
 		return TResult::FAIL;

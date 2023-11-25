@@ -10,14 +10,14 @@ class ClientNetMgr {
 	SINGLETON_PATTERN(ClientNetMgr);
 
 private:
-	ClientNetwork*	clientNet{};
+	std::shared_ptr<ClientNetwork>	clientNet{};
 
 
 public:
 	TResult Init(short portnum);
 	void Execute();
 
-	ClientNetwork* GetClientNetwork() { return clientNet; }
+	ClientNetwork* GetClientNetwork() { return clientNet.get(); }
 
 
 	ClientNetMgr();

@@ -28,7 +28,7 @@ SceneStage::~SceneStage()
 
 void SceneStage::Init()
 {
-	target = new Target();
+	target = std::make_unique<Target>();
 	_water.Load(L"images\\stage\\Water_phase.bmp");
 	_fire.Load(L"images\\stage\\Fire_phase.bmp");
 	_electronic.Load(L"images\\stage\\Electronic_phase.bmp");

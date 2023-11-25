@@ -30,7 +30,7 @@ private:
 	CImage _dark;
 	CImage _dialog_bar;
 	CImage _glowing_black;
-	Target* target;
+	std::unique_ptr<Target> target;
 	bool _dialogflag = false;
 	bool _select_pokemon = false;
 	bool _ready_Air_pokemon = false;
