@@ -3,6 +3,7 @@
 #include "ClientInfo.h"
 #include "ServerFramework.h"
 #include "SceneMgr.h"
+#include "LobbyScene.h"
 
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
 constexpr int invalidID = -1;
@@ -75,12 +76,17 @@ bool ClientMgr::SendPacket()
 	packetGen.GenerateData();
 
 	// Send
-	for (int i = 0; i < GetPoolIndex() + 1; ++i)
+	for (int i = 0; i < GetPoolIndex(); ++i)
 	{
 		auto& client = clientPool[i];
 		if (client == nullptr) {
 			continue;
 		}
+
+		// Å×½ºÆ®
+		BYTE cmd = BYTE(ServerLobbyCmd::None);
+		client->GetCmdList()->CommandPush(cmd, nullptr, 0);
+		
 
 		if (client->GetConnectFlag() == ConnectFlag::recv) {
 			DataType dataType = GetDataType(client);
@@ -88,6 +94,8 @@ bool ClientMgr::SendPacket()
 			client->Send();
 		}
 	}
+
+	//packetGen.DeleteData();
 
 	return true;
 }
@@ -188,11 +196,17 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 		return std::pair<int, TResult>(invalidID, TResult::CLIENT_CAN_NOT_ACCEPT_ANYMORE);
 
 	ClientInfo* NewUser = new ClientInfo;
+	ServerNetwork* serverNet = new ServerNetwork();
+	serverNet->SetSocket(sock);
+
 	NewUser->SetID(id);
-	NewUser->SetServerNet(new ServerNetwork);
+	NewUser->SetServerNet(serverNet);
 
 	clientEventType type = clientEventType::registerNewID;
 	clientEvents.push(std::make_pair(type, NewUser));
+
+	++clientPoolIndex;
+	SCENE_MGR->Lobby()->AddPlayer(id);
 
 	return std::pair<int, TResult>(id, TResult::SUCCESS);
 }

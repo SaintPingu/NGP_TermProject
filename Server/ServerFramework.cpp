@@ -164,7 +164,7 @@ TResult ServerFramework::ProcessCommand()
 
 TResult ServerFramework::UpdateScene()
 {
-
+	
 	return TResult();
 }
 

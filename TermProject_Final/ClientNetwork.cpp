@@ -27,24 +27,35 @@ void ClientNetwork::Logic()
 	framework->WakeForPacket();
 	while (executeClientNet)
 	{
+		std::cout << "수신 대기\n";
 		// recv 구동
-		RecvPacket();
+		if (RecvPacket() == TResult::FAIL) {
+			break;
+		}
 		curConnectFlag = ConnectFlag::recv;
 		framework->WakeForPacket();
 
+		std::cout << "수신 완료 및 송신 대기\n";
 		// send 대기
 		ResetEvent(sendPacket);
 		WaitForSingleObject(sendPacket, INFINITE);
 
+		std::cout << "송신 중\n";
+
 		// send 구동
-		SendPacket();
+		if (SendPacket() == TResult::FAIL) {
+			break;
+		}
 		curConnectFlag = ConnectFlag::send;
+
+		std::cout << "송신 완료\n";
 
 	}
 
 	// Terminate 명령 전달
 	// ...
 
+	std::cout << "서버 연결 종료\n";
 	// 연결 종료
 	CloseHandle(sendPacket);
 	WSACleanup();

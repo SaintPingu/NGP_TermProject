@@ -570,3 +570,13 @@ inline float DeltaTime()
 
 // 2023-11-22-WED (민동현) - Common.h 에 추가 -> rectWindow를 상수값으로 표현
 constexpr RECT rectWindow{ 0, 0, 484, 711 };
+
+
+
+
+
+
+
+
+// 소켓 함수 오류 출력
+void err_display(const char* msg);

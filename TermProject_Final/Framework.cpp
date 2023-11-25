@@ -12,7 +12,6 @@ SINGLETON_PATTERN_DEFINITION(Framework)
 void Framework::Start(HWND hWnd)
 {
 	recvPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
-	ResetEvent(recvPacket);
 
 	GetClientRect(hWnd, &rectClientWindow);
 	sceneManager = std::make_shared<SceneManager>();

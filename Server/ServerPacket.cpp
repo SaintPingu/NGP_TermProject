@@ -23,7 +23,7 @@ void PacketGenerator::GenerateData()
 
 			playerlobbydata[i].Pid_Mov_Dir = static_cast<BYTE>(byte.to_ulong());
 			playerlobbydata[i].Pos.x = players.at(clientID)->pos.x;
-			playerlobbydata[i].Pos.x = players.at(clientID)->pos.y;
+			playerlobbydata[i].Pos.y = players.at(clientID)->pos.y;
 			++i;
 		}
 
@@ -44,18 +44,30 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 	buffer.reserve(100);
 
 	if (type == DataType::Lobby) {
-		BYTE len = pCommandList.size() + sizeof(lobbyData);
-		buffer.push_back(len); // Datalen
+		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
+		BYTE len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
 
+		// Datalen
+		buffer.push_back(len); 
+
+		// ServerLobbyCmd
 		for (int i = 0;i < pCommandList.size();++i) {
-			buffer.push_back(pCommandList[i]); //ServerLobbyCmd
+			buffer.push_back(pCommandList[i]);
 		}
 
-		BYTE bytes[sizeof(lobbyData)];
-		std::memcpy(bytes, &lobbyData, sizeof(lobbyData));
+		/* LobbyData */
+		// PlayerCnt
+		buffer.push_back(lobbyData.PlayerCnt);
 
-		for (int i = 0; i < sizeof(lobbyData); ++i) {
-			buffer.push_back(bytes[i]); //ServerLobbyCmd
+		// PlayerLobbyData
+		for (int i = 0; i < lobbyData.PlayerCnt; ++i) {
+			constexpr int datalen = sizeof(Lobby::PlayerLobbyData);
+			BYTE bytes[datalen];
+			std::memcpy(bytes, &lobbyData.PlayersData[i], datalen);
+
+			for (int i = 0; i < datalen; ++i) {
+				buffer.push_back(bytes[i]);
+			}
 		}
 	}
 	else if (type == DataType::Stage) {

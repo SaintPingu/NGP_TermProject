@@ -179,7 +179,6 @@ void SceneLobby::ProcessCommand()
 		break;
 	case (BYTE)ServerLobbyCmd::GoStage:
 		SceneMgr->LoadScene(SceneType::Stage);
-
 		scene = std::dynamic_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
 
 		element = (StageElement)(*buffer.begin());
@@ -203,26 +202,38 @@ void SceneLobby::WriteData(void* data)
 	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 
 	Lobby::LobbyData lobbydata;
-	lobbydata.PlayersData = new Lobby::PlayerLobbyData[*buffer->begin()];
-	memcpy(&lobbydata, &(*buffer->begin()), sizeof(*buffer));
+	memcpy(&lobbydata.PlayerCnt, buffer->data(), sizeof(BYTE));
+	buffer->erase(buffer->begin(), buffer->begin() + sizeof(BYTE));
+	lobbydata.PlayersData = new Lobby::PlayerLobbyData[lobbydata.PlayerCnt];
 
 	for (int i = 0 ; i < lobbydata.PlayerCnt; ++i) {
-		Lobby::PlayerLobbyData* pldata = &lobbydata.PlayersData[i];
-		//[ playerID(5) , isMoving(1) , dir(2) ]=> 1byte
-		int playerID = pldata->Pid_Mov_Dir >> 3; 
-		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 5) >> 5;
+		memcpy(&lobbydata.PlayersData[i], buffer->data(), sizeof(Lobby::PlayerLobbyData));
 
-		bool isMoving = pldata->Pid_Mov_Dir >> 2;
-		pldata->Pid_Mov_Dir = (pldata->Pid_Mov_Dir << 6) >> 6;
+		Lobby::PlayerLobbyData* playersData = &lobbydata.PlayersData[i];
 
-		int dir = pldata->Pid_Mov_Dir;
+		std::bitset<8> byte(playersData->Pid_Mov_Dir);
+		std::bitset<5> pid(byte.to_string().substr(0, 5));
+		std::bitset<1> mov(byte.to_string().substr(5, 1));
+		std::bitset<2> dir(byte.to_string().substr(6, 2));
 
-		lobbyPlayers[playerID].pos = pldata->Pos;
-		lobbyPlayers[playerID].isMoving = isMoving;
+		int clientID = pid.to_ulong();
+		bool isMoving = mov.to_ulong();
+		Dir direction = static_cast<Dir>(dir.to_ulong() + 1);
 
-		// +1 인 이유는 원래 empty 포함 0~4 표현인데 2비트에는 0~3까지 밖에 표현을 못하므로..
-		lobbyPlayers[playerID].dir = (Dir)(dir + 1); 
+		lobbyPlayers[clientID].isMoving = isMoving;
+		lobbyPlayers[clientID].dir = direction;
+
+		lobbyPlayers[clientID].pos.x = playersData->Pos.x;
+		lobbyPlayers[clientID].pos.y = playersData->Pos.y;
+
+		std::cout << "isMoving : " << isMoving << std::endl;
+		std::cout << "dir : " << (int)direction << std::endl;
+		std::cout << "pos.x : " << playersData->Pos.x << std::endl;
+		std::cout << "pos.y : " << playersData->Pos.y << std::endl;
+		buffer->erase(buffer->begin(), buffer->begin() + sizeof(Lobby::PlayerLobbyData));
 	}
+
+	delete[] lobbydata.PlayersData;
 }
 
 int SceneLobby::GetCamSizeX()

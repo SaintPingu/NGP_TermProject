@@ -28,6 +28,13 @@ void ClientNetMgr::Execute()
 
 TResult ClientNetMgr::Init(short portnum)
 {
+	AllocConsole();
+
+	FILE* consoleIn, * consoleOut, * consoleErr;
+	freopen_s(&consoleIn, "CONIN$", "r", stdin);
+	freopen_s(&consoleOut, "CONOUT$", "w", stdout);
+	freopen_s(&consoleErr, "CONOUT$", "w", stderr);
+
 	TResult result = TResult::SUCCESS;
 
 	// 윈속 초기화

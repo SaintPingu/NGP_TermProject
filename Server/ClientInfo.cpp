@@ -35,11 +35,15 @@ TResult ClientInfo::Logic()
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
 		curConnectFlag = ConnectFlag::send;		// 전송 대기
-		SendPacket();
+		if (SendPacket() == TResult::FAIL) {
+			break;
+		}
 
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 완료 및 수신 대기\n";
 
-		RecvPacket();
+		if (RecvPacket() == TResult::FAIL) {
+			break;
+		}
 		curConnectFlag = ConnectFlag::recv;		// 리시브 완료
 
 		//std::cout << "\t\t-> Client [" << ID << "] 수신 완료\n";
