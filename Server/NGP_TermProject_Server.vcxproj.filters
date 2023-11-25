@@ -101,9 +101,6 @@
     <ClInclude Include="PacketNetwork.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ServerNetwork.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="ServerFramework.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -165,6 +162,9 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNetwork.h">
       <Filter>PCH</Filter>
     </ClInclude>
   </ItemGroup>

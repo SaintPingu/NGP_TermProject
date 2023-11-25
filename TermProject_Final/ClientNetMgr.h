@@ -29,4 +29,3 @@ public:
 #define CLIENT_NETWORK_MGR ClientNetMgr::Inst()
 #define CLIENT_NETWORK ClientNetMgr::Inst()->GetClientNetwork()
 #define PACKET_BUFFER CLIENT_NETWORK->GetPacketBuffer();
-

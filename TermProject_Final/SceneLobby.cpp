@@ -47,7 +47,7 @@ void SceneLobby::Init()
 	rectImage = rectBackground;
 	rectDraw = rectBackground;
 	
-	lobbyPlayers[0] = LobbyPlayer(Vector2(100, 100), Dir::Down, false);
+	//lobbyPlayers[0] = LobbyPlayer(Vector2(100, 100), Dir::Down, false);
 }
 
 void SceneLobby::Render(HDC hdc)
@@ -226,10 +226,6 @@ void SceneLobby::WriteData(void* data)
 		lobbyPlayers[clientID].pos.x = playersData->Pos.x;
 		lobbyPlayers[clientID].pos.y = playersData->Pos.y;
 
-		std::cout << "isMoving : " << isMoving << std::endl;
-		std::cout << "dir : " << (int)direction << std::endl;
-		std::cout << "pos.x : " << playersData->Pos.x << std::endl;
-		std::cout << "pos.y : " << playersData->Pos.y << std::endl;
 		buffer->erase(buffer->begin(), buffer->begin() + sizeof(Lobby::PlayerLobbyData));
 	}
 

@@ -12,6 +12,7 @@ SINGLETON_PATTERN_DEFINITION(Framework)
 void Framework::Start(HWND hWnd)
 {
 	recvPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
+	serverConnect = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	GetClientRect(hWnd, &rectClientWindow);
 	sceneManager = std::make_shared<SceneManager>();
@@ -45,6 +46,8 @@ void Framework::Update()
 void Framework::WaitForPacket()
 {
 	WaitForSingleObject(recvPacket, INFINITE);
+	ResetEvent(recvPacket);
+
 	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
 }
 
@@ -68,8 +71,8 @@ void Framework::GetInput()
 		return;
 	}
 
-	CommandList& cmdList = CLIENT_NETWORK->GetPacketGenerator().GetCommandList();
-	CrntScene->GetInput(&cmdList);
+	CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
+	CrntScene->GetInput(cmdList);
 }
 
 void Framework::SendPacket()
@@ -106,8 +109,7 @@ void Framework::ConnectToServer()
 		});
 
 	// 서버 연결 대기
-	WaitForSingleObject(recvPacket, INFINITE);
-	ResetEvent(recvPacket);
+	WaitForSingleObject(serverConnect, INFINITE);
 
 	if (CLIENT_NETWORK->IsConnected() == false) {
 		MessageBox(hWnd, L"서버 연결에 실패하였습니다.", L"연결 에러", MB_ICONERROR | MB_OK);

@@ -2,15 +2,13 @@
 #include "../Server/PacketStruct.h"
 
 class PacketGenerator {
-private:
+public:
 	CommandList cmdList;
 
-public:
 	PacketGenerator(){}
 	~PacketGenerator(){}
 
 	Packet GeneratePacket();
-	CommandList& GetCommandList() { return cmdList; }
 };
 
 class PacketLoader {

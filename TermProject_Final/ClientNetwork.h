@@ -33,7 +33,7 @@ public:
 	void Logic();
 	void Send() { SetEvent(sendPacket); }
 
-	PacketGenerator GetPacketGenerator() { return packetGenerator; }
+	PacketGenerator& GetPacketGenerator() { return packetGenerator; }
 public:
 	bool IsTerminate() { return IsTerminated; }
 

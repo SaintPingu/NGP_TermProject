@@ -11,6 +11,7 @@ class Framework {
 private:
 	//패킷을 서버로부터 받았다는 이벤트
 	HANDLE recvPacket;
+	HANDLE serverConnect;
 
 private:
 	std::thread clientNetwork{};
@@ -45,6 +46,7 @@ public:
 	void Terminate();
 
 	void ConnectToServer();
+	void CompleteServerConnect() { SetEvent(serverConnect); }
 	
 	// 23-11-16 최정일 클라이언트 ID를 알아야 움직일 플레이어가 누구이고 화면에 표시할 중심 캐릭터를 알수있음.
 	int client_ID = 0;

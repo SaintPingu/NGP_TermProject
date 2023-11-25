@@ -45,10 +45,14 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 	if (type == DataType::Lobby) {
 		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
-		BYTE len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
+		int len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
 
 		// Datalen
-		buffer.push_back(len); 
+		BYTE lenBytes[sizeof(int)];
+		std::memcpy(lenBytes, &len, sizeof(int));
+		for (int i = 0; i < sizeof(int); ++i) {
+			buffer.push_back(lenBytes[i]);
+		}
 
 		// ServerLobbyCmd
 		for (int i = 0;i < pCommandList.size();++i) {
