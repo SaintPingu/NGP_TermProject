@@ -12,7 +12,13 @@ void Image::Load(const POINT& imgSize)
 void ObjectImage::Load(const POINT& imgSize, const POINT& bodySize)
 {
 	Image::Load(imgSize);
-	this->bodySize = bodySize;
+
+	if (bodySize.x == 0) {
+		this->bodySize = imgSize;
+	}
+	else {
+		this->bodySize = bodySize;
+	}
 }
 
 

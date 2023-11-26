@@ -30,6 +30,7 @@ public:
 	//const std::shared_ptr<BattleScene>& Battle() const { return battleScene; }
 
 	GameData& GetGameData() { return gameData; }
+	StageElement& GetCrntStageType() { return gameData.crntStageType; }
 	SceneType GetClientLocation(int id) const { return gameData.clientLocations.at(id); }
 
 	void UpdateScenes();
