@@ -185,6 +185,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PacketNetwork.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SceneBattle.cpp" />
     <ClCompile Include="SceneLobby.cpp" />
     <ClCompile Include="SceneIntro.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -210,8 +212,10 @@
     <ClInclude Include="Loading.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PacketNetwork.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneBattle.h" />
     <ClInclude Include="SceneIntro.h" />
     <ClInclude Include="SceneLobby.h" />
     <ClInclude Include="SceneManager.h" />

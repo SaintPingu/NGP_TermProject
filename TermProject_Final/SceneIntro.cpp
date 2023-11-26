@@ -45,7 +45,7 @@ void MainIntro::Init(const wchar_t* imgfile, float posX, float posY)
 	rectImage = { 0, 0, size.x, size.y };
 }
 
-void MainIntro::Paint(HDC hdc)
+void MainIntro::Render(HDC hdc)
 {
 	// 사이즈에 따른 위치 렉트값
 	rectDraw = { pos.x, pos.y, size.x + pos.x, size.y + pos.y };
@@ -65,7 +65,7 @@ void Cloud::Move(float MoveX, float MoveY)
 		pos.x = -188;
 }
 
-void Logo::Paint(HDC hdc)
+void Logo::Render(HDC hdc)
 {
 	// 폰트 설정
 	HFONT hFont = CreateFont(LOGO_SIZE, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ChubbyChoo-SemiBold"));
@@ -89,7 +89,7 @@ void Logo::Paint(HDC hdc)
 }
 
 // 처음 메인 화면 start, finish, finish등 메인 메뉴 설정
-void Menu::Paint(HDC hdc)
+void Menu::Render(HDC hdc)
 {
 	HFONT hFont = CreateFont(MENU_SIZE, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ARCADECLASSIC"));
 	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
@@ -231,15 +231,15 @@ void SceneIntro::Init()
 
 void SceneIntro::Render(HDC hdc)
 {
-	intro.Paint(hdc);
+	intro.Render(hdc);
 	for (int i = 0; i < CLOUD_NUM; i++)
 	{
-		clouds[i].Paint(hdc);
+		clouds[i].Render(hdc);
 	}
 
-	logo.Paint(hdc);
+	logo.Render(hdc);
 
-	menu.Paint(hdc);
+	menu.Render(hdc);
 }
 
 void SceneIntro::Animate()

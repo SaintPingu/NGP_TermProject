@@ -146,7 +146,7 @@ RECT GetRotatedBody(const Vector2 vPoints[4])
 	return rectBody;
 }
 
-void PaintHitbox(HDC hdc, RECT rectBody)
+void RenderHitbox(HDC hdc, RECT rectBody)
 {
 	FrameRect(hdc, &rectBody, (HBRUSH)GetStockObject(BLACK_BRUSH));
 }

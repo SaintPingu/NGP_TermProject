@@ -90,6 +90,9 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="ServerNetwork.h">
       <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,12 @@ GameObject::GameObject(ObjectImage& image, const Vector2& pos)
 
 	SetPos(pos);
 }
+
+void GameObject::Render(const HDC& hdc, const RECT* rectImage)
+{
+	image->Render(hdc, rectBody, rectImage);
+}
+
 void GameObject::Init(ObjectImage& image, const Vector2& pos)
 {
 	this->image = &image;

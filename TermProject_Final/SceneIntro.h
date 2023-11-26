@@ -8,7 +8,7 @@ public:
 	FRECT rectDraw = { 0, };
 
 	void Init(const wchar_t* imgfile, float posX, float posY);
-	virtual void Paint(HDC hdc);
+	virtual void Render(HDC hdc);
 
 private:
 	CImage img;
@@ -36,7 +36,7 @@ class Logo : public MainIntro
 public:
 	float logoMovingCnt = 0;
 public:
-	void Paint(HDC hdc);
+	void Render(HDC hdc);
 };
 
 class Menu : public MainIntro
@@ -53,7 +53,7 @@ public:
 	{
 		background.Load(L"images\\loading\\Loading_Black_background.bmp");
 	}
-	void Paint(HDC hdc);
+	void Render(HDC hdc);
 	void fingerController();
 };
 

@@ -23,7 +23,7 @@ void Image::Load(const WCHAR* fileName, const POINT& imgSize, BYTE alpha)
 
 	this->rectImage = { 0, 0, imgSize.x, imgSize.y };
 }
-void Image::Paint(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) const
+void Image::Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) const
 {
 	const HDC memDC = CreateCompatibleDC(hdc);
 
@@ -36,10 +36,10 @@ void Image::Paint(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) c
 
 	if (isShowDrawBox == true)
 	{
-		PaintHitbox(hdc, rectDraw);
+		RenderHitbox(hdc, rectDraw);
 	}
 }
-void Image::PaintRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage) const
+void Image::RenderRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage) const
 {
 	if (rectImage == nullptr)
 	{
@@ -79,7 +79,7 @@ void Image::PaintRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectIm
 		std::swap(points[0], points[1]);
 		SelectObject(hdc, (HBRUSH)GetStockObject(NULL_BRUSH));
 		Polygon(hdc, points, 4);
-		PaintHitbox(hdc, rectDraw);
+		RenderHitbox(hdc, rectDraw);
 	}
 }
 void Image::SetAlpha(BYTE alpha)
@@ -107,7 +107,7 @@ void ObjectImage::Load(const WCHAR* fileName, const POINT& imgSize, const POINT&
 	}
 }
 
-void ObjectImage::Paint(const HDC& hdc, const RECT& rectBody, const RECT* rectImage) const
+void ObjectImage::Render(const HDC& hdc, const RECT& rectBody, const RECT* rectImage) const
 {
 	if (rectImage == nullptr)
 	{
@@ -120,16 +120,16 @@ void ObjectImage::Paint(const HDC& hdc, const RECT& rectBody, const RECT* rectIm
 	rectDraw.right = rectDraw.left + drawSize.x;
 	rectDraw.bottom = rectDraw.top + drawSize.y;
 
-	Image::Paint(hdc, rectDraw, *rectImage);
+	Image::Render(hdc, rectDraw, *rectImage);
 
 	if (isShowHitbox == true)
 	{
-		PaintHitbox(hdc, rectBody);
+		RenderHitbox(hdc, rectBody);
 	}
 }
-void ObjectImage::Paint(const RECT& rectDest, const HDC& hdc) const
+void ObjectImage::Render(const RECT& rectDest, const HDC& hdc) const
 {
-	Image::Paint(hdc, rectDest, this->rectImage);
+	Image::Render(hdc, rectDest, this->rectImage);
 }
 
 void ObjectImage::ScaleImage(float scaleX, float scaleY)
@@ -162,7 +162,7 @@ void EffectImage::Load(const WCHAR* fileName, const POINT& imgSize, int maxFrame
 	this->maxFrame = maxFrame;
 	this->drawSize = imgSize;
 }
-void EffectImage::Paint(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage) const
+void EffectImage::Render(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage) const
 {
 	if (rectImage == nullptr)
 	{
@@ -175,16 +175,16 @@ void EffectImage::Paint(const HDC& hdc, const POINT& drawPoint, const RECT* rect
 	rectDraw.right = rectDraw.left + drawSize.x;
 	rectDraw.bottom = rectDraw.top + drawSize.y;
 
-	Image::Paint(hdc, rectDraw, *rectImage);
+	Image::Render(hdc, rectDraw, *rectImage);
 }
-void EffectImage::Paint(const HDC& hdc, const RECT& rectDest, const RECT* rectImage) const
+void EffectImage::Render(const HDC& hdc, const RECT& rectDest, const RECT* rectImage) const
 {
 	if (rectImage == nullptr)
 	{
 		rectImage = &this->rectImage;
 	}
 
-	Image::Paint(hdc, rectDest, *rectImage);
+	Image::Render(hdc, rectDest, *rectImage);
 }
 void EffectImage::ScaleImage(float scaleX, float scaleY)
 {
@@ -201,25 +201,25 @@ void GUIImage::Load(const WCHAR* fileName, const POINT& imgSize, BYTE alpha)
 {
 	Image::Load(fileName, imgSize, alpha);
 }
-void GUIImage::Paint(const HDC& hdc, const RECT& rectDest)
+void GUIImage::Render(const HDC& hdc, const RECT& rectDest)
 {
-	Image::Paint(hdc, rectDest, rectImage);
+	Image::Render(hdc, rectDest, rectImage);
 }
-void GUIImage::PaintBlack(const HDC& hdc, const RECT& rectDest)
+void GUIImage::RenderBlack(const HDC& hdc, const RECT& rectDest)
 {
 	const HDC memDC = CreateCompatibleDC(hdc);
 	const HBITMAP hBitmap = CreateCompatibleBitmap(hdc, rectImage.right, rectImage.bottom);
 	SelectObject(memDC, hBitmap);
 
 	const RECT rectMask = { 0, 0, rectImage.right, rectImage.bottom };
-	Image::Paint(memDC, rectMask, rectImage);
+	Image::Render(memDC, rectMask, rectImage);
 	SelectObject(hdc, GetStockObject(GRAY_BRUSH));
 	StretchBlt(hdc, rectDest.left, rectDest.top, rectDest.right - rectDest.left, rectDest.bottom - rectDest.top, memDC, 0, 0, rectImage.right, rectImage.bottom, MERGECOPY);
 
 	DeleteDC(memDC);
 	DeleteObject(hBitmap);
 }
-void GUIImage::PaintGauge(const HDC& hdc, const RECT& rectDest, float current, float max)
+void GUIImage::RenderGauge(const HDC& hdc, const RECT& rectDest, float current, float max)
 {
 	constexpr int gapY = 6;
 	const int imgWidth = rectImage.right - rectImage.left;
@@ -232,7 +232,7 @@ void GUIImage::PaintGauge(const HDC& hdc, const RECT& rectDest, float current, f
 	SelectObject(memDC, hBitmap);
 
 	FillRect(memDC, &rectImage, transBrush);
-	Image::Paint(memDC, rectImage, rectImage);
+	Image::Render(memDC, rectImage, rectImage);
 
 	RECT rectErase = rectImage;
 	float unitHeight = imgHeight / max;

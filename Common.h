@@ -401,7 +401,7 @@ void SetRectByWindow(RECT& rect);
 
 RECT GetRotatedBody(const Vector2 vPoints[4]);
 
-void PaintHitbox(HDC hdc, RECT rectBody);
+void RenderHitbox(HDC hdc, RECT rectBody);
 
 void CheckOverflowAdd(BYTE& lhs, const BYTE& rhs);
 void CheckOverflowSub(BYTE& lhs, const BYTE& rhs);

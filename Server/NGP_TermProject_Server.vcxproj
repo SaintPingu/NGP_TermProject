@@ -159,6 +159,7 @@
     <ClCompile Include="ClientMgr.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
     <ClCompile Include="DataBase.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="LobbyScene.cpp" />
     <ClCompile Include="Log.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Data.h" />
     <ClInclude Include="DataBase.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="func.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="LobbyScene.h" />

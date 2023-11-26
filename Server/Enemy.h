@@ -1,24 +1,6 @@
 #pragma once
 #include "Object.h"
-
-typedef struct EnemyData {
-	Type type = Type::Empty;
-
-	int attackDelay = 0;
-	int crntAttackDelay = 0;
-	float bulletSpeed = 0;
-
-	float hp = 0;
-	float speed = 0;
-	float damage = 0;
-
-	int maxYPos = 0;
-	int frameNum_Idle = 0;
-	int frameNum_IdleMax = 0;
-	int frameNum_Atk = 0;
-	int frameNum_AtkMax = 0;
-	int frameNum_AtkRev = 0;
-}EnemyData;
+#include "DataBase.h"
 
 class Enemy abstract : public GameObject, public IMovable {
 protected:
@@ -53,7 +35,7 @@ public:
 
 
 class EnemyBullet;
-class BulletData;
+struct BulletData;
 class EnemyController {
 private:
 	std::vector<Enemy*> enemies;

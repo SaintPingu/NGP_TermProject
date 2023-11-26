@@ -14,6 +14,7 @@ protected:
 
 	GameObject() {};
 	GameObject(ObjectImage& image, const Vector2& pos);
+	void Render(const HDC& hdc, const RECT* rectImage = nullptr);
 	void Init(ObjectImage& image, const Vector2& pos);
 	void SetPos(const Vector2& pos);
 
