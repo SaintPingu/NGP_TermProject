@@ -75,7 +75,11 @@ void SceneLobby::Render(HDC hdc)
 	npc[3].Draw(hdc, camLeft);
 
 	for (auto& [id, player] : lobbyPlayers) {
-		playerImage.Draw(hdc, player.pos.x - 20, player.pos.y - 20, 40, 40,
+		int camX{};
+		if (id != framework->client_ID) {
+			camX = camLeft;
+		}
+		playerImage.Draw(hdc, player.pos.x - 20 - camLeft, player.pos.y - 20, 40, 40,
 			player.rectImage.left, player.rectImage.top, player.rectImage.right, player.rectImage.bottom);
 	}
 

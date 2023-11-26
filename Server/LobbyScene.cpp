@@ -6,6 +6,28 @@
 void LobbyPlayer::Move()
 {
 	constexpr float speed = 200.f;
+
+	if (!isMoving) {
+		return;
+	}
+
+	int v{}, h{};
+
+	switch (dir) {
+	case Dir::Left:
+		v = -1;
+		break;
+	case Dir::Right:
+		v = 1;
+		break;
+	case Dir::Up:
+		h = -1;
+		break;
+	case Dir::Down:
+		h = 1;
+		break;
+	}
+
 	if (v != 0) {
 		pos.x += DeltaTime() * speed * v;
 
@@ -15,32 +37,6 @@ void LobbyPlayer::Move()
 	}
 }
 
-bool LobbyPlayer::IsMoving()
-{
-	if (v == 0 && h == 0) {
-		return false;
-	}
-	return true;
-}
-
-Dir LobbyPlayer::GetDir()
-{
-	switch (v) {
-	case -1:
-		return Dir::Left;
-	case 1:
-		return Dir::Right;
-	}
-
-	switch (h) {
-	case -1:
-		return Dir::Up;
-	case 1:
-		return Dir::Down;
-	}
-
-	return befDir;
-}
 
 
 
@@ -63,28 +59,23 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 		players.erase(clientID);
 		return;
 	case ClientLobbyCmd::MoveLeft:
-		player->v = -1;
-		player->h = 0;
-		player->befDir = Dir::Left;
+		player->isMoving = true;
+		player->dir = Dir::Left;
 		break;
 	case ClientLobbyCmd::MoveRight:
-		player->v = 1;
-		player->h = 0;
-		player->befDir = Dir::Right;
+		player->isMoving = true;
+		player->dir = Dir::Right;
 		break;
 	case ClientLobbyCmd::MoveUp:
-		player->v = 0;
-		player->h = -1;
-		player->befDir = Dir::Up;
+		player->isMoving = true;
+		player->dir = Dir::Up;
 		break;
 	case ClientLobbyCmd::MoveDown:
-		player->v = 0;
-		player->h = 1;
-		player->befDir = Dir::Down;
+		player->isMoving = true;
+		player->dir = Dir::Down;
 		break;
 	case ClientLobbyCmd::Stop:
-		player->v = 0;
-		player->h = 0;
+		player->isMoving = false;
 		break;
 	default:
 		assert(0);

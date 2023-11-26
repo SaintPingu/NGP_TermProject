@@ -7,13 +7,11 @@ public:
 	POINT aboutMapPos = { pos.x, pos.y };
 	RECT rect = { 0, };
 
-	int v{}, h{};
+	bool isMoving;
 
-	Dir befDir{ Dir::Down };
+	Dir dir{ Dir::Down };
 
 	void Move();
-	bool IsMoving();
-	Dir GetDir();
 };
 
 class LobbyScene : public Scene {

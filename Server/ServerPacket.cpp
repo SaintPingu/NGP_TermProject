@@ -17,8 +17,8 @@ void PacketGenerator::GenerateData()
 		int i{};
 		for(const auto& [clientID, player] : players) {
 			std::bitset<5> pid(clientID);
-			std::bitset<1> mov(players.at(clientID)->IsMoving());
-			std::bitset<2> dir(static_cast<int>(players.at(clientID)->GetDir()));
+			std::bitset<1> mov(players.at(clientID)->isMoving);
+			std::bitset<2> dir(static_cast<int>(players.at(clientID)->dir));
 			std::bitset<8> byte(pid.to_string() + mov.to_string() + dir.to_string());
 
 			playerlobbydata[i].Pid_Mov_Dir = static_cast<BYTE>(byte.to_ulong());
@@ -112,11 +112,12 @@ void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
 
 int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 {
+	constexpr int notAlloc = -1;
 	if (packetBuffers.empty()) {
-		return -1;
+		return notAlloc;
 	}
 
-	if (crntClientID == -1) {
+	if (crntClientID == notAlloc) {
 		crntClientID = packetBuffers.begin()->first;
 	}
 	PacketBuffer* packetBuffer = packetBuffers[crntClientID];
@@ -128,8 +129,8 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 
 	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
 
-	if (packetBuffer->empty()) {
-		return -1; // error
+	if (packetBuffer == nullptr || packetBuffer->empty()) {
+		return notAlloc; // error
 	}
 
 	if (type == SceneType::Lobby || type == SceneType::Battle) {
@@ -138,7 +139,7 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	}
 	else if (type == SceneType::Stage) {
 		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
-		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin()+1);
+		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
 
 		if (cmd == (BYTE)ClientStageCmd::EnterStage) {
 			data.push_back(*(packetBuffers[crntClientID]->begin() + 1)); // ClientStageData
@@ -148,6 +149,9 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 
 	if (packetBuffer->empty()) {
 		packetBuffers.erase(crntClientID);
+		int clientID = crntClientID;
+		crntClientID = notAlloc;
+		return clientID;
 	}
 
 	return crntClientID;

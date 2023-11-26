@@ -28,7 +28,10 @@ TResult ClientInfo::Logic()
 {
 	std::cout << "\n\t\t-> Client [" << ID << "] 구동 중...\n";
 
-// 2023-11-16-TUR (민동현) : 리시브 완료 시 외부에서 "Send() { SetEvent(sendEvent) }" 를 호출해 전송하도록 한다.
+	// 2023-11-26 (민동현) : 첫 패킷은 클라이언트의 ID를 전송한다.
+	serverNet->SendClientID(ID);
+
+	// 2023-11-16-TUR (민동현) : 리시브 완료 시 외부에서 "Send() { SetEvent(sendEvent) }" 를 호출해 전송하도록 한다.
 	while(executeLogic)
 	{
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";

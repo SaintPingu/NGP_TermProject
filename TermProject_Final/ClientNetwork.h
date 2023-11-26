@@ -23,6 +23,7 @@ private:
 	HANDLE sendPacket;
 	virtual TResult SendPacket();
 	virtual TResult RecvPacket();
+	TResult RecvClientID(int& id);
 
 	// 서버와 연결되었는가?
 	bool isConnected = false;

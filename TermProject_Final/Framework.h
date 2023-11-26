@@ -50,6 +50,7 @@ public:
 	
 	// 23-11-16 최정일 클라이언트 ID를 알아야 움직일 플레이어가 누구이고 화면에 표시할 중심 캐릭터를 알수있음.
 	int client_ID = 0;
+	void SetClientID(int id) { client_ID = id; }
 	SceneManager* GetSceneMgr() { 	return sceneManager.get(); }
 
 	void SetPacketLoader() { packetLoader; }
@@ -60,6 +61,7 @@ public:
 
 	// 23-11-25 민동현 : WaitForPacket() 함수를 꺠우기 위한 함수
 	void WakeForPacket() { SetEvent(recvPacket); }
+
 
 private:
 	std::function<void()> UpdateFunc{ std::bind(&Framework::UpdateSingle, this) };

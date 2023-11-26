@@ -24,6 +24,11 @@ void ClientNetwork::Logic()
 {
 	isConnected = true;
 	executeClientNet = true;
+
+	int id;
+	RecvClientID(id);
+	framework->SetClientID(id);
+
 	framework->CompleteServerConnect();
 	while (executeClientNet)
 	{
@@ -79,6 +84,19 @@ TResult ClientNetwork::RecvPacket()
 	PacketNetwork::RecvPacket();
 
 	return TResult();
+}
+
+TResult ClientNetwork::RecvClientID(int& id)
+{
+	int retval{};
+	retval = recv(TCP_Socket, (char*)&id, sizeof(int), MSG_WAITALL);
+	std::cout << "Clinet ID : " << id << std::endl;
+	if (retval == SOCKET_ERROR) {
+		err_display("Recv Error");
+		return TResult::FAIL;
+	}
+
+	return TResult::NONE;
 }
 
 
