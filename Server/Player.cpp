@@ -1,6 +1,3 @@
-#include "Player.h"
-#include "Player.h"
-#include "Player.h"
 #include "stdafx.h"
 #include "player.h"
 #include "scene.h"
