@@ -93,6 +93,12 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="BattleScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="StageScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -170,11 +176,17 @@
     <ClInclude Include="Scene.h">
       <Filter>PCH</Filter>
     </ClInclude>
-    <ClInclude Include="ServerNetwork.h">
-      <Filter>PCH</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNetwork.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="StageScene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

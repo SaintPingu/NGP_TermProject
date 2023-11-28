@@ -44,6 +44,7 @@ TResult ClientNetMgr::Init(short portnum)
 
 	// 1. 서버 아이피 주소 입력 
 	const char* serverIP = "127.0.0.1";
+	//const char* serverIP = "192.168.21.157";
 
 	// 클라이언트 네트워크 초기화 
 	clientNet = std::make_shared<ClientNetwork>();
