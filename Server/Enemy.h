@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "DataBase.h"
+#include "Player.h"
 
 class Enemy abstract : public GameObject, public IMovable {
 protected:
@@ -35,7 +36,7 @@ public:
 class Melee : public Enemy {
 private:
 	void SetPosDest();
-	bool CheckCollidePlayer();
+	bool CheckCollidePlayer(int clientID);
 public:
 	Melee(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
 	//void Paint(const HDC& hdc) override;

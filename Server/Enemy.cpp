@@ -323,40 +323,76 @@ void Melee::SetPosDest()
 		return;
 	}
 
+	Player* player = nullptr; //player 배틀씬의 플레이어 연결해야함.
+	if (!player) {
+		return;
+	}
 	const Vector2 posCenter = GetPosCenter();
-	//const Vector2 vectorToPlayer = posCenter - player->GetPosCenter();
 
-	//const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
+	Vector2 distanceToplayer1 = posCenter - player[0].GetPosCenter();
+	Vector2 distanceToplayer2 = posCenter - player[1].GetPosCenter();
 
-	//unitVector = vectorToPlayer / radius;
+	Vector2* nearVector;
+	if (distanceToplayer1.x * distanceToplayer1.x + distanceToplayer1.y * distanceToplayer1.y 
+		< distanceToplayer2.x * distanceToplayer2.x + distanceToplayer2.y * distanceToplayer2.y) {
+		nearVector  = &distanceToplayer1;
+	}
+	else {
+		nearVector = &distanceToplayer2;
+	}
 
-	//posDest = posCenter - (unitVector * data.speed);
+	const Vector2 vectorToPlayer = *nearVector;
+
+	const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
+
+	unitVector = vectorToPlayer / radius;
+
+	posDest = posCenter - (unitVector * data.speed);
 }
 
-bool Melee::CheckCollidePlayer()
+bool Melee::CheckCollidePlayer(int clientID)
 {
+	Player* player = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
+
+	if (!player) {
+		return false;
+	}
+
 	const RECT rectBody = GetRectBody();
-	/*if (player->IsCollide(rectBody) == true)
+
+	if (player->IsCollide(rectBody) == true)
 	{
 		StopMove();
-		SetAction(Action::Attack, data.frameNum_Atk);
+		//SetAction(Action::Attack, data.frameNum_Atk);
 		ResetAttackDelay();
 
 		return true;
-	}*/
+	}
 
 	return false;
 }
 
 void Melee::Move()
 {
+	Player* battlePlayers = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
+
+	if (!battlePlayers) {
+		return;
+	}
+
 	if (IsMove() == false)
 	{
 		return;
 	}
-	else if (CheckCollidePlayer() == true)
+	
+	if (CheckCollidePlayer(0) == true)
 	{
-		//player->Hit(data.damage, GetType());
+		battlePlayers[0].Hit(data.damage, GetType());
+		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
+		return;
+	}
+	else if (CheckCollidePlayer(1) == true) {
+		battlePlayers[1].Hit(data.damage, GetType());
 		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
 		return;
 	}
@@ -397,6 +433,12 @@ void Range::Fire()
 {
 	//SetAction(Action::Attack, data.frameNum_Atk);
 
+	EnemyController* enemies = nullptr; // EnemyController 연결해줘야함.
+
+	if (!enemies) {
+		return;
+	}
+
 	RECT rectBody = GetRectBody();
 	POINT bulletPos = { 0, };
 	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
@@ -410,12 +452,12 @@ void Range::Fire()
 	Vector2 unitVector = Vector2::Down();
 	int randDegree = (rand() % 10) - 5;
 
-	/*unitVector = Rotate(unitVector, randDegree);
+	unitVector = Rotate(unitVector, randDegree);
 	enemies->CreateBullet(bulletPos, bulletData, unitVector);
 	unitVector = Rotate(unitVector, 20);
 	enemies->CreateBullet(bulletPos, bulletData, unitVector);
 	unitVector = Rotate(unitVector, -40);
-	enemies->CreateBullet(bulletPos, bulletData, unitVector);*/
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
 }
 
 void Range::Move()

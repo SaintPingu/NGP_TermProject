@@ -19,7 +19,7 @@ private:
 	std::shared_ptr<LobbyScene> lobbyScene{};
 
 	//std::shared_ptr<StageScene> stageScene{};
-	//std::shared_ptr<BattleScene> battleScene{};
+	std::shared_ptr<BattleScene> battleScene{};
 
 public:
 	void Init();
@@ -27,7 +27,7 @@ public:
 
 	const std::shared_ptr<LobbyScene>& Lobby() const { return lobbyScene; }
 	//const std::shared_ptr<StageScene>& Stage() const { return stageScene; }
-	//const std::shared_ptr<BattleScene>& Battle() const { return battleScene; }
+	const std::shared_ptr<BattleScene>& Battle() const { return battleScene; }
 
 	GameData& GetGameData() { return gameData; }
 	StageElement& GetCrntStageType() { return gameData.crntStageType; }
