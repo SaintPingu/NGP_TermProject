@@ -32,6 +32,30 @@ public:
 	}
 };
 
+class Melee : public Enemy {
+private:
+	void SetPosDest();
+	bool CheckCollidePlayer();
+public:
+	Melee(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
+	//void Paint(const HDC& hdc) override;
+	void Move() override;
+	void CheckAttackDelay() override;
+};
+
+class Range : public Enemy {
+private:
+	const ObjectImage* bulletImage = nullptr;
+
+	void SetPosDest();
+	void Fire();
+public:
+	Range(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
+	//void Paint(const HDC& hdc) override;
+	void Move() override;
+	void CheckAttackDelay() override;
+};
+
 
 
 class EnemyBullet;

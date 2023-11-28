@@ -3,6 +3,7 @@
 #include "SceneIntro.h"
 #include "SceneLobby.h"
 #include "SceneStage.h"
+//#include "SceneBattle.h"
 #include "Loading.h"
 #include "Framework.h"
 
@@ -48,6 +49,9 @@ void SceneManager::InitScene(SceneType scene)
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
+		break;
+	case SceneType::Battle:
+		//crntScene = std::make_shared<SceneBattle>();
 		break;
 	default:
 		assert(0);

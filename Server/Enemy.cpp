@@ -247,8 +247,8 @@ void EnemyController::CreateCheckRange()
 		const float xPos = (rand() % (WINDOWSIZE_X - 100)) + 50;
 		const float yPos = -(rand() % 100);
 
-		/*Range* enemy = new Range(imgRange, { xPos, yPos }, rangeData);
-		enemies.emplace_back(enemy);*/
+		Range* enemy = new Range(imgRange, { xPos, yPos }, rangeData);
+		enemies.emplace_back(enemy);
 	}
 }
 
@@ -312,4 +312,132 @@ void EnemyController::MoveBullets()
 void EnemyController::DestroyCollideBullet(const RECT& rect)
 {
 	bullets->DestroyCollideBullet(rect);
+}
+
+#define ELAPSE_BATTLE_INVALIDATE 10
+
+void Melee::SetPosDest()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	const Vector2 posCenter = GetPosCenter();
+	//const Vector2 vectorToPlayer = posCenter - player->GetPosCenter();
+
+	//const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
+
+	//unitVector = vectorToPlayer / radius;
+
+	//posDest = posCenter - (unitVector * data.speed);
+}
+
+bool Melee::CheckCollidePlayer()
+{
+	const RECT rectBody = GetRectBody();
+	/*if (player->IsCollide(rectBody) == true)
+	{
+		StopMove();
+		SetAction(Action::Attack, data.frameNum_Atk);
+		ResetAttackDelay();
+
+		return true;
+	}*/
+
+	return false;
+}
+
+void Melee::Move()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+	else if (CheckCollidePlayer() == true)
+	{
+		//player->Hit(data.damage, GetType());
+		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
+		return;
+	}
+
+	SetPosDest();
+	SetPos(posDest);
+}
+
+void Melee::CheckAttackDelay()
+{
+	if (IsMove() == false)
+	{
+		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		if (IsClearAttackDelay() == true)
+		{
+			StartMove();
+		}
+	}
+}
+
+void Range::SetPosDest()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	unitVector = Vector2::Down();
+	posDest = Vector2::GetDest(GetPosCenter(), unitVector, data.speed);
+	if (posDest.y > data.maxYPos)
+	{
+		StopMove();
+	}
+
+}
+
+void Range::Fire()
+{
+	//SetAction(Action::Attack, data.frameNum_Atk);
+
+	RECT rectBody = GetRectBody();
+	POINT bulletPos = { 0, };
+	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
+	bulletPos.y = rectBody.bottom;
+
+	BulletData bulletData;
+	bulletData.bulletType = GetType();
+	bulletData.damage = data.damage;
+	bulletData.speed = data.bulletSpeed;
+
+	Vector2 unitVector = Vector2::Down();
+	int randDegree = (rand() % 10) - 5;
+
+	/*unitVector = Rotate(unitVector, randDegree);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
+	unitVector = Rotate(unitVector, 20);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
+	unitVector = Rotate(unitVector, -40);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);*/
+}
+
+void Range::Move()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	SetPosDest();
+	SetPos(posDest);
+}
+
+void Range::CheckAttackDelay()
+{
+	if (IsMove() == false)
+	{
+		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		if (IsClearAttackDelay() == true)
+		{
+			Fire();
+			ResetAttackDelay();
+		}
+	}
 }
