@@ -7,8 +7,6 @@
 ///		CLIENT INFO
 /// ------------------+
 
-#include "PacketStruct.h"
-
 class ServerNetwork;
 class ClientInfo
 {

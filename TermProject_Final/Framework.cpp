@@ -39,7 +39,8 @@ void Framework::UpdateSingle()
 
 void Framework::Update()
 {
-	UpdateFunc();
+	UpdateSingle();
+	//UpdateFunc();
 	
 }
 
@@ -99,7 +100,9 @@ void Framework::Render()
 void Framework::Terminate()
 {
 	CloseHandle(recvPacket);
-	clientNetwork.join();
+	if (clientNetwork.joinable()) {
+		clientNetwork.join();
+	}
 }
 
 void Framework::ConnectToServer()

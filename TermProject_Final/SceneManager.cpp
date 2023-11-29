@@ -3,12 +3,13 @@
 #include "SceneIntro.h"
 #include "SceneLobby.h"
 #include "SceneStage.h"
+#include "SceneBattle.h"
 #include "Loading.h"
 #include "Framework.h"
 
 void SceneManager::Init(HWND hWnd)
 {
-	InitScene(SceneType::Intro);
+	InitScene(SceneType::Battle);
 	loading = std::make_shared<Loading>();
 }
 
@@ -36,7 +37,7 @@ void SceneManager::FinishRender(HWND hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC
 void SceneManager::InitScene(SceneType scene)
 {
 	if (crntSceneType == SceneType::Intro && scene != SceneType::Intro) {
-		framework->ConnectToServer();
+		//framework->ConnectToServer();
 	}
 
 	switch (scene) {
@@ -48,6 +49,9 @@ void SceneManager::InitScene(SceneType scene)
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
+		break;
+	case SceneType::Battle:
+		crntScene = std::make_shared<SceneBattle>();
 		break;
 	default:
 		assert(0);

@@ -1,5 +1,4 @@
 #pragma once
-#include "../Server/PacketStruct.h"
 
 class PacketGenerator {
 public:

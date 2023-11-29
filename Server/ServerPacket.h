@@ -1,5 +1,4 @@
 #pragma once
-#include "PacketStruct.h"
 enum class DataType : BYTE { Lobby = 0, Stage, Battle };
 
 class PacketGenerator

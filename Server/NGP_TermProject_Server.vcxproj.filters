@@ -110,9 +110,6 @@
     <ClInclude Include="ServerFramework.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="PacketStruct.h">
-      <Filter>Packet</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common.h">
       <Filter>PCH</Filter>
     </ClInclude>
@@ -124,9 +121,6 @@
     </ClInclude>
     <ClInclude Include="func.h">
       <Filter>PCH</Filter>
-    </ClInclude>
-    <ClInclude Include="Data.h">
-      <Filter>Packet</Filter>
     </ClInclude>
     <ClInclude Include="DataBase.h">
       <Filter>DataBase</Filter>

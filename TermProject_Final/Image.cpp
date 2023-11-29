@@ -23,7 +23,7 @@ void Image::Load(const WCHAR* fileName, const POINT& imgSize, BYTE alpha)
 
 	this->rectImage = { 0, 0, imgSize.x, imgSize.y };
 }
-void Image::Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) const
+void Image::Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage)
 {
 	const HDC memDC = CreateCompatibleDC(hdc);
 
@@ -39,7 +39,7 @@ void Image::Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) 
 		RenderHitbox(hdc, rectDraw);
 	}
 }
-void Image::RenderRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage) const
+void Image::RenderRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage)
 {
 	if (rectImage == nullptr)
 	{
@@ -107,7 +107,7 @@ void ObjectImage::Load(const WCHAR* fileName, const POINT& imgSize, const POINT&
 	}
 }
 
-void ObjectImage::Render(const HDC& hdc, const RECT& rectBody, const RECT* rectImage) const
+void ObjectImage::Render(const HDC& hdc, const RECT& rectBody, const RECT* rectImage)
 {
 	if (rectImage == nullptr)
 	{
@@ -127,7 +127,7 @@ void ObjectImage::Render(const HDC& hdc, const RECT& rectBody, const RECT* rectI
 		RenderHitbox(hdc, rectBody);
 	}
 }
-void ObjectImage::Render(const RECT& rectDest, const HDC& hdc) const
+void ObjectImage::Render(const RECT& rectDest, const HDC& hdc)
 {
 	Image::Render(hdc, rectDest, this->rectImage);
 }
@@ -162,7 +162,7 @@ void EffectImage::Load(const WCHAR* fileName, const POINT& imgSize, int maxFrame
 	this->maxFrame = maxFrame;
 	this->drawSize = imgSize;
 }
-void EffectImage::Render(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage) const
+void EffectImage::Render(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage)
 {
 	if (rectImage == nullptr)
 	{
@@ -177,7 +177,7 @@ void EffectImage::Render(const HDC& hdc, const POINT& drawPoint, const RECT* rec
 
 	Image::Render(hdc, rectDraw, *rectImage);
 }
-void EffectImage::Render(const HDC& hdc, const RECT& rectDest, const RECT* rectImage) const
+void EffectImage::Render(const HDC& hdc, const RECT& rectDest, const RECT* rectImage)
 {
 	if (rectImage == nullptr)
 	{

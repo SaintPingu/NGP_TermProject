@@ -13,12 +13,12 @@ protected:
 	RECT rectImage = { 0, };
 	POINT drawSize = { 0, };
 	void Load(const WCHAR* fileName, const POINT& imgSize, BYTE alpha = 0xff);
-	void Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage) const;
+	void Render(const HDC& hdc, const RECT& rectDraw, const RECT& rectImage);
 	float scaleX = 1;
 	float scaleY = 1;
 
 public:
-	void RenderRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage = nullptr) const;
+	void RenderRotation(const HDC& hdc, Vector2 vPoints[4], const RECT* rectImage = nullptr);
 	void SetAlpha(BYTE alpha);
 
 	inline RECT GetRectImage() const
@@ -56,8 +56,8 @@ private:
 
 public:
 	void Load(const WCHAR* fileName, const POINT& imgSize, const POINT& bodyDrawPoint = { 0, 0 }, const POINT& bodySize = { 0, 0 });
-	void Render(const HDC& hdc, const RECT& rectBody, const RECT* rectImage = nullptr) const;
-	void Render(const RECT& rectDest, const HDC& hdc) const;
+	void Render(const HDC& hdc, const RECT& rectBody, const RECT* rectImage = nullptr);
+	void Render(const RECT& rectDest, const HDC& hdc);
 	void ScaleImage(float scaleX, float scaleY);
 
 	inline POINT GetBodyDrawPoint() const
@@ -75,8 +75,8 @@ private:
 	int maxFrame = 0;
 public:
 	void Load(const WCHAR* fileName, const POINT& imgSize, int maxFrame = 0, BYTE alpha = 0xff);
-	void Render(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage = nullptr) const;
-	void Render(const HDC& hdc, const RECT& rectDest, const RECT* rectImage = nullptr) const;
+	void Render(const HDC& hdc, const POINT& drawPoint, const RECT* rectImage = nullptr);
+	void Render(const HDC& hdc, const RECT& rectDest, const RECT* rectImage = nullptr);
 	void ScaleImage(float scaleX, float scaleY);
 
 	inline int GetMaxFrame() const

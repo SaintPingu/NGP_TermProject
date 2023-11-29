@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
 
-class Battle
+class BattleMap
 {
 public:
 	CImage _water;
@@ -21,7 +21,7 @@ public:
 	bool isShowHP = false;
 
 public:
-	Battle();
+	BattleMap();
 	void Init();
 	void Render(HDC hdc, StageElement _select_index);
 
@@ -32,10 +32,15 @@ public:
 	}
 };
 
+class Player;
 class SceneBattle : public Scene {
 private:
+	std::unordered_map<BulletType, ObjectImage> bulletImages;
+
 	StageElement stage;
-	Battle battle;
+	BattleMap battleMap;
+	std::unordered_map<int, std::shared_ptr<Player>> players;
+	Battle::BulletsBattleData bulletsData{};
 
 public:
 	virtual void Init() override;
@@ -45,4 +50,6 @@ public:
 
 	virtual void WriteData(void* data) override;
 	virtual void ProcessCommand() override;
+
+	void CreatePlayer(int id, Type type, Type subType);
 };

@@ -114,6 +114,7 @@ enum class Action { Idle = 0, Attack, Hurt, Death };
 enum class Pokemon { Null = 0, Moltres, Articuno, Thunder };
 enum class SubPokemon { Null = 0, Pikachu = 0, Squirtle, Charmander };
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
+enum class BulletType { Empty = 0, Main_Fire, Main_Elec, Main_Water, Sub_Fire, Sub_Elec, Sub_Water, Enemy, Boss, _count };
 enum class Skill { Empty = 0, Identity, Sector, Circle };
 
 enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
@@ -581,3 +582,176 @@ constexpr RECT rectWindow{ 0, 0, 484, 711 };
 
 // 소켓 함수 오류 출력
 void err_display(const char* msg);
+
+
+
+
+
+
+
+
+
+// 2023-11-06 (장재문) : 패킷 내부 데이터 생성 / bitset을 이용해 비트별로 쪼개가며 구현할 예정입니다.. + 기획서에 PlayerCount[n] 으로 되어있는데 여기서 왜 [n]이지..? + 최종 데이터에서는 vector 빼야함 - 보낼 거기 때문이지..
+// 2023-11-08 (장재문) : 패킷 내부 데이터 정리 / 바이트 정리 - 세부 사항 업데이트 중..
+
+
+/* +--------------------------------------------------------------------------
+	LobbyData
+	{
+		* PlayerLobbyData
+			[ 1 ][ 9 ][ 9 ]...[ 9 ]					( 1 + 9 * n ) BYTE
+	}
+   ---------------------------------------------------------------------------+ */
+
+   /// +--------------
+   ///	    LOBBY
+   /// --------------+	
+namespace Lobby
+{
+	/// +--------------------
+	///	    PLAYER - LOBBY
+	/// --------------------+	
+	struct PlayerLobbyData // 9 BYTE
+	{
+		BYTE			Pid_Mov_Dir;	// 1 BYTE - ( 0b [7][6][5][4][3]PlayerID [2]IsMoving [1][0]Dir )
+		Vector2			Pos;			// 4 BYTE + 4 BYTE
+	};
+
+	/// +--------------
+	///	  LOBBY DATA
+	/// --------------+	
+	struct LobbyData        // 1 + ( 9 * n BYTE )
+	{
+		BYTE						 PlayerCnt;		// 2
+		PlayerLobbyData* PlayersData;   // [Player1-LobbyData][Player2-LobbyData] 동적 생성  
+	};
+
+};
+
+
+/* +--------------------------------------------------------------------------
+	BattleData
+	{
+		* PlayerBattleData
+			[ 1 ][ 8 ]								( 1 + 8 ) BYTE
+
+		* EnemyBattleData
+			[ 1 ][ 9 ][ 9 ][ 9 ]...[ 9 ]			( 1 + 9 * n ) BYTE
+
+		* BulletsBattleData
+			[ 1 ][ 17 ][ 17 ][ 17 ]...[ 17 ]		( 1 + 17 * n ) BYTE
+
+		* BossSkillBattleData
+			[ 1 ][ 9 ][ 9 ][ 9 ]...[ 9 ]			( 1 + 9 * n ) BYTE
+	}
+   ---------------------------------------------------------------------------+ */
+
+
+   /// +--------------
+   ///	    BATTLE
+   /// --------------+	
+namespace Battle
+{
+	/// +--------------------
+	///	    PALYER - BATTLE
+	/// --------------------+	
+	struct PlayerBattleData   // 9 BYTE
+	{
+		BYTE		PlayerID;
+		Vector2		Pos;
+	};
+
+	struct EnemyBattleData
+	{
+		/// +--------------
+		///	  ENEMY DATA
+		/// --------------+	
+		struct Data          // 9 BYTE
+		{
+
+			BYTE		TypeDirActPad;    // 1 BYTE - ( 0b [7][6] Type [5][4] Dir [3][2] Action [1][0] Padding)
+			Vector2		Pos;
+		};
+
+		BYTE					EnemyCnt;	// 1  BYTE
+		Data* Enemys;     // [Data][Data][Data]...[Data] - EnemyCnt 개수 만큼 동적 배열 
+	};
+
+	/// +----------------------
+	///	   BOSS SKILL - BATTLE
+	/// ----------------------+	
+	struct BossSkillBattleData
+	{
+		BYTE					EffectCnt;  // 1  BYTE
+		//		Effect*					Effects;	// [Effect][Effect][Effect]...[Effect] - EffectCnt 개수 만큼 동적 배열 
+	};
+
+	/// +--------------
+	///	  BULLET DATA
+	/// --------------+	
+	struct BulletsBattleData
+	{
+		/// +--------------------
+		///	    BULLET - BATTLE
+		/// --------------------+	
+		struct Data	  // 17 BYTE
+		{
+			BYTE		bulletType;
+			Vector2		Pos;
+			Vector2		Dir;
+		};
+
+		BYTE				    BulletCnt;		// 1  BYTE
+		Data* BulletsData;	// [Data][Data]...[Data] - BulletCnt 개수 만큼 동적 배열 
+	};
+
+
+	/// +--------------
+	///	  BATTLE DATA
+	/// --------------+	
+	const UINT MaxBattlePlayerCnt = 2;
+	struct BattleData
+	{
+		PlayerBattleData		PlayerBattleData[MaxBattlePlayerCnt];
+		EnemyBattleData			EnemyData;
+		BulletsBattleData		BulletData;
+		BossSkillBattleData		BossEffectData;
+	};
+};
+
+
+typedef std::vector<BYTE> PacketBuffer;
+//using PacketBuffer = std::vector<BYTE>;
+using Packet = std::vector<BYTE>;
+
+/// +--------------
+///	    LOBBY
+/// --------------+	
+struct LobbyPacket
+{
+	BYTE				DataLen;
+	ServerLobbyCmd		Command;
+	Lobby::LobbyData	LobbyData;
+};
+
+
+/// +--------------
+///	    STAGE
+/// --------------+	
+struct StagePacket
+{
+	BYTE				DataLen;
+	ServerStageCmd		Command;
+};
+
+
+/// +--------------
+///	    BATTLE
+/// --------------+	
+struct BattlePacket
+{
+	int32				DataLen;
+	BYTE				CmdCnt;
+	ServerBattleCmd* Command;		// [ServerBattleCmd][ServerBattleCmd]...[ServerBattleCmd]
+	Battle::BattleData	BattleData;
+};

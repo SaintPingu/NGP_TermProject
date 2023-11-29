@@ -20,6 +20,7 @@
 #include <fmod.hpp>
 #include <algorithm>
 #include <functional>
+#include <bitset>
 
 #include <string>
 #include <unordered_map>

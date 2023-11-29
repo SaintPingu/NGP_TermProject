@@ -190,7 +190,6 @@
     <ClInclude Include="ClientMgr.h" />
     <ClInclude Include="conmanip.h" />
     <ClInclude Include="ConsoleLog.h" />
-    <ClInclude Include="Data.h" />
     <ClInclude Include="DataBase.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="Enemy.h" />
@@ -200,7 +199,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PacketNetwork.h" />
-    <ClInclude Include="PacketStruct.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneMgr.h" />

@@ -108,9 +108,17 @@ void ServerFramework::Logic()
 	std::cout << "\t-> Server Logic 구동 중 ... [P : 종료]\n";
 	while (executeFramework)
 	{
+		static int cnt{};
+		std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
+		if (cnt >= 60) {
+			cnt = 0;
+		}
+
 		Event();
 		Update();
-		SendPakcet();
+		if (cnt & 1) {
+			SendPakcet();
+		}
 	}
 	std::cout << "\t-> Server Logic Exit\n";
 
@@ -135,12 +143,6 @@ TResult ServerFramework::Event()
 TResult ServerFramework::Update()
 {
 	Timer::Inst()->Tick(60.f);
-
-	static int cnt{};
-	std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
-	if (cnt >= 30) {
-		cnt = 0;
-	}
 
 	CLIENT_MGR->SetPacketBuffer();
 	CLIENT_MGR->ProcessCommand();
