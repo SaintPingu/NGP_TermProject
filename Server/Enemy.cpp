@@ -89,16 +89,6 @@ bool Enemy::Hit(float damage)
 	return false;
 }
 
-
-
-
-
-
-
-
-
-
-
 void EnemyController::Pop(size_t& index)
 {
 	//effects->CreateExplosionEffect(enemies.at(index)->GetPosCenter(), enemies.at(index)->GetType());

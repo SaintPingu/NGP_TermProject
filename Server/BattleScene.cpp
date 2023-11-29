@@ -3,9 +3,9 @@
 #include "DataBase.h"
 
 
-
 void BattleScene::Init()
 {
+
 }
 
 void BattleScene::Update()
@@ -36,22 +36,22 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		/// ----------------------------------+	
 	case ClientBattleCmd::MoveLeftTap:
 	{
-		player->SetDir(Dir::Left);
+		player->SetDirection(Dir::Left);
 	}
 		break;
 	case ClientBattleCmd::MoveRightTap:
 	{
-		player->SetDir(Dir::Right);
+		player->SetDirection(Dir::Right);
 	}
 		break;
 	case ClientBattleCmd::MoveUpTap:
 	{
-		player->SetDir(Dir::Up);
+		player->SetDirection(Dir::Up);
 	}
 		break;
 	case ClientBattleCmd::MoveDownTap:
 	{
-		player->SetDir(Dir::Down);
+		player->SetDirection(Dir::Down);
 	}
 		break;
 		
@@ -63,7 +63,8 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 	case ClientBattleCmd::MoveUpAway:
 	case ClientBattleCmd::MoveDownAway:
 	{
-		player->Stop();
+		player->StopMove();
+
 	}
 		break;
 
@@ -72,7 +73,7 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		/// ----------------------------------+	
 	case ClientBattleCmd::Stop:
 	{
-		player->Stop();
+		player->StopMove();
 	}
 		break;
 
@@ -81,34 +82,49 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		///				S K I L L 
 		/// ----------------------------------+	
 	case ClientBattleCmd::SkillQ:
-
+		Skill_Q();
 		break;
 	case ClientBattleCmd::SkillW:
-
+		Skill_W();
 		break;
 	case ClientBattleCmd::SkillE:
-
+		Skill_E();
 		break;
 	}
 }
 
 void BattleScene::AddPlayer(int clientID)
 {
-	 players[clientID] = std::make_shared<BattlePlayer>(); 
+	 players[clientID] = std::make_shared<Player>(); 
 
 }
 
 void BattleScene::UpdatePlayer()
 {
 	for (auto& [clientID, player] : players) {
-		if(player->IsMoving())
+		if(player->IsMove())
 			player->Move();
 	}
 }
 
-void BattleScene::UpdateEnemy()
+void BattleScene::Skill_Q()
 {
 
+}
+
+void BattleScene::Skill_W()
+{
+
+}
+
+void BattleScene::Skill_E()
+{
+
+}
+
+void BattleScene::UpdateEnemy()
+{
+	
 }
 
 void BattleScene::UpdateBoss()
@@ -123,82 +139,6 @@ void BattleScene::UpdatePlayerSkill()
 
 void BattleScene::UpdateBossSkill()
 {
-
-}
-
-
-
-void BattlePlayer::Move()
-{
-	pos.x += DeltaTime() * speed * dirVector.x;
-	pos.y += DeltaTime() * speed * dirVector.y;
-}
-
-void BattlePlayer::SepSpeed(float speed)
-{
-}
-
-void BattlePlayer::Stop()
-{
-	isMoving = false;
-}
-
-void BattlePlayer::SetDir(Dir d)
-{
-	isMoving  = true;
-	curDir    = d;
-
-	switch (curDir)
-	{
-	case Dir::Left:
-	{
-		dirVector.x = -1;
-		dirVector.y = 0;
-	}
-		break;
-	case Dir::Right:
-	{
-		dirVector.x = 1;
-		dirVector.y = 0;
-	}
-		break;
-	case Dir::Up:
-	{
-		dirVector.x = 0;
-		dirVector.y = -1;
-	}
-		break;
-	case Dir::Down:
-	{
-		dirVector.x = 0;
-		dirVector.y = 1;
-	}
-		break;
-	case Dir::LD:
-	{
-		dirVector.x = -1;
-		dirVector.y = 1;
-	}
-		break;
-	case Dir::LU:
-	{
-		dirVector.x = -1;
-		dirVector.y = -1;
-	}
-		break;
-	case Dir::RD:
-	{
-		dirVector.x = 1;
-		dirVector.y = 1;
-	}
-		break;
-	case Dir::RU:
-	{
-		dirVector.x = 1;
-		dirVector.y = -1;
-	}
-		break;
-	}
 
 }
 

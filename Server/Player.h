@@ -55,13 +55,14 @@ private:
 		playerData.crntShotDelay = playerData.shotDelay;
 	}
 public:
+	Player() {};
 	Player(Type type, Type subType);
 	~Player();
 	void Init();
 
 	void SetDirection(Dir dir);
-	void SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC& timerProc) override;
-	void Move(const HWND& hWnd, int timerID) override;
+	void SetMove() override;
+	void Move() override;
 	void Stop(Dir dir) override;
 	void CheckCollideWindow(Vector2& pos) const;
 

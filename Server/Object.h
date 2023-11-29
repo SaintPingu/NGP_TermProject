@@ -55,8 +55,8 @@ private:
 	virtual void SetPosDest() abstract;
 	bool isMove = false;
 public:
-	virtual void SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC& timerProc) abstract;
-	virtual void Move(const HWND& hWnd, int timerID) abstract;
+	virtual void SetMove() abstract;
+	virtual void Move() abstract;
 	virtual void Stop(Dir dir) abstract;
 
 	inline void StartMove()

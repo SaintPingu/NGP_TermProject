@@ -28,6 +28,9 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{2b6ccd62-469e-482f-b823-412ccb78a034}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Battle">
+      <UniqueIdentifier>{041d131f-07a5-4e0f-8341-488f09f45b84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,10 +96,10 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="BattleScene.cpp">
+    <ClCompile Include="StageScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="StageScene.cpp">
+    <ClCompile Include="BattleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

@@ -183,7 +183,7 @@ void Player::SetDirection(Dir inputDir)
 	StopMove();
 }
 
-void Player::SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC& timerProc)
+void Player::SetMove()
 {
 	if (playerData.isDeath == true)
 	{
@@ -198,7 +198,6 @@ void Player::SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC&
 
 	if (IsMove() == false && alpha == 0)
 	{
-		SetTimer(hWnd, timerID, elpase, timerProc);
 	}
 	else if (alpha > 0.5f)
 	{
@@ -207,7 +206,7 @@ void Player::SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC&
 	StartMove();
 }
 
-void Player::Move(const HWND& hWnd, int timerID)
+void Player::Move()
 {
 	Vector2 posCenter = GetPosCenter();
 	Vector2 posNext = Vector2::Lerp(posCenter, posDest, alpha);
@@ -231,7 +230,6 @@ void Player::Move(const HWND& hWnd, int timerID)
 			vectorMove = { 0.0f, };
 			StopMove();
 			alpha = 0;
-			KillTimer(hWnd, timerID);
 		}
 	}
 }
