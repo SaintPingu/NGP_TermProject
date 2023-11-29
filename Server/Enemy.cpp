@@ -89,16 +89,6 @@ bool Enemy::Hit(float damage)
 	return false;
 }
 
-
-
-
-
-
-
-
-
-
-
 void EnemyController::Pop(size_t& index)
 {
 	//effects->CreateExplosionEffect(enemies.at(index)->GetPosCenter(), enemies.at(index)->GetType());
@@ -247,8 +237,8 @@ void EnemyController::CreateCheckRange()
 		const float xPos = (rand() % (WINDOWSIZE_X - 100)) + 50;
 		const float yPos = -(rand() % 100);
 
-		/*Range* enemy = new Range(imgRange, { xPos, yPos }, rangeData);
-		enemies.emplace_back(enemy);*/
+		Range* enemy = new Range(imgRange, { xPos, yPos }, rangeData);
+		enemies.emplace_back(enemy);
 	}
 }
 
@@ -312,4 +302,174 @@ void EnemyController::MoveBullets()
 void EnemyController::DestroyCollideBullet(const RECT& rect)
 {
 	bullets->DestroyCollideBullet(rect);
+}
+
+#define ELAPSE_BATTLE_INVALIDATE 10
+
+void Melee::SetPosDest()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	Player* player = nullptr; //player 배틀씬의 플레이어 연결해야함.
+	if (!player) {
+		return;
+	}
+	const Vector2 posCenter = GetPosCenter();
+
+	Vector2 distanceToplayer1 = posCenter - player[0].GetPosCenter();
+	Vector2 distanceToplayer2 = posCenter - player[1].GetPosCenter();
+
+	Vector2* nearVector;
+	if (distanceToplayer1.x * distanceToplayer1.x + distanceToplayer1.y * distanceToplayer1.y 
+		< distanceToplayer2.x * distanceToplayer2.x + distanceToplayer2.y * distanceToplayer2.y) {
+		nearVector  = &distanceToplayer1;
+	}
+	else {
+		nearVector = &distanceToplayer2;
+	}
+
+	const Vector2 vectorToPlayer = *nearVector;
+
+	const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
+
+	unitVector = vectorToPlayer / radius;
+
+	posDest = posCenter - (unitVector * data.speed);
+}
+
+bool Melee::CheckCollidePlayer(int clientID)
+{
+	Player* player = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
+
+	if (!player) {
+		return false;
+	}
+
+	const RECT rectBody = GetRectBody();
+
+	if (player->IsCollide(rectBody) == true)
+	{
+		StopMove();
+		//SetAction(Action::Attack, data.frameNum_Atk);
+		ResetAttackDelay();
+
+		return true;
+	}
+
+	return false;
+}
+
+void Melee::Move()
+{
+	Player* battlePlayers = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
+
+	if (!battlePlayers) {
+		return;
+	}
+
+	if (IsMove() == false)
+	{
+		return;
+	}
+	
+	if (CheckCollidePlayer(0) == true)
+	{
+		battlePlayers[0].Hit(data.damage, GetType());
+		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
+		return;
+	}
+	else if (CheckCollidePlayer(1) == true) {
+		battlePlayers[1].Hit(data.damage, GetType());
+		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
+		return;
+	}
+
+	SetPosDest();
+	SetPos(posDest);
+}
+
+void Melee::CheckAttackDelay()
+{
+	if (IsMove() == false)
+	{
+		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		if (IsClearAttackDelay() == true)
+		{
+			StartMove();
+		}
+	}
+}
+
+void Range::SetPosDest()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	unitVector = Vector2::Down();
+	posDest = Vector2::GetDest(GetPosCenter(), unitVector, data.speed);
+	if (posDest.y > data.maxYPos)
+	{
+		StopMove();
+	}
+
+}
+
+void Range::Fire()
+{
+	//SetAction(Action::Attack, data.frameNum_Atk);
+
+	EnemyController* enemies = nullptr; // EnemyController 연결해줘야함.
+
+	if (!enemies) {
+		return;
+	}
+
+	RECT rectBody = GetRectBody();
+	POINT bulletPos = { 0, };
+	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
+	bulletPos.y = rectBody.bottom;
+
+	BulletData bulletData;
+	bulletData.bulletType = GetType();
+	bulletData.damage = data.damage;
+	bulletData.speed = data.bulletSpeed;
+
+	Vector2 unitVector = Vector2::Down();
+	int randDegree = (rand() % 10) - 5;
+
+	unitVector = Rotate(unitVector, randDegree);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
+	unitVector = Rotate(unitVector, 20);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
+	unitVector = Rotate(unitVector, -40);
+	enemies->CreateBullet(bulletPos, bulletData, unitVector);
+}
+
+void Range::Move()
+{
+	if (IsMove() == false)
+	{
+		return;
+	}
+
+	SetPosDest();
+	SetPos(posDest);
+}
+
+void Range::CheckAttackDelay()
+{
+	if (IsMove() == false)
+	{
+		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		if (IsClearAttackDelay() == true)
+		{
+			Fire();
+			ResetAttackDelay();
+		}
+	}
 }

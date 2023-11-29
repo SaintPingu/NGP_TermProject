@@ -1,30 +1,32 @@
 #pragma once
+#include "DataBase.h"
 #include "object.h"
 
 //struct BulletData;
 //class PlayerBullet;
 //class SkillManager;
 
-typedef struct PlayerData {
-	Type type = Type::Empty;
-	Type subType = Type::Empty;
+//typedef struct PlayerData {
+//	Type type = Type::Empty;
+//	Type subType = Type::Empty;
+//
+//	float maxhp = 0;
+//	float maxmp = 0;
+//	float hp = 0;
+//	float mp = 0;
+//	float speed = 0;
+//
+//	float bulletSpeed = 0;
+//	float shotDelay = 0;
+//	float crntShotDelay = 0;
+//	float damage = 0;
+//	float subDamage = 0;
+//	float damage_Q = 0; // per sec
+//
+//	bool isDeath = false;
+//	bool isInvincible = false;
+//}PlayerData;
 
-	float maxhp = 0;
-	float maxmp = 0;
-	float hp = 0;
-	float mp = 0;
-	float speed = 0;
-
-	float bulletSpeed = 0;
-	float shotDelay = 0;
-	float crntShotDelay = 0;
-	float damage = 0;
-	float subDamage = 0;
-	float damage_Q = 0; // per sec
-
-	bool isDeath = false;
-	bool isInvincible = false;
-}PlayerData;
 
 class Player : public GameObject, public IControllable {
 private:
@@ -53,13 +55,14 @@ private:
 		playerData.crntShotDelay = playerData.shotDelay;
 	}
 public:
+	Player() {};
 	Player(Type type, Type subType);
 	~Player();
 	void Init();
 
 	void SetDirection(Dir dir);
-	void SetMove(const HWND& hWnd, int timerID, int elpase, const TIMERPROC& timerProc) override;
-	void Move(const HWND& hWnd, int timerID) override;
+	void SetMove() override;
+	void Move() override;
 	void Stop(Dir dir) override;
 	void CheckCollideWindow(Vector2& pos) const;
 

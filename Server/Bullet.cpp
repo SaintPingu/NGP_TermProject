@@ -13,17 +13,17 @@ BulletController::Bullet::Bullet(const POINT& center, const POINT& bulletSize, c
 {
 	this->data = data;
 
-	rectBody.left = (float)center.x - ((float)bulletSize.x / 2);
-	rectBody.right = rectBody.left + bulletSize.x;
-	rectBody.top = (float)center.y - ((float)bulletSize.y / 2);
+	rectBody.left   = (float)center.x - ((float)bulletSize.x / 2);
+	rectBody.right  = rectBody.left + bulletSize.x;
+	rectBody.top    = (float)center.y - ((float)bulletSize.y / 2);
 	rectBody.bottom = rectBody.top + bulletSize.y;
-	rectRotBody = rectBody;
+	rectRotBody     = rectBody;
 }
 BulletController::Bullet::Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data, const Vector2& unitVector, bool isRotateImg, bool isSkillBullet) : Bullet(center, bulletSize, data)
 {
-	this->dir = Dir::Empty;
-	this->unitVector = unitVector;
-	this->isRotateImg = isRotateImg;
+	this->dir           = Dir::Empty;
+	this->unitVector    = unitVector;
+	this->isRotateImg   = isRotateImg;
 	this->isSkillBullet = isSkillBullet;
 
 	Vector2 vPoints[4];
@@ -75,13 +75,13 @@ bool BulletController::Bullet::Move()
 		break;
 	}
 
-	rectBody.left += moveX;
-	rectBody.right += moveX;
-	rectBody.top += moveY;
-	rectBody.bottom += moveY;
-	rectRotBody.left += moveX;
-	rectRotBody.right += moveX;
-	rectRotBody.top += moveY;
+	rectBody.left      += moveX;
+	rectBody.right     += moveX;
+	rectBody.top       += moveY;
+	rectBody.bottom    += moveY;
+	rectRotBody.left   += moveX;
+	rectRotBody.right  += moveX;
+	rectRotBody.top    += moveY;
 	rectRotBody.bottom += moveY;
 
 	switch (dir)
@@ -144,16 +144,6 @@ POINT BulletController::Bullet::GetPos() const
 
 	return { (LONG)rectBody.left + (width / 2), (LONG)rectBody.top + (height / 2) };
 }
-
-
-
-
-
-
-
-
-
-
 
 BulletController::BulletController(const ObjectImage& bulletImage)
 {

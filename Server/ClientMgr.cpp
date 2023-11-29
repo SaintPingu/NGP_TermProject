@@ -4,6 +4,9 @@
 #include "ServerFramework.h"
 #include "SceneMgr.h"
 #include "LobbyScene.h"
+#include "StageScene.h"
+#include "BattleScene.h"
+
 
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
 constexpr int invalidID = -1;
@@ -195,6 +198,12 @@ TResult ClientMgr::ProcessCommand()
 		switch (SCENE_MGR->GetClientLocation(clientID)) {
 		case SceneType::Lobby:
 			SCENE_MGR->Lobby()->ProcessCommand(clientID, cmd, &data);	// data is nullptr in lobby
+			break;
+		case SceneType::Stage:
+			SCENE_MGR->Stage()->ProcessCommand(clientID, cmd, &data);
+			break;
+		case SceneType::Battle:
+			SCENE_MGR->Battle()->ProcessCommand(clientID, cmd, &data);
 			break;
 		default:
 			assert(0);
