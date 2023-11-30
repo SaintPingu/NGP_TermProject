@@ -114,8 +114,21 @@ void Player::Render(HDC hdc)
 
 void Player::RenderSkill(HDC hdc)
 {
+
 }
 
 void Player::Animate(const HWND& hWnd)
 {
+
+}
+
+
+void Player::ActiveSkill(Skill skill)
+{
+	if (isDeath == true)
+	{
+		return;
+	}
+
+	//skillManager->ActiveSkill(skill);
 }

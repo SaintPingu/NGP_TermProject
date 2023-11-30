@@ -22,6 +22,9 @@ private:
 
 	bool isDeath;
 
+	float hp = 0;
+	float mp = 0;
+
 public:
 	Player(Type type, Type subType);
 	~Player();
@@ -31,4 +34,24 @@ public:
 	void Animate(const HWND& hWnd);
 
 	void ActiveSkill(Skill skill);
+
+	
+	void SetDeath(bool val) { isDeath = val; }
+	bool IsDeath() { return isDeath; }
+	Type GetType() { return type; }
+	Type GetSubType() { return subType; }
+
+
+	float GetHP() {
+		return hp;
+	}
+	float GetMaxHP() {
+		return hp;
+	}
+	float GetMP() {
+		return mp;
+	}
+	float GetMaxMP() {
+		return mp;
+	}
 };

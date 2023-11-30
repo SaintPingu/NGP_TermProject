@@ -2,6 +2,8 @@
 #include "SceneBattle.h"
 #include "InputManager.h"
 #include "Player.h"
+#include "Framework.h"
+#include "SceneManager.h"
 
 
 BattleMap::BattleMap()
@@ -111,6 +113,10 @@ void SceneBattle::RenderBullets(HDC hdc)
 		bulletImages[bullet.type].RenderRotation(hdc, vPoints);
 	}
 
+}
+
+void SceneBattle::RenderEffects(HDC hdc)
+{
 }
 
 void SceneBattle::Init()
@@ -317,6 +323,55 @@ void SceneBattle::WriteData(void* data)
 
 void SceneBattle::ProcessCommand()
 {
+	BYTE cmd;
+	PacketBuffer buffer;
+	PacketLoader packetLoader = framework->GetPacketLoader();
+
+	std::shared_ptr<SceneBattle> scene;
+	
+	// 배틀은 명령이 여러개이므로 반복필요
+	while (packetLoader.PopCommand(cmd, buffer, SceneType::Battle)) {
+		switch (cmd)
+		{
+		case (BYTE)ServerBattleCmd::Loss:
+			//std::unordered_map<int, std::shared_ptr<Player>> players;
+			//1.모든 플레이어 죽음 처리 
+			for (auto& [id, player] : players) {
+				player->SetDeath(true);
+				//player->hp = 0;
+			}
+			//2. 클라 플레이어만 죽음 처리
+			players[framework->client_ID]->SetDeath(true);
+			// 둘중 뭐로?
+
+
+			/*soundManager->StopEffectSound();
+			soundManager->PlayEffectSound(EffectSound::Loss);
+			soundManager->StopBGMSound();*/
+
+			break;
+		case (BYTE)ServerBattleCmd::Win:
+			//bossData.isDeath = true; 
+			for (auto& [id, player] : players) {
+				//player->InvincibleMode(); // 서버에서 처리를 하는건가?
+			}
+			//soundManager->StopEffectSound();
+			//soundManager->StopBossSound();
+			break;
+		case (BYTE)ServerBattleCmd::AcceptSkillQ:
+			players[framework->client_ID]->ActiveSkill(Skill::Identity);
+			break;
+		case (BYTE)ServerBattleCmd::Hit:
+			break;
+		case (BYTE)ServerBattleCmd::UpdateMP:
+			break;
+		case (BYTE)ServerBattleCmd::CreateEffect:
+			break;
+		default:
+			break;
+		}
+	}
+
 }
 
 void SceneBattle::CreatePlayer(int id, Type type, Type subType)
