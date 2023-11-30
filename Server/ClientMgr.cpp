@@ -96,17 +96,13 @@ bool ClientMgr::SendPacket()
 		if (client == nullptr) {
 			continue;
 		}
-
-		// 테스트용 None 커맨드 전송
-		BYTE cmd = BYTE(ServerLobbyCmd::None);
-		client->GetCmdList()->CommandPush(cmd, nullptr, 0);
 		
 		DataType dataType = GetDataType(client);
 		packetGenerator.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
 		client->Send();
 	}
 
-	//packetGenerator.DeleteData();
+	packetGenerator.DeleteData();
 
 	return true;
 }

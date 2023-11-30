@@ -30,6 +30,7 @@ void Framework::UpdateWithServer()
 	AnimateScene();
 }
 
+// 네트워크 없이 단독 실행
 void Framework::UpdateSingle()
 {
 	GetInput();
@@ -39,8 +40,8 @@ void Framework::UpdateSingle()
 
 void Framework::Update()
 {
-	UpdateSingle();
-	//UpdateFunc();
+	//UpdateSingle(); 
+	UpdateFunc();
 	
 }
 

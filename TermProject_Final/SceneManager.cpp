@@ -9,7 +9,7 @@
 
 void SceneManager::Init(HWND hWnd)
 {
-	InitScene(SceneType::Battle);
+	InitScene(SceneType::Intro);
 	loading = std::make_shared<Loading>();
 }
 
@@ -37,7 +37,7 @@ void SceneManager::FinishRender(HWND hWnd, PAINTSTRUCT& ps, HDC& hdc, HDC& memDC
 void SceneManager::InitScene(SceneType scene)
 {
 	if (crntSceneType == SceneType::Intro && scene != SceneType::Intro) {
-		//framework->ConnectToServer();
+		framework->ConnectToServer();
 	}
 
 	switch (scene) {

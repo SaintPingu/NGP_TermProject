@@ -21,6 +21,134 @@
 //	EnemyBullet	enemyBullets;
 //};
 
+void PacketGenerator::GenerateLobbyPacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList)
+{
+	if (cmdList.empty()) {
+		// 보낸 커맨드가 없을 경우 None 전송
+		BYTE cmd = BYTE(ServerLobbyCmd::None);
+		cmdList.push_back(cmd);
+	}
+	// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
+	int len = cmdList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
+
+	// Datalen
+	BYTE lenBytes[sizeof(int)];
+	std::memcpy(lenBytes, &len, sizeof(int));
+	for (int i = 0; i < sizeof(int); ++i) {
+		buffer.push_back(lenBytes[i]);
+	}
+
+	// ServerLobbyCmd
+	for (int i = 0; i < cmdList.size(); ++i) {
+		buffer.push_back(cmdList[i]);
+	}
+
+	/* LobbyData */
+	// PlayerCnt
+	buffer.push_back(lobbyData.PlayerCnt);
+
+	// PlayerLobbyData
+	for (int i = 0; i < lobbyData.PlayerCnt; ++i) {
+		constexpr int datalen = sizeof(Lobby::PlayerLobbyData);
+		BYTE bytes[datalen];
+		std::memcpy(bytes, &lobbyData.PlayersData[i], datalen);
+
+		for (int j = 0; j < datalen; ++j) {
+			buffer.push_back(bytes[j]);
+		}
+	}
+}
+
+void PacketGenerator::GenerateStagePacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList)
+{
+	BYTE len = cmdList.size();
+	buffer.push_back(len); // Datalen
+
+	for (int i = 0; i < cmdList.size(); ++i) {
+		buffer.push_back(cmdList[i]); //ServerStageCmd
+	}
+}
+
+// battle씬은 int형 길이로 보낸다.
+// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
+// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
+int PacketGenerator::GetBattlePacketSize(size_t cmdListSize)
+{
+	return
+		cmdListSize
+		+ sizeof(Battle::PlayerBattleData) * Battle::MaxBattlePlayerCnt;
+		+ sizeof(battleData.EnemyData.EnemyCnt)
+		+ (sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt)
+		+ sizeof(battleData.BulletData.BulletCnt)
+		+ (sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt)
+		+ sizeof(battleData.BossEffectData.EffectCnt)
+		+ (sizeof(Battle::BossSkillBattleData::Data) * battleData.BossEffectData.EffectCnt);
+}
+void PacketGenerator::GenerateBattlePacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList)
+{
+	int len = GetBattlePacketSize(cmdList.size());
+
+	//데이터 길이
+	buffer.insert(buffer.begin(), sizeof(int), len);
+	//void* vlen = &len;
+	//for (int i = 0; i < sizeof(int); ++i) {
+	//	buffer.push_back(((BYTE*)vlen)[i]); // Datalen	
+	//}
+
+	//커맨드리스트
+	buffer.push_back(cmdList.size()); // cmdCnt
+	for (int i = 0; i < cmdList.size(); ++i) {
+		buffer.push_back(cmdList[i]); //ServerBattleCmd
+	}
+
+	{//PlayerBattleData[2] 
+		BYTE bytes[sizeof(Battle::PlayerBattleData) * 2];
+		std::memcpy(bytes, battleData.PlayerBattleData, sizeof(Battle::PlayerBattleData) * 2);
+		for (int i = 0; i < sizeof(Battle::PlayerBattleData) * 2; ++i) {
+			buffer.push_back(bytes[i]);
+		}
+	}
+
+	{//Enemy개수 + (Battle::EnemyData * Enemy개수)
+		buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
+		BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
+		for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
+
+			memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData::Data));
+
+			for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
+				buffer.push_back(bytes[i]);
+			}
+		}
+	}
+
+	{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
+		buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
+		BYTE bytes[sizeof(Battle::BulletsBattleData::Data)];
+		for (int i = 0; i < int(battleData.BulletData.BulletCnt); ++i) {
+
+			memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData::Data));
+
+			for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
+				buffer.push_back(bytes[i]);
+			}
+		}
+	}
+
+	{//Effect개수 + (Effect * Effect개수)  // Effect 구현시 주석 해제
+		buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
+		BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
+		for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
+
+			memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData::Data));
+
+			for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
+				buffer.push_back(bytes[i]);
+			}
+		}
+	}
+}
+
 void PacketGenerator::GenerateData()
 { // GenerateData
 	{// 로비 생성
@@ -59,118 +187,25 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 	buffer.clear();
 	buffer.reserve(100);
 
-	if (type == DataType::Lobby) {
-		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
-		int len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
-
-		// Datalen
-		BYTE lenBytes[sizeof(int)];
-		std::memcpy(lenBytes, &len, sizeof(int));
-		for (int i = 0; i < sizeof(int); ++i) {
-			buffer.push_back(lenBytes[i]);
-		}
-
-		// ServerLobbyCmd
-		for (int i = 0;i < pCommandList.size();++i) {
-			buffer.push_back(pCommandList[i]);
-		}
-
-		/* LobbyData */
-		// PlayerCnt
-		buffer.push_back(lobbyData.PlayerCnt);
-
-		// PlayerLobbyData
-		for (int i = 0; i < lobbyData.PlayerCnt; ++i) {
-			constexpr int datalen = sizeof(Lobby::PlayerLobbyData);
-			BYTE bytes[datalen];
-			std::memcpy(bytes, &lobbyData.PlayersData[i], datalen);
-
-			for (int j = 0; j < datalen; ++j) {
-				buffer.push_back(bytes[j]);
-			}
-		}
+	switch (type) {
+	case DataType::Lobby:
+		GenerateLobbyPacket(buffer, pCommandList);
+		break;
+	case DataType::Stage:
+		GenerateStagePacket(buffer, pCommandList);
+		break;
+	case DataType::Battle:
+		GenerateBattlePacket(buffer, pCommandList);
+		break;
+	default:
+		assert(0);
+		break;
 	}
-	else if (type == DataType::Stage) {
-		BYTE len = pCommandList.size();
-		buffer.push_back(len); // Datalen
+}
 
-		for (int i = 0; i < pCommandList.size(); ++i) {
-			buffer.push_back(pCommandList[i]); //ServerStageCmd
-		}
-
-	}
-	else if (type == DataType::Battle) {
-		// battle씬은 int형 길이로 보낸다.
-		// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
-		// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
-		int len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
-			sizeof(battleData.PlayerBattleData[1]) +
-			sizeof(battleData.EnemyData.EnemyCnt) +
-			(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
-			sizeof(battleData.BulletData.BulletCnt) +
-			(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
-			sizeof(battleData.BossEffectData.EffectCnt) +
-			(sizeof(int/*Effect*/) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
-
-		void* vlen = &len;
-		//데이터 길이
-		for (int i = 0; i < sizeof(int); ++i) {
-			buffer.push_back(((BYTE*)vlen)[i]); // Datalen	
-		}
-
-		//커맨드리스트
-		buffer.push_back(pCommandList.size()); // cmdCnt
-		for (int i = 0; i < pCommandList.size(); ++i) {
-			buffer.push_back(pCommandList[i]); //ServerBattleCmd
-		}
-		
-		{//PlayerBattleData[2] 
-			BYTE bytes[sizeof(Battle::PlayerBattleData) * 2];
-			std::memcpy(bytes, battleData.PlayerBattleData, sizeof(Battle::PlayerBattleData) * 2);
-			for (int i = 0; i < sizeof(Battle::PlayerBattleData) * 2; ++i) {
-				buffer.push_back(bytes[i]);
-			}
-		}
-
-		{//Enemy개수 + (Battle::EnemyData * Enemy개수)
-			buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
-			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
-			for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
-
-				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData::Data));
-
-				for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
-					buffer.push_back(bytes[i]);
-				}
-			}
-		}
-
-		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
-			buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
-			BYTE bytes[sizeof(Battle::BulletsBattleData::Data)];
-			for (int i = 0; i < int(battleData.BulletData.BulletCnt); ++i) {
-
-				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData::Data));
-
-				for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
-					buffer.push_back(bytes[i]);
-				}
-			}
-		}
-
-		{//Effect개수 + (Effect * Effect개수)  // Effect 구현시 주석 해제
-			buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
-			BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
-			for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
-
-				memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData::Data));
-
-				for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
-					buffer.push_back(bytes[i]);
-				}
-			}
-		}
-	}
+void PacketGenerator::DeleteData()
+{
+	delete[] lobbyData.PlayersData;
 }
 
 void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)

@@ -3,6 +3,12 @@ enum class DataType : BYTE { Lobby = 0, Stage, Battle };
 
 class PacketGenerator
 {
+
+	void GenerateLobbyPacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList);
+	void GenerateStagePacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList);
+	int GetBattlePacketSize(size_t cmdListSize);
+	void GenerateBattlePacket(PacketBuffer& buffer, std::vector<BYTE>& cmdList);
+
 public:
 	PacketGenerator() {}
 	~PacketGenerator() {}
@@ -13,6 +19,9 @@ public:
 	
 	void GenerateData();
 	void GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type);
+
+	void DeleteData();
+
 };
 
 class PacketLoader
