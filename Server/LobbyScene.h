@@ -3,14 +3,14 @@
 
 class LobbyPlayer {
 public:
+	POINT befpos{};
 	POINT pos = { 60, 232 };
-	POINT aboutMapPos = { pos.x, pos.y };
-	RECT rect = { 0, };
 
 	bool isMoving;
 
 	Dir dir{ Dir::Down };
 
+	RECT GetRect();
 	void Move();
 };
 
@@ -26,4 +26,6 @@ public:
 	const std::unordered_map<int, std::shared_ptr<LobbyPlayer>>& GetPlayers() const { return players; }
 
 	void AddPlayer(int clientID) { players[clientID] = std::make_shared<LobbyPlayer>(); }
+
+	bool CheckCollision(RECT playerRect);
 };

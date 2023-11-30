@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "LobbyScene.h"
+#include "DataBase.h"
 
-
+#define TPLAYER_IMAGESIZE_X 32
+#define TPLAYER_IMAGESIZE_Y 32
 
 void LobbyPlayer::Move()
 {
@@ -37,7 +39,16 @@ void LobbyPlayer::Move()
 	}
 }
 
-
+RECT LobbyPlayer::GetRect()
+{
+	RECT rect{};
+	rect.left = pos.x - TPLAYER_IMAGESIZE_X / 2;
+	rect.right = rect.left + TPLAYER_IMAGESIZE_X;
+	rect.top = pos.y - TPLAYER_IMAGESIZE_Y / 2;
+	rect.bottom = rect.top + TPLAYER_IMAGESIZE_Y;
+	
+	return rect;
+}
 
 
 
@@ -83,11 +94,29 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 	}
 }
 
+bool LobbyScene::CheckCollision(RECT playerRect)
+{
+	RECT temp;
+	for (int i = 0; i < 18; ++i) {
+		RECT rect = DATABASE->buildingLocations[i];
+		if (IntersectRect(&temp, &playerRect, &rect))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // 하나의 키 입력으로 지속적으로 플레이어를 움직여야 한다.
 void LobbyScene::Update()
 {
 	for (auto& [clientID, player] : players) {
+		player->befpos = player->pos;
 		player->Move();
+		if (CheckCollision(player->GetRect())) {
+			player->pos = player->befpos;
+		}
 	}
 }
 

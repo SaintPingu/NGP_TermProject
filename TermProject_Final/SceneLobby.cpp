@@ -46,8 +46,6 @@ void SceneLobby::Init()
 
 	rectImage = rectBackground;
 	rectDraw = rectBackground;
-	
-	//lobbyPlayers[0] = LobbyPlayer(Vector2(100, 100), Dir::Down, false);
 }
 
 void SceneLobby::Render(HDC hdc)
