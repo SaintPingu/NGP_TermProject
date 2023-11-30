@@ -35,13 +35,34 @@ public:
 class Player;
 class SceneBattle : public Scene {
 private:
+	struct Eenemy {
+		Type type{};
+		Vector2 pos{};
+		Dir dir{};
+		bool isAction;
+	};
+	struct Bullet {
+		BulletType type{};
+		Vector2 pos{};
+		Vector2 dir{};
+	};
+	struct Effect {
+		EffectType type{};
+		Vector2 pos{};
+	};
+
 	std::unordered_map<BulletType, ObjectImage> bulletImages;
 
 	StageElement stage;
 	BattleMap battleMap;
 	std::unordered_map<int, std::shared_ptr<Player>> players;
-	Battle::BulletsBattleData bulletsData{};
+	std::vector<Bullet> bullets{};
+	std::vector<Eenemy> enemies{};
+	std::vector<Effect> effects{};
 
+	void RenderPlayers(HDC hdc);
+	void RenderBullets(HDC hdc);
+	void RenderEffects(HDC hdc);
 public:
 	virtual void Init() override;
 	virtual void Render(HDC hdc) override;

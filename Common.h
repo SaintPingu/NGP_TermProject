@@ -115,6 +115,7 @@ enum class Pokemon { Null = 0, Moltres, Articuno, Thunder };
 enum class SubPokemon { Null = 0, Pikachu = 0, Squirtle, Charmander };
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
 enum class BulletType { Empty = 0, Main_Fire, Main_Elec, Main_Water, Sub_Fire, Sub_Elec, Sub_Water, Enemy, Boss, _count };
+enum class EffectType { Empty = 0, Explode_Fire, Explode_Water, Explode_Elec, Cloud_Fire, Cloud_Water, Cloud_Elec };
 enum class Skill { Empty = 0, Identity, Sector, Circle };
 
 enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
@@ -682,8 +683,12 @@ namespace Battle
 	/// ----------------------+	
 	struct BossSkillBattleData
 	{
+		struct Data {
+			BYTE	type;
+			Vector2 pos;
+		};
 		BYTE					EffectCnt;  // 1  BYTE
-		//		Effect*					Effects;	// [Effect][Effect][Effect]...[Effect] - EffectCnt 개수 만큼 동적 배열 
+		Data*					Effects;	// [Effect][Effect][Effect]...[Effect] - EffectCnt 개수 만큼 동적 배열 
 	};
 
 	/// +--------------
@@ -720,8 +725,7 @@ namespace Battle
 };
 
 
-typedef std::vector<BYTE> PacketBuffer;
-//using PacketBuffer = std::vector<BYTE>;
+using PacketBuffer = std::vector<BYTE>;
 using Packet = std::vector<BYTE>;
 
 /// +--------------
@@ -755,3 +759,10 @@ struct BattlePacket
 	ServerBattleCmd* Command;		// [ServerBattleCmd][ServerBattleCmd]...[ServerBattleCmd]
 	Battle::BattleData	BattleData;
 };
+
+
+// remove data from begin
+inline void RemoveData(PacketBuffer& buffer, size_t size)
+{
+	buffer.erase(buffer.begin(), buffer.begin() + size);
+}

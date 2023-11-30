@@ -89,6 +89,30 @@ void BattleMap::Render(HDC hdc, StageElement _select_index)
 	}
 }
 
+void SceneBattle::RenderPlayers(HDC hdc)
+{
+	for (auto& [id, player] : players) {
+		player->Render(hdc);
+	}
+}
+
+void SceneBattle::RenderBullets(HDC hdc)
+{
+	for(auto& bullet : bullets) {
+		FRECT rectBody;
+		POINT bulletSize = bulletImages[bullet.type].GetBodySize();
+		rectBody.left = (float)bullet.pos.x - ((float)bulletSize.x / 2);
+		rectBody.right = rectBody.left + bulletSize.x;
+		rectBody.top = (float)bullet.pos.y - ((float)bulletSize.y / 2);
+		rectBody.bottom = rectBody.top + bulletSize.y;
+
+		Vector2 vPoints[4];
+		GetRotationPos(rectBody, bullet.dir, Vector2::Up(), vPoints);
+		bulletImages[bullet.type].RenderRotation(hdc, vPoints);
+	}
+
+}
+
 void SceneBattle::Init()
 {
 	// 맵 초기화
@@ -147,67 +171,13 @@ void SceneBattle::Init()
 
 	// 테스트 플레이어 생성
 	CreatePlayer(0, Type::Elec, Type::Fire);
-
-	// 테스트 총알 생성
-	bulletsData.BulletCnt = 3 + 3 + 2;
-	bulletsData.BulletsData = new Battle::BulletsBattleData::Data[bulletsData.BulletCnt];
-	bulletsData.BulletsData[0].bulletType = (BYTE)BulletType::Main_Elec;
-	bulletsData.BulletsData[0].Pos = Vector2(50, 50);
-	bulletsData.BulletsData[0].Dir = Vector2(.2f, .8f);
-
-	bulletsData.BulletsData[1].bulletType = (BYTE)BulletType::Main_Fire;
-	bulletsData.BulletsData[1].Pos = Vector2(100, 50);
-	bulletsData.BulletsData[1].Dir = Vector2(.6f, .4f);
-
-	bulletsData.BulletsData[2].bulletType = (BYTE)BulletType::Main_Water;
-	bulletsData.BulletsData[2].Pos = Vector2(150, 50);
-	bulletsData.BulletsData[2].Dir = Vector2(-.6f, .4f);
-
-	bulletsData.BulletsData[3].bulletType = (BYTE)BulletType::Sub_Elec;
-	bulletsData.BulletsData[3].Pos = Vector2(50, 100);
-	bulletsData.BulletsData[3].Dir = Vector2(.6f, -.4f);
-
-	bulletsData.BulletsData[4].bulletType = (BYTE)BulletType::Sub_Fire;
-	bulletsData.BulletsData[4].Pos = Vector2(100, 100);
-	bulletsData.BulletsData[4].Dir = Vector2(.9f, .1f);
-
-	bulletsData.BulletsData[5].bulletType = (BYTE)BulletType::Sub_Water;
-	bulletsData.BulletsData[5].Pos = Vector2(150, 100);
-	bulletsData.BulletsData[5].Dir = Vector2(0, 1.f);
-
-	bulletsData.BulletsData[6].bulletType = (BYTE)BulletType::Enemy;
-	bulletsData.BulletsData[6].Pos = Vector2(200, 150);
-	bulletsData.BulletsData[6].Dir = Vector2(1.f, 0);
-
-	bulletsData.BulletsData[7].bulletType = (BYTE)BulletType::Boss;
-	bulletsData.BulletsData[7].Pos = Vector2(300, 150);
-	bulletsData.BulletsData[7].Dir = Vector2(1.f, 0);
 }
 
 void SceneBattle::Render(HDC hdc)
 {
 	battleMap.Render(hdc, stage);
-	for (auto& [id, player] : players) {
-		player->Render(hdc);
-	}
-
-	for (int i = 0; i < bulletsData.BulletCnt; ++i) {
-		BulletType bulletType = (BulletType)bulletsData.BulletsData[i].bulletType;
-		Vector2 pos = bulletsData.BulletsData[i].Pos;
-		Vector2 dir = bulletsData.BulletsData[i].Dir;
-
-		FRECT rectBody;
-		POINT bulletSize = bulletImages[bulletType].GetBodySize();
-		rectBody.left = (float)pos.x - ((float)bulletSize.x / 2);
-		rectBody.right = rectBody.left + bulletSize.x;
-		rectBody.top = (float)pos.y - ((float)bulletSize.y / 2);
-		rectBody.bottom = rectBody.top + bulletSize.y;
-
-		Vector2 vPoints[4];
-		GetRotationPos(rectBody, dir, Vector2::Up(), vPoints);
-		bulletImages[bulletType].RenderRotation(hdc, vPoints);
-	}
-
+	RenderPlayers(hdc);
+	RenderBullets(hdc);
 	/*boss->Render(hdc);
 	player->Render(hdc);
 	enemies->Render(hdc);
@@ -274,6 +244,75 @@ void SceneBattle::GetInput(CommandList* cmdList)
 
 void SceneBattle::WriteData(void* data)
 {
+	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
+
+	Battle::BattleData battleData;
+
+	// PlayerBattleData
+	memcpy(&battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData));
+	RemoveData(*buffer, sizeof(Battle::PlayerBattleData));
+
+	// EnemyBattleData - Cnt
+	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(BYTE));
+	RemoveData(*buffer, sizeof(BYTE));
+
+	// EnemyBattleData - Data
+	battleData.EnemyData.Enemys = new Battle::EnemyBattleData::Data[battleData.EnemyData.EnemyCnt];
+	enemies.clear();
+	enemies.resize(battleData.EnemyData.EnemyCnt);
+
+	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
+		memcpy(&battleData.EnemyData.Enemys[i], buffer->data(), sizeof(Battle::EnemyBattleData::Data));
+		RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data));
+
+		Battle::EnemyBattleData::Data* enemyData = &battleData.EnemyData.Enemys[i];
+		std::bitset<8> byte(enemyData->TypeDirActPad);
+		std::bitset<2> type(byte.to_string().substr(0, 2));
+		std::bitset<3> dir(byte.to_string().substr(2, 3));
+		std::bitset<1> action(byte.to_string().substr(5, 1));
+
+		enemies[i].type = static_cast<Type>(type.to_ulong());
+		enemies[i].dir = static_cast<Dir>(dir.to_ulong());
+		enemies[i].isAction = static_cast<bool>(action.to_ulong());
+		enemies[i].pos = enemyData->Pos;
+	}
+
+	// BulletsBattleData - Cnt
+	memcpy(&battleData.BulletData.BulletCnt, buffer->data(), sizeof(BYTE));
+	RemoveData(*buffer, sizeof(BYTE));
+
+	// BulletsBattleData - Data
+	battleData.BulletData.BulletsData = new Battle::BulletsBattleData::Data[battleData.BulletData.BulletCnt];
+	bullets.clear();
+	bullets.resize(battleData.BulletData.BulletCnt);
+
+	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
+		memcpy(&battleData.BulletData.BulletsData[i], buffer->data(), sizeof(Battle::BulletsBattleData::Data));
+		RemoveData(*buffer, sizeof(Battle::BulletsBattleData::Data));
+
+		Battle::BulletsBattleData::Data* bulletData = &battleData.BulletData.BulletsData[i];
+		bullets[i].type = static_cast<BulletType>(bulletData->bulletType);
+		bullets[i].pos = bulletData->Pos;
+		bullets[i].dir = bulletData->Dir;
+	}
+
+	// BulletsBattleData - Cnt
+	memcpy(&battleData.BossEffectData.EffectCnt, buffer->data(), sizeof(BYTE));
+	RemoveData(*buffer, sizeof(BYTE));
+
+	// BulletsBattleData - Data
+	battleData.BossEffectData.Effects = new Battle::BossSkillBattleData::Data[battleData.BossEffectData.EffectCnt];
+	bullets.clear();
+	bullets.resize(battleData.BossEffectData.EffectCnt);
+
+	for (int i = 0; i < battleData.BossEffectData.EffectCnt; ++i) {
+		memcpy(&battleData.BossEffectData.Effects[i], buffer->data(), sizeof(Battle::BulletsBattleData::Data));
+		RemoveData(*buffer, sizeof(Battle::BulletsBattleData::Data));
+
+		Battle::BossSkillBattleData::Data* effectData = &battleData.BossEffectData.Effects[i];
+		effects[i].type = static_cast<EffectType>(effectData->type);
+		effects[i].pos = effectData->pos;
+	}
 }
 
 void SceneBattle::ProcessCommand()

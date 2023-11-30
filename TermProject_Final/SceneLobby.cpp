@@ -209,7 +209,7 @@ void SceneLobby::WriteData(void* data)
 	memcpy(&lobbydata.PlayerCnt, buffer->data(), sizeof(BYTE));
 	buffer->erase(buffer->begin(), buffer->begin() + sizeof(BYTE));
 	lobbydata.PlayersData = new Lobby::PlayerLobbyData[lobbydata.PlayerCnt];
-
+	
 	for (int i = 0 ; i < lobbydata.PlayerCnt; ++i) {
 		memcpy(&lobbydata.PlayersData[i], buffer->data(), sizeof(Lobby::PlayerLobbyData));
 
