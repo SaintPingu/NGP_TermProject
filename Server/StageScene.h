@@ -1,5 +1,4 @@
 #pragma once
-#include "Data.h"
 #include "Scene.h"
 
 const int maxStagePlayer = 2;

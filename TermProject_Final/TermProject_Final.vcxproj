@@ -178,6 +178,7 @@
     <ClCompile Include="ClientNetMgr.cpp" />
     <ClCompile Include="ClientNetwork.cpp" />
     <ClCompile Include="ClientPacket.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="ClientNetwork.h" />
     <ClInclude Include="ClientPacket.h" />
     <ClInclude Include="ClientStructs.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="InputManager.h" />

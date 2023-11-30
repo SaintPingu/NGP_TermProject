@@ -106,9 +106,9 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		int len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
 			sizeof(battleData.PlayerBattleData[1]) +
 			sizeof(battleData.EnemyData.EnemyCnt) +
-			(sizeof(Battle::EnemyData) * battleData.EnemyData.EnemyCnt) +
+			(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
 			sizeof(battleData.BulletData.BulletCnt) +
-			(sizeof(Battle::BulletBattleData) * battleData.BulletData.BulletCnt) +
+			(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
 			sizeof(battleData.BossEffectData.EffectCnt) +
 			(sizeof(int/*Effect*/) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
 
@@ -134,12 +134,12 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 		{//Enemy개수 + (Battle::EnemyData * Enemy개수)
 			buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
-			BYTE bytes[sizeof(Battle::EnemyData)];
+			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
 			for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
 
-				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyData));
+				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData::Data));
 
-				for (int j = 0; j < sizeof(Battle::EnemyData); ++j) {
+				for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
 				}
 			}
@@ -147,28 +147,28 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
 			buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
-			BYTE bytes[sizeof(Battle::BulletBattleData)];
+			BYTE bytes[sizeof(Battle::BulletsBattleData::Data)];
 			for (int i = 0; i < int(battleData.BulletData.BulletCnt); ++i) {
 
-				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletBattleData));
+				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData::Data));
 
-				for (int j = 0; j < sizeof(Battle::BulletBattleData); ++j) {
+				for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
 				}
 			}
 		}
 
 		{//Effect개수 + (Effect * Effect개수)  // Effect 구현시 주석 해제
-			//buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
-			//BYTE bytes[sizeof(Battle::BossSkillBattleData)];
-			//for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
+			buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
+			BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
+			for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
 
-			//	memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData));
+				memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData::Data));
 
-			//	for (int j = 0; j < sizeof(Battle::BossSkillBattleData); ++j) {
-			//		buffer.push_back(bytes[i]);
-			//	}
-			//}
+				for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
+					buffer.push_back(bytes[i]);
+				}
+			}
 		}
 	}
 }
