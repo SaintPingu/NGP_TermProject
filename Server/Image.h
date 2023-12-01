@@ -40,3 +40,22 @@ public:
 		return bodySize;
 	}
 };
+
+class EffectImage : public Image {
+private:
+	int maxFrame = 0;
+public:
+	void Load(const POINT& imgSize, int maxFrame = 0/*, BYTE alpha = 0xff*/);
+	void ScaleImage(float scaleX, float scaleY);
+
+	inline int GetMaxFrame() const
+	{
+		return maxFrame;
+	}
+};
+
+class ISprite abstract {
+protected:
+	int frame = 0;
+	RECT GetRectImage(const Image& image, int frame, int spriteRow = 0) const;
+};

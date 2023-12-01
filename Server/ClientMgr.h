@@ -47,7 +47,7 @@ public:
 	bool	Event();
 	bool	SendPacket();
 
-	bool SetPacketBuffer();
+	bool	SetPacketBuffer();
 
 	TResult CreateClientThread(int ID);
 
@@ -61,6 +61,7 @@ public:
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
 	
 	int GetPoolIndex() const { return clientPoolIndex; }
+	ClientInfo* GetClient(int ID);
 
 
 public:

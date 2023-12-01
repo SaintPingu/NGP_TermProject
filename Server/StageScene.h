@@ -5,8 +5,13 @@ const int maxStagePlayer = 2;
 class StagePlayer
 {
 public:
+	int ID{};
 	Type typeFly = Type::Empty;
 	Type typeGnd = Type::Empty;
+
+public:
+	void CommandPush(ServerStageCmd cmd, Type other_fly, Type other_gnd);
+
 };
 
 class StageScene : public Scene
@@ -24,5 +29,7 @@ public:
 	const std::unordered_map<int, std::shared_ptr<StagePlayer>>& GetPlayers() const { return players; }
 
 	bool AddPlayer(int clientID);
+	void Clear();
+
 };
 

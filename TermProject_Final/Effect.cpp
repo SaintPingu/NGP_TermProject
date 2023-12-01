@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "effect.h"
+#include "Effect.h"
 
 EffectManager::EffectManager()
 {

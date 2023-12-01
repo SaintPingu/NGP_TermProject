@@ -10,11 +10,33 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
-	UpdatePlayer();
-	UpdateEnemy();
-	UpdateBoss();
-	UpdatePlayerSkill();
-	UpdateBossSkill();
+	//UpdatePlayer();
+	//UpdateEnemy();
+	//UpdateBoss();
+	//UpdatePlayerSkill();
+	//UpdateBossSkill();
+	for (auto& [clientID, player] : players) {
+		if (player->IsMove())
+			player->Move();
+		player->CheckShot();
+	}
+	enemies->CreateCheckMelee();
+	enemies->CreateCheckRange();
+	enemies->CheckAttackDelay();
+
+	for (auto& [clientID, player] : players) {
+		boss->CheckActDelay(player.get());
+
+	}
+	boss->CheckAttackDelay();
+
+	for (auto& [clientID, player] : players) {
+		player->MoveBullets();
+	}
+	enemies->MoveBullets();
+	enemies->Move();
+	boss->Move();
+
 }
 
 void BattleScene::ProcessCommand(int clientID, Command command, void* data)
@@ -64,7 +86,6 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 	case ClientBattleCmd::MoveDownAway:
 	{
 		player->StopMove();
-
 	}
 		break;
 
@@ -82,12 +103,18 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		///				S K I L L 
 		/// ----------------------------------+	
 	case ClientBattleCmd::SkillQ:
+		player->ActiveSkill(Skill::Identity);
+
 		Skill_Q();
 		break;
 	case ClientBattleCmd::SkillW:
+		player->ActiveSkill(Skill::Sector);
+
 		Skill_W();
 		break;
 	case ClientBattleCmd::SkillE:
+		player->ActiveSkill(Skill::Circle);
+
 		Skill_E();
 		break;
 	}
@@ -104,31 +131,24 @@ void BattleScene::UpdatePlayer()
 	for (auto& [clientID, player] : players) {
 		if(player->IsMove())
 			player->Move();
+
+		player->CheckShot();
+
 	}
-}
-
-void BattleScene::Skill_Q()
-{
-
-}
-
-void BattleScene::Skill_W()
-{
-
-}
-
-void BattleScene::Skill_E()
-{
-
 }
 
 void BattleScene::UpdateEnemy()
 {
-	
+	enemies->CreateCheckMelee();
+	enemies->CreateCheckRange();
+	enemies->CheckAttackDelay();
+
 }
 
-void BattleScene::UpdateBoss()
+void BattleScene::UpdateBoss(Player* player)
 {
+	boss->CheckActDelay(player);
+	boss->CheckAttackDelay();
 
 }
 
@@ -138,6 +158,22 @@ void BattleScene::UpdatePlayerSkill()
 }
 
 void BattleScene::UpdateBossSkill()
+{
+
+}
+
+
+void BattleScene::Skill_Q()
+{
+	
+}
+
+void BattleScene::Skill_W()
+{
+
+}
+
+void BattleScene::Skill_E()
 {
 
 }

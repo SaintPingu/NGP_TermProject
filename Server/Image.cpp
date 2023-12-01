@@ -36,3 +36,21 @@ void ObjectImage::ScaleImage(float scaleX, float scaleY)
 	this->scaleX = scaleX;
 	this->scaleY = scaleY;
 }
+
+void EffectImage::Load(const POINT& imgSize, int maxFrame)
+{
+	Image::Load(imgSize);
+	++rectImage.left;
+	++rectImage.top;
+	++rectImage.right;
+	++rectImage.bottom;
+	this->maxFrame = maxFrame;
+	this->drawSize = imgSize;
+}
+
+
+void EffectImage::ScaleImage(float scaleX, float scaleY)
+{
+	drawSize.x = (LONG)((float)drawSize.x * scaleX);
+	drawSize.y = (LONG)((float)drawSize.y * scaleY);
+}

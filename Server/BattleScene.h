@@ -3,6 +3,9 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "Boss.h"
+#include "Battle.h"
+
 
 const int maxBlattlePlayer = 2;
 class BattleScene : public Scene	
@@ -19,8 +22,8 @@ private:
 	/// ----------------------------------+	
 	EnemyController*	enemies;
 	EnemyBullet*		enemyBullets;
-	// Boss* boss;
-
+	Boss*				boss;
+	BattleInfo*			battle;
 
 public:
 	virtual void Init() override;
@@ -28,6 +31,8 @@ public:
 	virtual void ProcessCommand(int clientID, Command command, void* data) override;
 
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
+	Boss* GetBoss() { return boss; }
+	BattleInfo* GetBattle() { return battle; }
 
 	void AddPlayer(int clientID);
 
@@ -35,7 +40,7 @@ public:
 public:
 	void UpdatePlayer();
 	void UpdateEnemy();
-	void UpdateBoss();
+	void UpdateBoss(Player* player);
 	void UpdatePlayerSkill();
 	void UpdateBossSkill();
 

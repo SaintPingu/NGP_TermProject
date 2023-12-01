@@ -181,6 +181,12 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	clientEvents.push(std::make_pair(type, terminateID));
 }
 
+ClientInfo* ClientMgr::GetClient(int ID)
+{
+	//	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);
+	return clientPool[ID];
+}
+
 TResult ClientMgr::ProcessCommand()
 {
 	Command cmd;

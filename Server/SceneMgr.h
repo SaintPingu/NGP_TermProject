@@ -6,6 +6,14 @@ class LobbyScene;
 class StageScene;
 class BattleScene;
 
+enum class SceneEventType
+{
+	ChangeClientLocation_ToLobby,
+	ChangeClientLocation_ToStage,
+	ChangeClientLocation_ToBattle,
+
+	END,
+};
 
 class SceneMgr {
 	struct GameData {
@@ -21,10 +29,21 @@ private:
 	std::shared_ptr<StageScene>		stageScene{};
 	std::shared_ptr<BattleScene>	battleScene{};
 
+private:
+	/// +-----------------------------------------
+	///					E V E N T  
+	/// -----------------------------------------+	
+	std::queue<std::pair<SceneEventType, PVOID>>	sceneEvents;
+public:
+	bool Event();
+	void EventPush(SceneEventType type, PVOID data);
+
 public:
 	void Init();
 	void InsertClient(int id) { gameData.clientLocations[id] = SceneType::Lobby; }
 	void SetClientLocation(int id, SceneType type) { gameData.clientLocations[id] = type; }
+
+
 
 	const std::shared_ptr<LobbyScene>&  Lobby() const { return lobbyScene; }
 	const std::shared_ptr<StageScene>&  Stage() const { return stageScene; }
@@ -33,6 +52,11 @@ public:
 	GameData&		GetGameData() { return gameData; }
 	StageElement&	GetCrntStageType() { return gameData.crntStageType; }
 	SceneType		GetClientLocation(int id) const { return gameData.clientLocations.at(id); }
+	RECT GetRectDisplay() const
+	{
+		RECT rectDisplay = RECT{};
+		return rectDisplay;
+	}
 
 	void UpdateScenes();
 };

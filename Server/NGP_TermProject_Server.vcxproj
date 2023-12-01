@@ -154,12 +154,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Battle.cpp" />
     <ClCompile Include="BattleScene.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientMgr.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
     <ClCompile Include="DataBase.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="LobbyScene.cpp" />
@@ -175,6 +178,7 @@
     <ClCompile Include="ServerFramework.cpp" />
     <ClCompile Include="ServerNetwork.cpp" />
     <ClCompile Include="ServerPacket.cpp" />
+    <ClCompile Include="Skill.cpp" />
     <ClCompile Include="StageScene.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -187,7 +191,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common.h" />
+    <ClInclude Include="Battle.h" />
     <ClInclude Include="BattleScene.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientMgr.h" />
@@ -195,6 +201,7 @@
     <ClInclude Include="ConsoleLog.h" />
     <ClInclude Include="DataBase.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="func.h" />
     <ClInclude Include="Image.h" />
@@ -208,6 +215,7 @@
     <ClInclude Include="ServerFramework.h" />
     <ClInclude Include="ServerNetwork.h" />
     <ClInclude Include="ServerPacket.h" />
+    <ClInclude Include="Skill.h" />
     <ClInclude Include="StageScene.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TCPListenNetwork.h" />
