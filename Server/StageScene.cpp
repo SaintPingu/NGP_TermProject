@@ -33,8 +33,8 @@ void StageScene::Update()
 		/// ----------------------------------+	
 		int* P1_ID = new int(P1->ID);
 		int* P2_ID = new int(P2->ID);
-		SCENE_MGR->EventPush(SceneEventType::ChangeClientLocation_ToBattle, &(P1_ID));
-		SCENE_MGR->EventPush(SceneEventType::ChangeClientLocation_ToBattle, &(P2_ID));
+		SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P1_ID));
+		SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P2_ID));
 
 	}
 }

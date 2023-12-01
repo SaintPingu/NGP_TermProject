@@ -53,25 +53,30 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		curPlayerCnt -= 1;
 	}
 		break;
+	case ClientBattleCmd::MoveLeft:
+	{
+
+	}
+	break;
 		/// +----------------------------------
 		///				   T A P
 		/// ----------------------------------+	
-	case ClientBattleCmd::MoveLeftTap:
+	//case ClientBattleCmd::MoveLeftTap:
 	{
 		player->SetDirection(Dir::Left);
 	}
 		break;
-	case ClientBattleCmd::MoveRightTap:
+	//case ClientBattleCmd::MoveRightTap:
 	{
 		player->SetDirection(Dir::Right);
 	}
 		break;
-	case ClientBattleCmd::MoveUpTap:
+	//case ClientBattleCmd::MoveUpTap:
 	{
 		player->SetDirection(Dir::Up);
 	}
 		break;
-	case ClientBattleCmd::MoveDownTap:
+	//case ClientBattleCmd::MoveDownTap:
 	{
 		player->SetDirection(Dir::Down);
 	}
@@ -80,10 +85,10 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		/// +----------------------------------
 		///				A W A Y
 		/// ----------------------------------+	
-	case ClientBattleCmd::MoveLeftAway:
-	case ClientBattleCmd::MoveRightAway:
-	case ClientBattleCmd::MoveUpAway:
-	case ClientBattleCmd::MoveDownAway:
+	//case ClientBattleCmd::MoveLeftAway:
+	//case ClientBattleCmd::MoveRightAway:
+	//case ClientBattleCmd::MoveUpAway:
+	//case ClientBattleCmd::MoveDownAway:
 	{
 		player->StopMove();
 	}
@@ -104,7 +109,11 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 		/// ----------------------------------+	
 	case ClientBattleCmd::SkillQ:
 		player->ActiveSkill(Skill::Identity);
+		/*
+			AcceptSkillQ
+			-> SEver가 클라한테 클라가 Q 를 쓸수있는지를 판단한다. 
 
+		*/
 		Skill_Q();
 		break;
 	case ClientBattleCmd::SkillW:

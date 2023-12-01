@@ -162,7 +162,7 @@ void Boss::ResetAttackDelay()
 
 Boss::Boss()
 {
-	//const RECT rectDisplay = sceneManager->GetRectDisplay();
+	//const RECT rectDisplay = sceneManager->Battle()->GetRectDisplay();
 
 	ObjectImage imgBullet;
 	image = new ObjectImage();
@@ -254,7 +254,7 @@ void Boss::SetPosDest()
 		return;
 	}
 
-	//const RECT rectDisplay = sceneManager->GetRectDisplay();
+	//const RECT rectDisplay = sceneManager->Battle()->GetRectDisplay();
 
 	posDest = Vector2::GetDest(GetPosCenter(), unitVector, bossData.speed);
 	if (act == BossAct::Idle)

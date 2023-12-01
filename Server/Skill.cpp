@@ -265,15 +265,15 @@ void SkillManager::ActiveSkill(Skill skill)
 		switch (playerOwner->GetType())
 		{
 		case Type::Elec:
-			SCENE_MGR->Battle()->GetBattle()->ShakeMap(10);
+			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(10);
 			//soundManager->PlaySkillSound(SkillSound::Elec);
 			break;
 		case Type::Fire:
-			SCENE_MGR->Battle()->GetBattle()->ShakeMap(15);
+			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(15);
 			//soundManager->PlaySkillSound(SkillSound::Fire);
 			break;
 		case Type::Water:
-			SCENE_MGR->Battle()->GetBattle()->ShakeMap(20);
+			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(20);
 			//soundManager->PlaySkillSound(SkillSound::Water);
 			break;
 		default:
@@ -461,7 +461,7 @@ bool BossSkillManager::Effect::Animate(Player* player)
 			GetRotationPos(rectBody, unitVector_imgRotation, Vector2::Up(), vPoints);
 			if (SATIntersect(player->GetRectBody(), vPoints) == true)
 			{
-				player->Hit(skillData.damage, bossOwner->GetType());
+				player->Hit(skillData.damage, boss->GetType());
 				if (skillData.isHitOnce == true)
 				{
 					return false;
@@ -478,7 +478,7 @@ bool BossSkillManager::Effect::Animate(Player* player)
 			const RECT rectPlayer = player->GetRectBody();
 			if (IntersectRect2(rectBody, rectPlayer) == true)
 			{
-				player->Hit(skillData.damage, bossOwner->GetType());
+				player->Hit(skillData.damage, boss->GetType());
 				if (skillData.isHitOnce == true)
 				{
 					return false;
@@ -488,7 +488,7 @@ bool BossSkillManager::Effect::Animate(Player* player)
 
 	}
 
-	return Move(bossOwner);
+	return Move(boss);
 }
 
 
@@ -510,7 +510,7 @@ bool BossSkillManager::Effect::Move(Boss* boss)
 	}
 
 	posCenter = posCenter + (unitVector_direction * skillData.speed);
-	const RECT rectDisplay = SCENE_MGR->GetRectDisplay();
+	const RECT rectDisplay = SCENE_MGR->Battle()->GetRectDisplay();
 	const RECT rectBody = GetRectBody();
 
 	if (boss->GetType() == Type::Dark)
@@ -561,7 +561,7 @@ bool BossSkillManager::Effect::RotateToPlayer(float t, Player* player)
 
 BossSkillManager::BossSkillManager()
 {
-	switch (bossOwner->GetType())
+	switch (boss->GetType())
 	{
 	case Type::Elec:
 		imgSkill1.Load({ 32,224 }, 9);
@@ -645,7 +645,7 @@ BossSkillManager::BossSkillManager()
 }
 BossSkillManager::~BossSkillManager()
 {
-	if (bossOwner->GetType() == Type::Dark)
+	if (boss->GetType() == Type::Dark)
 	{
 		delete[] posOrigins;
 	}
@@ -664,44 +664,44 @@ BossSkillManager::~BossSkillManager()
 //}
 void BossSkillManager::UseSkill(Player* player)
 {
-	switch (bossOwner->GetType())
+	switch (boss->GetType())
 	{
 	case Type::Elec:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Elec_Create();
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Elec_Create();
 		}
 		break;
 	case Type::Water:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Water_Create();
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Water_Create();
 		}
 		break;
 	case Type::Fire:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Fire_Create();
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Fire_Create(player);
 		}
 		break;
 	case Type::Dark:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Dark_Create();
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Dark_Create();
 		}
@@ -728,7 +728,7 @@ void BossSkillManager::Skill1_Elec_Create()
 	const float startDegree = (rand() % 180);
 	for (int i = 0; i < lineCount; ++i)
 	{
-		skillEffects.emplace_back(imgSkill1_Warning, bossOwner->GetPosCenter(), startDegree + (20.0f * i));
+		skillEffects.emplace_back(imgSkill1_Warning, boss->GetPosCenter(), startDegree + (20.0f * i));
 	}
 }
 void BossSkillManager::Skill1_Elec(Player* player)
@@ -752,7 +752,7 @@ void BossSkillManager::Skill1_Elec(Player* player)
 				if (isSoundPlayed == false)
 				{
 					isSoundPlayed = true;
-					SCENE_MGR->Battle()->GetBattle()->ShakeMap();
+					;
 					//soundManager->PlayBossSound(BossSound::Elec_Laser);
 				}
 			}
@@ -774,15 +774,15 @@ void BossSkillManager::Skill1_Elec(Player* player)
 		isWarning = false;
 
 		SkillData skillData;
-		skillData.damage = bossOwner->GetDamage_Skill1();
+		skillData.damage = boss->GetDamage_Skill1();
 		for (const Vector2& unitVector : unitVectors)
 		{
-			skillEffects.emplace_back(imgSkill1, bossOwner->GetPosCenter(), unitVector, skillData);
+			skillEffects.emplace_back(imgSkill1, boss->GetPosCenter(), unitVector, skillData);
 		}
 	}
 	else if (isSkillEnd == true)
 	{
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 }
 
@@ -792,7 +792,7 @@ void BossSkillManager::Skill2_Elec_Create()
 
 	constexpr int creationMaxCount = 120;
 
-	const RECT rectDisplay = SCENE_MGR->GetRectDisplay();
+	const RECT rectDisplay = SCENE_MGR->Battle()->GetRectDisplay();
 	for (int i = 0; i < creationMaxCount; ++i)
 	{
 		const float randX = rand() % (rectDisplay.left + (rectDisplay.right - rectDisplay.left));
@@ -831,7 +831,6 @@ void BossSkillManager::Skill2_Elec(Player* player)
 			if (isSoundPlayed == false)
 			{
 				isSoundPlayed = true;
-				SCENE_MGR->Battle()->GetBattle()->ShakeMap();
 				//soundManager->PlayEffectSound(EffectSound::Explosion);
 			}
 		}
@@ -851,7 +850,7 @@ void BossSkillManager::Skill2_Elec(Player* player)
 	}
 
 	SkillData skillData;
-	skillData.damage = bossOwner->GetDamage_Skill2();
+	skillData.damage = boss->GetDamage_Skill2();
 	for (const Vector2& position : positions)
 	{
 		skillEffects.emplace_back(imgSkill2, position, skillData);
@@ -860,7 +859,7 @@ void BossSkillManager::Skill2_Elec(Player* player)
 	if (isWarningEnd == true && skillEffects.empty() == true)
 	{
 		showCount = 0;
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 }
 
@@ -869,7 +868,7 @@ void BossSkillManager::Skill1_Water_Create()
 {
 	constexpr int creationMaxCount = 30;
 
-	const RECT rectDisplay = SCENE_MGR->GetRectDisplay();
+	const RECT rectDisplay = SCENE_MGR->Battle()->GetRectDisplay();
 	for (int i = 0; i < creationMaxCount; ++i)
 	{
 		const float randX = rand() % (rectDisplay.left + (rectDisplay.right - rectDisplay.left));
@@ -877,7 +876,7 @@ void BossSkillManager::Skill1_Water_Create()
 
 		const Vector2 pos = { randX, randY };
 		SkillData skillData;
-		skillData.damage = bossOwner->GetDamage_Skill1();
+		skillData.damage = boss->GetDamage_Skill1();
 		skillData.speed = 50.0f;
 		skillEffects.emplace_back(imgSkill1, pos, Vector2::Down(), Vector2::Down(), skillData);
 	}
@@ -895,7 +894,7 @@ void BossSkillManager::Skill1_Water(Player* player)
 	}
 	else if (static_cast<int>(showCount) != prevShowCount)
 	{
-		SCENE_MGR->Battle()->GetBattle()->ShakeMap();
+		;
 		//soundManager->PlayBossSound(BossSound::Water_Tsunami);
 	}
 
@@ -911,7 +910,7 @@ void BossSkillManager::Skill1_Water(Player* player)
 	if (skillEffects.empty() == true)
 	{
 		showCount = 0;
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 	prevShowCount = static_cast<int>(showCount);
 }
@@ -920,7 +919,7 @@ void BossSkillManager::Skill2_Water_Create()
 	constexpr int lines = 16;
 	constexpr int creationCountByLine = 9;
 
-	const RECT rectDisplay = SCENE_MGR->GetRectDisplay();
+	const RECT rectDisplay = SCENE_MGR->Battle()->GetRectDisplay();
 	const Vector2 mainPosCenter = { (float)(rectDisplay.left + (rectDisplay.right / 2)), (float)(rectDisplay.top + (rectDisplay.bottom / 2)) };
 
 	float radius = 20;
@@ -965,7 +964,7 @@ void BossSkillManager::Skill2_Water(Player* player)
 	}
 
 	SkillData skillData;
-	skillData.damage = bossOwner->GetDamage_Skill2();
+	skillData.damage = boss->GetDamage_Skill2();
 
 	bool isSoundPlayed = false;
 	for (size_t i = 0; i < showCount; ++i)
@@ -975,7 +974,7 @@ void BossSkillManager::Skill2_Water(Player* player)
 			if (isSoundPlayed == false)
 			{
 				isSoundPlayed = true;
-				SCENE_MGR->Battle()->GetBattle()->ShakeMap();
+				;
 				//soundManager->PlayBossSound(BossSound::Water_Splash);
 			}
 			skillEffects.emplace_back(imgSkill2, warningEffects.at(i).GetRectDraw(), skillData);
@@ -1012,7 +1011,7 @@ void BossSkillManager::Skill2_Water(Player* player)
 	{
 		showCount = 1.0f;
 		showLine = 0.0f;
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 }
 void BossSkillManager::Skill1_Fire_Create()
@@ -1035,9 +1034,9 @@ void BossSkillManager::Skill1_Fire(Player* player)
 		++creationCount;
 		crntSkillDelay = skillDelay;
 
-		const FRECT rectBoss = bossOwner->GetRectBody();
-		const int width = bossOwner->GetBodyWidth();
-		const int height = bossOwner->GetBodyHeight();
+		const FRECT rectBoss = boss->GetRectBody();
+		const int width = boss->GetBodyWidth();
+		const int height = boss->GetBodyHeight();
 
 		Vector2 posCenter = { 0, };
 		posCenter.x = rectBoss.left + (rand() % width);
@@ -1046,7 +1045,7 @@ void BossSkillManager::Skill1_Fire(Player* player)
 
 		SkillData skillData;
 		skillData.speed = 20.0f;
-		skillData.damage = bossOwner->GetDamage_Skill1();
+		skillData.damage = boss->GetDamage_Skill1();
 		skillData.isHitOnce = true;
 		skillEffects.emplace_back(imgSkill1, posCenter, Vector2::Down(), vToPlayer, skillData);
 
@@ -1055,7 +1054,7 @@ void BossSkillManager::Skill1_Fire(Player* player)
 		vToPlayer = (player->GetPosCenter() - posCenter).Normalized();
 		skillEffects.emplace_back(imgSkill1, posCenter, Vector2::Down(), vToPlayer, skillData);
 
-		SCENE_MGR->Battle()->GetBattle()->ShakeMap();
+		;
 		//soundManager->PlayBossSound(BossSound::Fire_Ball);
 	}
 	--crntSkillDelay;
@@ -1075,7 +1074,7 @@ void BossSkillManager::Skill1_Fire(Player* player)
 		skillCount = 0;
 		creationCount = 0;
 		crntSkillDelay = 0;
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 }
 void BossSkillManager::Skill2_Fire_Create(Player* player)
@@ -1086,7 +1085,7 @@ void BossSkillManager::Skill2_Fire_Create(Player* player)
 void BossSkillManager::Skill2_Fire(Player* player)
 {
 	SkillData skillData;
-	skillData.damage = bossOwner->GetDamage_Skill2();
+	skillData.damage = boss->GetDamage_Skill2();
 	skillData.speed = 70.0f;
 	if (warningEffects.empty() == false)
 	{
@@ -1097,7 +1096,7 @@ void BossSkillManager::Skill2_Fire(Player* player)
 			skillEffects.emplace_back(imgSkill2, posCenter, Vector2::Down(), Vector2::Down(), skillData);
 			warningEffects.clear();
 
-			SCENE_MGR->Battle()->GetBattle()->ShakeMap(10);
+			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(10);
 			//soundManager->PlayBossSound(BossSound::Fire_Meteor);
 		}
 		else
@@ -1119,7 +1118,7 @@ void BossSkillManager::Skill2_Fire(Player* player)
 
 	if (skillEffects.empty() == true && warningEffects.empty() == true)
 	{
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 	}
 }
 void BossSkillManager::Skill1_Dark_Create()
@@ -1147,13 +1146,13 @@ void BossSkillManager::Skill1_Dark(Player* player)
 
 		SkillData skillData;
 		skillData.isHitOnce = true;
-		skillData.damage = bossOwner->GetDamage_Skill1();
+		skillData.damage = boss->GetDamage_Skill1();
 
-		const RECT rectDisplay(SCENE_MGR->GetRectDisplay());
+		const RECT rectDisplay(SCENE_MGR->Battle()->GetRectDisplay());
 		const int displayWidth = rectDisplay.right - rectDisplay.left;;
 
-		const FRECT rectBoss(bossOwner->GetRectBody());
-		const float bossHeight = bossOwner->GetBodyHeight();
+		const FRECT rectBoss(boss->GetRectBody());
+		const float bossHeight = boss->GetBodyHeight();
 
 		Vector2 posCenter = { 0, };
 		posCenter.x = rectDisplay.left + (rand() % displayWidth);
@@ -1195,7 +1194,7 @@ void BossSkillManager::Skill1_Dark(Player* player)
 		{
 			constexpr float speed = 5.0f;
 			posOrigins[i].y += speed;
-			if (posOrigins[i].y > (SCENE_MGR->GetRectDisplay().bottom + (darkSkilldata.radius * 2.5f)))
+			if (posOrigins[i].y > (SCENE_MGR->Battle()->GetRectDisplay().bottom + (darkSkilldata.radius * 2.5f)))
 			{
 				posOrigins[i] = Vector2::Zero();
 			}
@@ -1206,13 +1205,13 @@ void BossSkillManager::Skill1_Dark(Player* player)
 	{
 		crntSkillDelay = 0;
 		creationCount = 0;
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 		//soundManager->StopBossSound();
 	}
 }
 void BossSkillManager::Skill2_Dark_Create()
 {
-	const RECT rectDisplay(SCENE_MGR->GetRectDisplay());
+	const RECT rectDisplay(SCENE_MGR->Battle()->GetRectDisplay());
 	Vector2 posCenter = { 0, };
 	posCenter.x = (float)rectDisplay.left + ((float)(rectDisplay.right - rectDisplay.left) / 2);
 	posCenter.y = (float)rectDisplay.top + ((float)(rectDisplay.bottom - rectDisplay.top) / 2);
@@ -1245,7 +1244,7 @@ void BossSkillManager::Skill2_Dark(Player* player)
 			if (warningEffects.back().GetFrame() > 30)
 			{
 				SkillData skillData;
-				skillData.damage = bossOwner->GetDamage_Skill2();
+				skillData.damage = boss->GetDamage_Skill2();
 				skillData.speed = 20.0f;
 				skillData.isHitOnce = true;
 
@@ -1273,7 +1272,7 @@ void BossSkillManager::Skill2_Dark(Player* player)
 
 	if (warningEffects.empty() == true && skillEffects.empty() == true)
 	{
-		bossOwner->ReSetBossAct();
+		boss->ReSetBossAct();
 		//soundManager->StopBossSound();
 	}
 }
@@ -1282,44 +1281,44 @@ void BossSkillManager::Skill2_Dark(Player* player)
 
 void BossSkillManager::Animate(Player* player)
 {
-	switch (bossOwner->GetType())
+	switch (boss->GetType())
 	{
 	case Type::Elec:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Elec(player);
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Elec(player);
 		}
 		break;
 	case Type::Water:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Water(player);
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Water(player);
 		}
 		break;
 	case Type::Fire:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Fire(player);
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Fire(player);
 		}
 		break;
 	case Type::Dark:
-		if (bossOwner->GetAct() == BossAct::Skill1)
+		if (boss->GetAct() == BossAct::Skill1)
 		{
 			Skill1_Dark(player);
 		}
-		else if (bossOwner->GetAct() == BossAct::Skill2)
+		else if (boss->GetAct() == BossAct::Skill2)
 		{
 			Skill2_Dark(player);
 		}

@@ -498,15 +498,10 @@ enum class ClientBattleCmd : BYTE
 {
 	Terminate,
 
-	MoveLeftTap,
-	MoveRightTap,
-	MoveUpTap,
-	MoveDownTap,
-
-	MoveLeftAway,
-	MoveRightAway,
-	MoveUpAway,
-	MoveDownAway,
+	MoveLeft,
+	MoveRight,
+	MoveUp,
+	MoveDown,
 	Stop,
 
 	SkillQ,
