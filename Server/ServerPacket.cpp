@@ -64,12 +64,48 @@ void PacketGenerator::GenerateData()
 		enemybattledata.EnemyCnt = enemies.size();
 		enemybattledata.Enemys = new Battle::EnemyBattleData::Data[enemybattledata.EnemyCnt];
 		for (int i = 0; i < enemybattledata.EnemyCnt; ++i) {
-			enemybattledata.Enemys[i].Pos = enemies[i]->GetPosCenter();
-			enemybattledata.Enemys[i].TypeDirActPad = (BYTE)enemies[i]->GetType(); 
-			enemybattledata.Enemys[i].TypeDirActPad = (BYTE)enemies[i]->GetDir();
-				//action?
+			std::bitset<2> type((BYTE)enemies[i]->GetType());
+			std::bitset<3> dir((BYTE)enemies[i]->GetDir());
+			std::bitset<1> action(0); //action?
+			std::bitset<8> byte(type.to_string() + dir.to_string() + action.to_string());
 
+			enemybattledata.Enemys[i].TypeDirActPad = static_cast<BYTE>(byte.to_ulong());
+			enemybattledata.Enemys[i].Pos = enemies[i]->GetPosCenter();
 		}
+
+		Battle::BulletsBattleData bulletbattledata;
+		auto& enemybullets = battle->GetEnemyController()->GetEnemyBullets()->GetBullets();
+		auto& playerbullets = battle->GetPlayerController()->GetBullets();
+		
+		bulletbattledata.BulletCnt = enemybullets.size() + playerbullets.size();
+		bulletbattledata.BulletsData = new Battle::BulletsBattleData::Data[bulletbattledata.BulletCnt];
+		int bulletIdx{};
+		// enemy bullet 
+		for (const auto& bullet : enemybullets) {
+			bulletbattledata.BulletsData[bulletIdx].bulletType =(BYTE)bullet->GetType();
+			bulletbattledata.BulletsData[bulletIdx].Pos = bullet->GetPos();
+			bulletbattledata.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+			++bulletIdx;
+		}
+		// 플레이어 bullet 
+		for (const auto& bullet : playerbullets) {
+			bulletbattledata.BulletsData[bulletIdx].bulletType = (BYTE)bullet->GetType();
+			bulletbattledata.BulletsData[bulletIdx].Pos = bullet->GetPos();
+			bulletbattledata.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+			++bulletIdx;
+		}
+
+		Battle::BossSkillBattleData bossskillbattledata;
+		//bossskillbattledata.EffectCnt = // 이펙트 어떤 데이터인지 잘 모르겠음..
+
+		battleData.PlayerBattleData[0] = playerbattledata[0];
+		battleData.PlayerBattleData[1] = playerbattledata[1];
+		battleData.EnemyData.EnemyCnt = enemybattledata.EnemyCnt;
+		battleData.EnemyData.Enemys = enemybattledata.Enemys;
+		battleData.BulletData.BulletCnt = bulletbattledata.BulletCnt;
+		battleData.BulletData.BulletsData = bulletbattledata.BulletsData;
+		battleData.BossEffectData.EffectCnt = bossskillbattledata.EffectCnt;
+		battleData.BossEffectData.Effects = bossskillbattledata.Effects;
 	}
 }
 
@@ -127,11 +163,11 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		int len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
 			sizeof(battleData.PlayerBattleData[1]) +
 			sizeof(battleData.EnemyData.EnemyCnt) +
-			(sizeof(Battle::EnemyBattleData) * battleData.EnemyData.EnemyCnt) +
+			(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
 			sizeof(battleData.BulletData.BulletCnt) +
-			(sizeof(Battle::BulletsBattleData) * battleData.BulletData.BulletCnt) +
+			(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
 			sizeof(battleData.BossEffectData.EffectCnt) +
-			(sizeof(int/*Effect*/) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
+			(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
 
 		void* vlen = &len;
 		//데이터 길이
@@ -158,7 +194,7 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
 			for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
 
-				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData));
+				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData::Data));
 
 				for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
@@ -171,7 +207,7 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			BYTE bytes[sizeof(Battle::BulletsBattleData::Data)];
 			for (int i = 0; i < int(battleData.BulletData.BulletCnt); ++i) {
 
-				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData));
+				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData::Data));
 
 				for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
@@ -179,17 +215,17 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			}
 		}
 
-		{//Effect개수 + (Effect * Effect개수)  // Effect 구현시 주석 해제
-			//buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
-			//BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
-			//for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
+		{//Effect개수 + (Effect * Effect개수) 
+			buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
+			BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
+			for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
 
-			//	memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData));
+				memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData::Data));
 
-			//	for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
-			//		buffer.push_back(bytes[i]);
-			//	}
-			//}
+				for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
+					buffer.push_back(bytes[i]);
+				}
+			}
 		}
 	}
 }

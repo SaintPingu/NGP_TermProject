@@ -34,6 +34,7 @@ public:
 	Boss* GetBoss() { return boss; }
 	//BattleInfo* GetBattle() { return battle; }
 	const EnemyController* GetEnemyController() { return enemies; }
+	const PlayerBullet* GetPlayerController() { return playerbullet; }
 
 	void AddPlayer(int clientID);
 

@@ -18,6 +18,8 @@ protected:
 		Dir dir = Dir::Empty;
 		Vector2 unitVector;
 
+		POINT pos = { 0,0 };
+
 		FRECT rectBody = { 0, };
 		FRECT rectRotBody = { 0, };
 		Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data);
@@ -53,6 +55,8 @@ protected:
 		{
 			return isSkillBullet;
 		}
+
+		Vector2 GetBulletDirVector() { return unitVector; }
 	};
 
 	BulletController(const ObjectImage& bulletImage);
@@ -70,6 +74,9 @@ public:
 	void DestroyCollideBullet(const RECT& rect);
 
 	virtual void Move() abstract;
+
+	int GetBulletCount() { return bullets.size(); }
+	const std::vector<Bullet*>& GetBullets() const { return bullets; }
 };
 
 class PlayerBullet : public BulletController {

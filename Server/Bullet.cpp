@@ -12,7 +12,7 @@
 BulletController::Bullet::Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data)
 {
 	this->data = data;
-
+	pos = center;
 	rectBody.left   = (float)center.x - ((float)bulletSize.x / 2);
 	rectBody.right  = rectBody.left + bulletSize.x;
 	rectBody.top    = (float)center.y - ((float)bulletSize.y / 2);

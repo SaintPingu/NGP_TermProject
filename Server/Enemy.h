@@ -109,4 +109,5 @@ public:
 	}
 
 	const std::vector<Enemy*>& GetEnemies() const { return enemies; }
+	EnemyBullet* GetEnemyBullets() const { return bullets; }
 };
