@@ -9,7 +9,6 @@ protected:
 	Vector2 posDest = { 0, };
 	Vector2 unitVector = { 0, };
 
-	Dir GetDir() const;
 	virtual void SetPosDest() abstract override;
 
 	inline void ResetAttackDelay()
@@ -31,6 +30,8 @@ public:
 	{
 		return data.type;
 	}
+
+	Dir GetDir() const;
 };
 
 class Melee : public Enemy {
@@ -106,4 +107,6 @@ public:
 			enemy->CheckAttackDelay();
 		}
 	}
+
+	const std::vector<Enemy*>& GetEnemies() const { return enemies; }
 };

@@ -3,6 +3,7 @@
 #include "ServerFramework.h"
 #include "SceneMgr.h"
 #include "LobbyScene.h"
+#include "BattleScene.h"
 
 //////////////////////////////////////////////////////////
 #include "Player.h"
@@ -47,8 +48,28 @@ void PacketGenerator::GenerateData()
 	}
 
 	{// 배틀 생성 
-		/*auto& battle = SCENE_MGR->Battle();
-		battle-*/
+		auto& battle = SCENE_MGR->Battle();
+		auto& players = battle->GetPlayers();
+		
+		Battle::PlayerBattleData playerbattledata[2];
+		int plCount{};
+		for (auto& [playerID, player] : players) {
+			playerbattledata[plCount].PlayerID = playerID;
+			playerbattledata[plCount].Pos = player->GetPosCenter();
+			++plCount;
+		}
+
+		Battle::EnemyBattleData enemybattledata;
+		auto enemies = battle->GetEnemyController()->GetEnemies();
+		enemybattledata.EnemyCnt = enemies.size();
+		enemybattledata.Enemys = new Battle::EnemyBattleData::Data[enemybattledata.EnemyCnt];
+		for (int i = 0; i < enemybattledata.EnemyCnt; ++i) {
+			enemybattledata.Enemys[i].Pos = enemies[i]->GetPosCenter();
+			enemybattledata.Enemys[i].TypeDirActPad = (BYTE)enemies[i]->GetType(); 
+			enemybattledata.Enemys[i].TypeDirActPad = (BYTE)enemies[i]->GetDir();
+				//action?
+
+		}
 	}
 }
 
@@ -134,12 +155,12 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 		{//Enemy개수 + (Battle::EnemyData * Enemy개수)
 			buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
-			BYTE bytes[sizeof(Battle::EnemyBattleData)];
+			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
 			for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
 
 				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData));
 
-				for (int j = 0; j < sizeof(Battle::EnemyBattleData); ++j) {
+				for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
 				}
 			}
@@ -147,12 +168,12 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
 			buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
-			BYTE bytes[sizeof(Battle::BulletsBattleData)];
+			BYTE bytes[sizeof(Battle::BulletsBattleData::Data)];
 			for (int i = 0; i < int(battleData.BulletData.BulletCnt); ++i) {
 
 				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData));
 
-				for (int j = 0; j < sizeof(Battle::BulletsBattleData); ++j) {
+				for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
 					buffer.push_back(bytes[i]);
 				}
 			}
@@ -160,12 +181,12 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 		{//Effect개수 + (Effect * Effect개수)  // Effect 구현시 주석 해제
 			//buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수
-			//BYTE bytes[sizeof(Battle::BossSkillBattleData)];
+			//BYTE bytes[sizeof(Battle::BossSkillBattleData::Data)];
 			//for (int i = 0; i < int(battleData.BossEffectData.EffectCnt); ++i) {
 
 			//	memcpy(bytes, &battleData.BossEffectData.Effects[i], sizeof(Battle::BossSkillBattleData));
 
-			//	for (int j = 0; j < sizeof(Battle::BossSkillBattleData); ++j) {
+			//	for (int j = 0; j < sizeof(Battle::BossSkillBattleData::Data); ++j) {
 			//		buffer.push_back(bytes[i]);
 			//	}
 			//}

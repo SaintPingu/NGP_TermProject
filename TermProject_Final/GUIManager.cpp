@@ -267,12 +267,12 @@ GUIManager::GUIManager(const RECT& rectWindow)
 	hurtGUI_Elec.gui = new GUIImage();
 	hurtGUI_Dark.gui = new GUIImage();
 
-	Player* players = nullptr; // 배틀씬의 플레이어 2명을 연결해줘야함.
-	if (!players) {
+	std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함
+	if (players.empty()) {
 		return;
 	}
 	for (int i = 0; i < 2; ++i) {
-		switch (players[i].GetType())
+		switch (players[i]->GetType())
 		{
 		case Type::Elec:
 			icon_Q->Load(_T("images\\battle\\icon_elec_Q.png"), { 35, 35 });
@@ -290,7 +290,7 @@ GUIManager::GUIManager(const RECT& rectWindow)
 			gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_fire.png"), { 14, 217 });
 			break;
 		}
-		switch (players->GetSubType())
+		switch (players[i]->GetSubType())
 		{
 		case Type::Elec:
 			icon_W->Load(_T("images\\battle\\icon_elec_W.png"), { 130, 130 });
@@ -427,8 +427,6 @@ void GUIManager::Update(const HWND& hWnd)
 	hurtGUI_Elec.ReduceAlpha();
 	hurtGUI_Dark.ReduceAlpha();
 	
-	//int crntPhase = phase.GetPhase();
-
 	std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
 
 	if (players.empty()) {
@@ -443,16 +441,15 @@ void GUIManager::Update(const HWND& hWnd)
 		else if (isIconStop == true)
 		{
 			//if (crntPhase < 2 && isClearPhase == false && enemies->IsEmenyClear() == true)
-			{
-				isClearPhase = true;
+			//{
+			//	isClearPhase = true;
 
-				//player->InvincibleMode();
-				//phase.ClearPhase();
-				//soundManager->StopEffectSound();
-				//soundManager->StopBGMSound();
-				//soundManager->PlayEffectSound(EffectSound::Win);
-				//SceneMgr->StartLoading(hWnd); // 로딩 시작하는 함수?
-			}
+			//	phase.ClearPhase();
+			//	soundManager->StopEffectSound();
+			//	soundManager->StopBGMSound();
+			//	soundManager->PlayEffectSound(EffectSound::Win);
+			//	SceneMgr->StartLoading(hWnd); // 로딩 시작하는 함수?
+			//}
 			return;
 		}
 	}
@@ -465,10 +462,7 @@ void GUIManager::Update(const HWND& hWnd)
 		rectPokemonIcon.bottom += corrValue;
 		isIconStop = true;
 
-		/*if (crntPhase >= 2)
-		{
-			boss->Create();
-		}*/
+		//boss->Create();
 	}
 }
 RECT GUIManager::GetRectDisplay() const

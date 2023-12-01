@@ -334,16 +334,7 @@ void SceneBattle::ProcessCommand()
 		switch (cmd)
 		{
 		case (BYTE)ServerBattleCmd::Loss:
-			//std::unordered_map<int, std::shared_ptr<Player>> players;
-			//1.모든 플레이어 죽음 처리 
-			for (auto& [id, player] : players) {
-				player->SetDeath(true);
-				//player->hp = 0;
-			}
-			//2. 클라 플레이어만 죽음 처리
-			players[framework->client_ID]->SetDeath(true);
-			// 둘중 뭐로?
-
+			SceneMgr->LoadScene(SceneType::Stage);
 
 			/*soundManager->StopEffectSound();
 			soundManager->PlayEffectSound(EffectSound::Loss);
@@ -351,10 +342,8 @@ void SceneBattle::ProcessCommand()
 
 			break;
 		case (BYTE)ServerBattleCmd::Win:
-			//bossData.isDeath = true; 
-			for (auto& [id, player] : players) {
-				//player->InvincibleMode(); // 서버에서 처리를 하는건가?
-			}
+			SceneMgr->LoadScene(SceneType::Stage);
+
 			//soundManager->StopEffectSound();
 			//soundManager->StopBossSound();
 			break;

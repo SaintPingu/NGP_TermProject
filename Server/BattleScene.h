@@ -20,8 +20,8 @@ private:
 	/// +----------------------------------
 	///				  ENEMY  
 	/// ----------------------------------+	
+	PlayerBullet*		playerbullet;
 	EnemyController*	enemies;
-	EnemyBullet*		enemyBullets;
 	Boss*				boss;
 	BattleInfo*			battle;
 
@@ -33,6 +33,7 @@ public:
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
 	Boss* GetBoss() { return boss; }
 	BattleInfo* GetBattle() { return battle; }
+	const EnemyController* GetEnemyController() { return enemies; }
 
 	void AddPlayer(int clientID);
 
