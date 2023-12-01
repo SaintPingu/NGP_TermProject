@@ -407,12 +407,12 @@ void SceneStage::ProcessCommand()
 
 	packetLoader.PopCommand(cmd, buffer, SceneType::Stage);
 
-	switch (cmd)
+	switch ((ServerStageCmd)cmd)
 	{
-	case (BYTE)ServerStageCmd::GoLobby:
+	case ServerStageCmd::GoLobby:
 		SceneMgr->LoadScene(SceneType::Lobby);
 		break;
-	case (BYTE)ServerStageCmd::GoBattle:
+	case ServerStageCmd::GoBattle:
 		SceneMgr->LoadScene(SceneType::Battle);
 		//typeFly(4)
 		//typeGnd(4)

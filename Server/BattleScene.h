@@ -4,7 +4,7 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "Boss.h"
-#include "Battle.h"
+//#include "Battle.h"
 
 
 const int maxBlattlePlayer = 2;
@@ -23,7 +23,7 @@ private:
 	EnemyController*	enemies;
 	EnemyBullet*		enemyBullets;
 	Boss*				boss;
-	BattleInfo*			battle;
+	//BattleInfo*			battle;
 
 public:
 	virtual void Init() override;
@@ -32,7 +32,7 @@ public:
 
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
 	Boss* GetBoss() { return boss; }
-	BattleInfo* GetBattle() { return battle; }
+	//BattleInfo* GetBattle() { return battle; }
 
 	void AddPlayer(int clientID);
 
@@ -48,6 +48,11 @@ public:
 	void Skill_W();
 	void Skill_E();
 
+	RECT GetRectDisplay() const
+	{
+		RECT rectDisplay = RECT{};
+		return rectDisplay;
+	}
 
 };
 

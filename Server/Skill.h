@@ -55,7 +55,7 @@ public:
 
 class BossSkillManager {
 private:
-	class Boss* bossOwner{};	// 보스 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
+	class Boss* boss{};	// 보스 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
 	class Player* player{};
 
 private:
@@ -88,7 +88,7 @@ private:
 	class Effect : public ISprite {
 	private:
 	private:
-		class Boss* bossOwner{};	// 보스 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
+		class Boss* boss{};	// 보스 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
 
 
 		EffectImage imgSkill;

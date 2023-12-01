@@ -36,7 +36,8 @@ private:
 	std::queue<std::pair<SceneEventType, PVOID>>	sceneEvents;
 public:
 	bool Event();
-	void EventPush(SceneEventType type, PVOID data);
+	void ChangeLocationEvent(SceneEventType type, PVOID data);
+	void PushChangeLocationEvent(SceneEventType type, PVOID data);
 
 public:
 	void Init();
@@ -52,11 +53,6 @@ public:
 	GameData&		GetGameData() { return gameData; }
 	StageElement&	GetCrntStageType() { return gameData.crntStageType; }
 	SceneType		GetClientLocation(int id) const { return gameData.clientLocations.at(id); }
-	RECT GetRectDisplay() const
-	{
-		RECT rectDisplay = RECT{};
-		return rectDisplay;
-	}
-
+	
 	void UpdateScenes();
 };
