@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LobbyScene.h"
 #include "DataBase.h"
+#include "ClientMgr.h"
 
 #define TPLAYER_IMAGESIZE_X 32
 #define TPLAYER_IMAGESIZE_Y 32
@@ -53,6 +54,22 @@ RECT LobbyPlayer::GetRect()
 
 
 
+bool LobbyScene::CheckMoveScene(const std::shared_ptr<LobbyPlayer>& player)
+{
+	if (player->pos.x + 20 >= rectWindow.right) {
+		return true;
+	}
+	else if (player->pos.x - 20 <= rectWindow.left) {
+		int clientID = player->GetID();
+		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerLobbyCmd::GoMenu, nullptr, 0);
+		CLIENT_MGR->RegisterTerminateClientID(clientID);
+		RemovePlayer(clientID);
+		return true;
+	}
+
+	return false;
+}
+
 void LobbyScene::Init()
 {
 
@@ -60,7 +77,10 @@ void LobbyScene::Init()
 
 void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 {
-	auto& player = players.at(clientID);
+	auto& player = GetPlayer(clientID);
+	if (!player) {
+		return;
+	}
 
 	ClientLobbyCmd clientCmd = (ClientLobbyCmd)command;
 
@@ -94,6 +114,12 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 	}
 }
 
+void LobbyScene::AddPlayer(int clientID)
+{
+	players[clientID] = std::make_shared<LobbyPlayer>();
+	players[clientID]->SetID(clientID);
+}
+
 bool LobbyScene::CheckCollision(RECT playerRect)
 {
 	RECT temp;
@@ -108,15 +134,32 @@ bool LobbyScene::CheckCollision(RECT playerRect)
 	return false;
 }
 
+const std::shared_ptr<LobbyPlayer>& LobbyScene::GetPlayer(int id)
+{
+	if (players.count(id)) {
+		return players[id];
+	}
+
+	std::cout << "[ERROR - LobbyScene_GetPlayer()] 플레이어 ID [" << id << "] 가 존재하지 않습니다!\n";
+	return nullptr;
+}
+
 // 하나의 키 입력으로 지속적으로 플레이어를 움직여야 한다.
 void LobbyScene::Update()
 {
 	for (auto& [clientID, player] : players) {
 		player->befpos = player->pos;
 		player->Move();
-		if (CheckCollision(player->GetRect())) {
+		if (CheckMoveScene(player)) {
+			continue;
+		}
+		else if (CheckCollision(player->GetRect())) {
 			player->pos = player->befpos;
 		}
 	}
 }
 
+void LobbyScene::RemovePlayer(int clientID)
+{
+	players.erase(clientID);
+}

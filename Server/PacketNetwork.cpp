@@ -26,8 +26,8 @@ TResult PacketNetwork::RecvPacket()
 {
     //std::cout << "수신 대기\n";
     int retval{};
-    char dataLen;
-    retval = recv(TCP_Socket, &dataLen, sizeof(char), MSG_WAITALL);
+    uint8 dataLen;
+    retval = recv(TCP_Socket, (char*)&dataLen, sizeof(uint8), MSG_WAITALL);
     if (retval == SOCKET_ERROR) {
         return TResult::FAIL;
     }

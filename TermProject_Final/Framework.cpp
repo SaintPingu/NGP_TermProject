@@ -124,6 +124,11 @@ void Framework::ConnectToServer()
 	UpdateFunc = std::bind(&Framework::UpdateWithServer, this);
 }
 
+void Framework::DisconnectServer()
+{
+	CLIENT_NETWORK_MGR->Disconnect();
+}
+
 void Framework::DefaultPacketSend()
 {
 	CLIENT_NETWORK->Send();

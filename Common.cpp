@@ -363,7 +363,7 @@ CommandList::~CommandList()
 
 }
 
-void CommandList::CommandPush(BYTE& cmd, void* data, size_t size)
+void CommandList::PushCommand(BYTE cmd, void* data, size_t size)
 {
 	buffer.push_back(cmd);
 	for (int i = 0; i < size;++i) {

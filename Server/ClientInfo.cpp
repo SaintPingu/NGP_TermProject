@@ -84,6 +84,11 @@ PacketBuffer& ClientInfo::GetPacketBuffer()
 	return serverNet->GetPacketBuffer();
 }
 
+void ClientInfo::PushCommand(BYTE& cmd, void* data, size_t size)
+{
+	cmdList.PushCommand(cmd, data, size);
+}
+
 bool ClientInfo::IsConnected()
 {
 	if (serverNet->IsTerminate() == true)

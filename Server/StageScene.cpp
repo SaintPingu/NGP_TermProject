@@ -22,11 +22,8 @@ void StageScene::Update()
 		std::shared_ptr<StagePlayer> P1 = it->second;	it++;
 		std::shared_ptr<StagePlayer> P2 = it->second;
 
-		// StageScene 은 Cmd 만 전달을 하는데..
-		// 팀원의 타입을 전달 - 이거 안하면 팀원 타입을 어디서 알아? 배틀씬에서? 
-		// 배틀씬에서 넘기는 PlayerData 에 type 관련 데이터가 없는데..?
-		P1->CommandPush(ServerStageCmd::GoBattle, P2->typeFly, P2->typeGnd);
-		P2->CommandPush(ServerStageCmd::GoBattle, P1->typeFly, P1->typeGnd);
+		P1->PushCommand(ServerStageCmd::GoBattle, P2->typeFly, P2->typeGnd);
+		P2->PushCommand(ServerStageCmd::GoBattle, P1->typeFly, P1->typeGnd);
 
 		/// +----------------------------------
 		///			 씬 변경 ( 이벤트 )
@@ -130,14 +127,12 @@ void StageScene::Clear()
 	players.clear();
 }
 
-void StagePlayer::CommandPush(ServerStageCmd cmd, Type other_fly, Type other_gnd)
+void StagePlayer::PushCommand(ServerStageCmd cmd, Type other_fly, Type other_gnd)
 {
 	// 팀원의 type 을 전달 ( 자신의 타입은 이미 클라이언트에서 알고 있음 )  
 	// 상위 4비트 : fly Type
 	// 하위 4비트 : gnd Type  
 	BYTE packedTypeData = ((BYTE)other_fly << 4) | (BYTE)other_gnd;
 	BYTE bCmd           = (BYTE)cmd;
-	CLIENT_MGR->GetClient(ID)->GetCmdList()->CommandPush(bCmd, &packedTypeData, sizeof(BYTE));
-
-
+	CLIENT_MGR->PushCommand(ID, bCmd, &packedTypeData, sizeof(BYTE));
 }

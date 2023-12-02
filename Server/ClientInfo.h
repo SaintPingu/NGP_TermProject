@@ -44,7 +44,9 @@ public:
 	const ServerNetwork* GetServerNet() { return serverNet; }
 	PacketBuffer& GetPacketBuffer();
 	int					 GetID() { return ID; }
+
 	CommandList* GetCmdList() { return &cmdList; }
+	void PushCommand(BYTE& cmd, void* data, size_t size);
 
 	void Execute() { executeLogic = true; }
 	void Stop() { active = false; }

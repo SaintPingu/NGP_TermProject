@@ -59,6 +59,8 @@ private:
 
 	int v{}, h{};
 
+	float animatePerSec = 0.2f;
+
 public:
 	bool _allHide = false;
 

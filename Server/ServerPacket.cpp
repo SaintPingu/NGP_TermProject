@@ -47,6 +47,8 @@ void PacketGenerator::GenerateData()
 		lobbyData.PlayersData = playerlobbydata;
 	}
 
+	// 오류로 인한 임시 제거
+	return;
 	{// 배틀 생성 
 		auto& battle = SCENE_MGR->Battle();
 		auto& players = battle->GetPlayers();
@@ -59,7 +61,7 @@ void PacketGenerator::GenerateData()
 			++plCount;
 		}
 
-		Battle::EnemyBattleData enemybattledata;
+		Battle::EnemyBattleData enemybattledata{};
 		auto enemies = battle->GetEnemyController()->GetEnemies();
 		enemybattledata.EnemyCnt = enemies.size();
 		enemybattledata.Enemys = new Battle::EnemyBattleData::Data[enemybattledata.EnemyCnt];
@@ -95,7 +97,7 @@ void PacketGenerator::GenerateData()
 			++bulletIdx;
 		}
 
-		Battle::BossSkillBattleData bossskillbattledata;
+		Battle::BossSkillBattleData bossskillbattledata{};
 		//bossskillbattledata.EffectCnt = // 이펙트 어떤 데이터인지 잘 모르겠음..
 
 		battleData.PlayerBattleData[0] = playerbattledata[0];
@@ -117,6 +119,11 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 	buffer.reserve(100);
 
 	if (type == DataType::Lobby) {
+		// 커맨드가 아무것도 없을 경우 None 전송
+		if (pCommandList.empty()) {
+			pCommandList.push_back((BYTE)ServerLobbyCmd::None);
+		}
+
 		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
 		int len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
 

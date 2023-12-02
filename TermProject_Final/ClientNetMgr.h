@@ -16,6 +16,7 @@ private:
 public:
 	TResult Init(short portnum);
 	void Execute();
+	void Disconnect();
 
 	ClientNetwork* GetClientNetwork() { return clientNet.get(); }
 

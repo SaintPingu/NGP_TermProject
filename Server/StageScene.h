@@ -10,7 +10,7 @@ public:
 	Type typeGnd = Type::Empty;
 
 public:
-	void CommandPush(ServerStageCmd cmd, Type other_fly, Type other_gnd);
+	void PushCommand(ServerStageCmd cmd, Type other_fly, Type other_gnd);
 
 };
 

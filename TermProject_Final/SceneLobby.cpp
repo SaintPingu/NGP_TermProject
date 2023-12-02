@@ -132,32 +132,31 @@ void SceneLobby::GetInput(CommandList* cmdList)
 		v -= 1;
 	}
 
-	BYTE cmd;
+	ClientLobbyCmd cmd;
 	if (v != 0) {
 		if (v == -1) {
-			cmd = BYTE(ClientLobbyCmd::MoveLeft);
+			cmd = ClientLobbyCmd::MoveLeft;
 		} 
 		else {
-			cmd = BYTE(ClientLobbyCmd::MoveRight);
+			cmd = ClientLobbyCmd::MoveRight;
 		}
 	}
 	else if (h != 0) {
 		if (h == -1) {
-			cmd = BYTE(ClientLobbyCmd::MoveUp);
+			cmd = ClientLobbyCmd::MoveUp;
 		}
 		else {
-			cmd = BYTE(ClientLobbyCmd::MoveDown);
+			cmd = ClientLobbyCmd::MoveDown;
 		}
 	}
 	else {
-		cmd = BYTE(ClientLobbyCmd::Stop);
+		cmd = ClientLobbyCmd::Stop;
 	}
 
-	cmdList->CommandPush(cmd, nullptr, 0);
+	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
 
 	if (KEY_TAP(VK_ESCAPE)) {
-		BYTE cmd = BYTE(ClientLobbyCmd::Terminate);
-		cmdList->CommandPush(cmd, nullptr, 0);
+		cmdList->PushCommand((BYTE)ClientLobbyCmd::Terminate, nullptr, 0);
 	}
 }
 
@@ -167,25 +166,17 @@ void SceneLobby::ProcessCommand()
 	PacketBuffer buffer;
 	PacketLoader packetLoader = framework->GetPacketLoader();
 
-	std::shared_ptr<SceneStage> scene;
-
-	StageElement element;
-
 	// 로비는 명령이 항상 1개 이므로 바로 반복 필요x
 	packetLoader.PopCommand(cmd, buffer, SceneType::Lobby);
 
 	switch (cmd)
 	{
 	case (BYTE)ServerLobbyCmd::GoMenu:
+		framework->DisconnectServer();
 		SceneMgr->LoadScene(SceneType::Intro);
 		break;
 	case (BYTE)ServerLobbyCmd::GoStage:
 		SceneMgr->LoadScene(SceneType::Stage);
-		scene = std::dynamic_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
-
-		element = (StageElement)(*buffer.begin());
-
-		scene->SetStageElement(element); // stageElement 1byte
 		break;
 	case (BYTE)ServerLobbyCmd::None:
 		// 아무것도 하지 않는 명령어를 의미
@@ -305,6 +296,14 @@ void SceneLobby::NpcAnimate()
 
 void SceneLobby::PlayerAnimate()
 {
+	static float animateCnt = 0;
+	animateCnt += DeltaTime();
+
+	if (animateCnt < .05f) {
+		return;
+	}
+	animateCnt = 0;
+
 	for (auto& [id, player] : lobbyPlayers) {
 		if (!player.isMoving) {
 			StopPlayer(id);

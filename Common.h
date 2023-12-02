@@ -425,7 +425,7 @@ public:
 
 	std::vector<BYTE> buffer;
 
-	void CommandPush(BYTE& cmd, void* data, size_t size);
+	void PushCommand(BYTE cmd, void* data, size_t size);
 
 	std::vector<BYTE> GetCmdList();
 };

@@ -11,18 +11,11 @@ Packet PacketGenerator::GeneratePacket()
 	Packet packet;
 	isGenPacket = true;
 
-	if (pCommandList.size() == 0) {
-		packet.push_back(0);
-		return packet;
-	}
-	else {
-		BYTE len = pCommandList.size() + sizeof(BYTE);
-		packet.push_back(len); // Datalen
-		packet.push_back(len - 1); // cntcmd
-	}
+	uint8 len = pCommandList.size();
+	packet.insert(packet.begin(), &len, &len + sizeof(uint8));
 
 	for (int i = 0;i < pCommandList.size();++i) {
-		packet.push_back(pCommandList[i]); //data
+		packet.push_back(pCommandList[i]); // commandList
 	}
 
 	return packet;

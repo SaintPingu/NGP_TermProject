@@ -45,6 +45,10 @@ void ClientNetwork::Logic()
 		WaitForSingleObject(sendPacket, INFINITE);
 		ResetEvent(sendPacket);
 
+		// 12/02 민동현 : 수신 과정에서 종료 커맨트 수신 시 서버 연결 종료
+		if (!executeClientNet) {
+			break;
+		}
 		//std::cout << "송신 중\n";
 
 		// send 구동
@@ -63,6 +67,7 @@ void ClientNetwork::Logic()
 
 	std::cout << "서버 연결 종료\n";
 	// 연결 종료
+	CloseSocket();
 	CloseHandle(sendPacket);
 	WSACleanup();
 	isConnected = false;

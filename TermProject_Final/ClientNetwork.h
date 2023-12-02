@@ -33,6 +33,7 @@ public:
 
 	void Logic();
 	void Send() { SetEvent(sendPacket); }
+	void Disconnect() { executeClientNet = false; }
 
 	PacketGenerator& GetPacketGenerator() { return packetGenerator; }
 public:

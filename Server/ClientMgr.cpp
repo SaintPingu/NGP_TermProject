@@ -155,6 +155,7 @@ void ClientMgr::Exit(int id)
 	if (clientPool[id] != nullptr)
 	{
 		clientPool[id]->Exit();
+		SCENE_MGR->DeleteClient(id);
 	}
 }
 
@@ -164,6 +165,14 @@ void ClientMgr::Exit()
 	{
 		if (info != nullptr)
 			info->Exit();
+	}
+}
+
+void ClientMgr::PushCommand(int clientID, BYTE cmd, void* data, size_t size)
+{
+	ClientInfo* client = GetClient(clientID);
+	if (client) {
+		client->PushCommand(cmd, data, size);
 	}
 }
 
@@ -189,7 +198,7 @@ ClientInfo* ClientMgr::GetClient(int ID)
 
 TResult ClientMgr::ProcessCommand()
 {
-	Command cmd;
+	Command cmd{};
 	PacketBuffer data;
 	while (true) {
 		int clientID = packetLoader.PopCommand(cmd, data);

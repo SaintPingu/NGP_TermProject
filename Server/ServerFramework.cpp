@@ -11,6 +11,7 @@
 #include "ServerPacket.h"
 #include "DataBase.h"
 
+static constexpr int FPS = 120;
 
 SINGLETON_PATTERN_DEFINITION(ServerFramework);
 
@@ -110,13 +111,13 @@ void ServerFramework::Logic()
 	{
 		static int cnt{};
 		std::cout << "\t\t\t\t-> server logic [" << ++cnt << "]\r";
-		if (cnt >= 60) {
+		if (cnt >= FPS) {
 			cnt = 0;
 		}
 
 		Event();
 		Update();
-		if (cnt & 1) {
+		if (cnt % 4 == 0) {	// (120FPS에서 30프레임마다 데이터 송신)
 			SendPakcet();
 		}
 	}
@@ -143,13 +144,13 @@ TResult ServerFramework::Event()
 
 TResult ServerFramework::Update()
 {
-	Timer::Inst()->Tick(60.f);
+	Timer::Inst()->Tick(FPS);
 
 	CLIENT_MGR->SetPacketBuffer();
 	CLIENT_MGR->ProcessCommand();
 	ServerFramework::UpdateScene();
 
-	if (GetAsyncKeyState('P') & 0x8000)
+	if (GetAsyncKeyState('`') & 0x8000)
 		SERVER_FRAMEWORK->Exit();
 
 
