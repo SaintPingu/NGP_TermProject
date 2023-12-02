@@ -335,9 +335,9 @@ bool SceneBattle::ProcessCommand()
 	
 	// 배틀은 명령이 여러개이므로 반복필요
 	while (packetLoader.PopCommand(cmd, buffer, SceneType::Battle)) {
-		switch (cmd)
+		switch ((ServerBattleCmd)cmd)
 		{
-		case (BYTE)ServerBattleCmd::Loss:
+		case ServerBattleCmd::Loss:
 			SceneMgr->LoadScene(SceneType::Stage);
 
 			/*soundManager->StopEffectSound();
@@ -345,20 +345,31 @@ bool SceneBattle::ProcessCommand()
 			soundManager->StopBGMSound();*/
 
 			break;
-		case (BYTE)ServerBattleCmd::Win:
+		case ServerBattleCmd::Win:
 			SceneMgr->LoadScene(SceneType::Stage);
 
 			//soundManager->StopEffectSound();
 			//soundManager->StopBossSound();
 			break;
-		case (BYTE)ServerBattleCmd::AcceptSkillQ:
+		case ServerBattleCmd::AcceptSkillQ:
 			players[framework->client_ID]->ActiveSkill(Skill::Identity);
 			break;
-		case (BYTE)ServerBattleCmd::Hit:
+		case ServerBattleCmd::Hit:
+			float hp;
+			memcpy(&hp, &(*buffer.begin()), sizeof(float));
+			players[framework->client_ID]->SetHp(hp);
 			break;
-		case (BYTE)ServerBattleCmd::UpdateMP:
+		case ServerBattleCmd::UpdateMP:
+			float mp;
+			memcpy(&mp, &(*buffer.begin()), sizeof(float));
+			players[framework->client_ID]->SetMp(mp);
 			break;
-		case (BYTE)ServerBattleCmd::CreateEffect:
+		case ServerBattleCmd::CreateEffect:
+			Effect createEffect;
+			memcpy(&createEffect.type, &(*buffer.begin()), sizeof(BYTE));
+			buffer.erase(buffer.begin());
+			memcpy(&createEffect.pos, &(*buffer.begin()), sizeof(float) * 2);
+			effects.push_back(createEffect);
 			break;
 		default:
 			break;

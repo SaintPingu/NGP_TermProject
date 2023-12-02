@@ -45,11 +45,17 @@ public:
 	float GetHP() {
 		return hp;
 	}
+	void SetHp(float val) {
+		hp = val;
+	}
 	float GetMaxHP() {
 		return hp;
 	}
 	float GetMP() {
 		return mp;
+	}
+	void SetMp(float val) {
+		mp = val;
 	}
 	float GetMaxMP() {
 		return mp;
