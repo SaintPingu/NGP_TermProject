@@ -25,6 +25,7 @@ public:
 	}
 	inline constexpr void ResetLoading()
 	{
+		crntPokemonCnt = 0;
 		loadingPokemonCnt = 0;
 		loadingBarCnt = 0;
 	}

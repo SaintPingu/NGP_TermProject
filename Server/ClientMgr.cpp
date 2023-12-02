@@ -190,6 +190,14 @@ void ClientMgr::RegisterTerminateClientID(int id)
 	clientEvents.push(std::make_pair(type, terminateID));
 }
 
+void ClientMgr::Disconnect(int id)
+{
+	ClientInfo* client = GetClient(id);
+	if (client) {
+		client->Disconnect();
+	}
+}
+
 ClientInfo* ClientMgr::GetClient(int ID)
 {
 	//	std::lock_guard<Mutex> lock(mutex[(UINT)mutexType::accessClientPool]);

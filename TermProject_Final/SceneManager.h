@@ -19,6 +19,8 @@ public:
 	void RenderScene(HWND hWnd);
 	void AnimateScene();
 
+	void DisConnect();
+
 	std::shared_ptr<Scene> GetCurrentScene() { return crntScene; }
 	SceneType GetCurrentSceneType() { return crntSceneType; }
 

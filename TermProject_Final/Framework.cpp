@@ -18,11 +18,15 @@ void Framework::Start(HWND hWnd)
 	sceneManager = std::make_shared<SceneManager>();
 	sceneManager->Init(hWnd);
 	this->hWnd = hWnd;
+
+	SetUpdateFuncToSingle();
 }
 
 void Framework::UpdateWithServer()
 {
-	WaitForPacket();
+	if (WaitForPacket() == false) {
+		return;
+	}
 	ProcessCommand();
 	WriteData();
 	GetInput();
@@ -45,12 +49,21 @@ void Framework::Update()
 	
 }
 
-void Framework::WaitForPacket()
+bool Framework::WaitForPacket()
 {
 	WaitForSingleObject(recvPacket, INFINITE);
 	ResetEvent(recvPacket);
 
+	if (CLIENT_NETWORK->IsConnected() == false) {
+		return false;
+	}
+
 	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
+	if (packetLoader.buffer->empty()) {	// 예외 처리
+		SetEvent(recvPacket);
+		return false;
+	}
+	return true;
 }
 
 void Framework::ProcessCommand()
@@ -62,6 +75,12 @@ void Framework::WriteData()
 {
 	//packetLoader를 통해 서버의 Data를 처리한다
 	PacketBuffer buffer = packetLoader.PopData();
+
+	// 예외 처리
+	if (buffer.empty()) {
+		SetEvent(recvPacket);
+		return;
+	}
 
 	CrntScene->WriteData(&buffer);
 }
@@ -108,6 +127,10 @@ void Framework::Terminate()
 
 void Framework::ConnectToServer()
 {
+	if (clientNetwork.joinable()) {
+		clientNetwork.join();
+	}
+
 	clientNetwork = std::thread([&]() {
 		CLIENT_NETWORK_MGR->Execute();
 		});
@@ -121,12 +144,13 @@ void Framework::ConnectToServer()
 		return;
 	}
 
-	UpdateFunc = std::bind(&Framework::UpdateWithServer, this);
+	SetUpdateFuncToServer();
 }
 
 void Framework::DisconnectServer()
 {
-	CLIENT_NETWORK_MGR->Disconnect();
+	SetUpdateFuncToSingle();
+	SceneMgr->DisConnect();
 }
 
 void Framework::DefaultPacketSend()

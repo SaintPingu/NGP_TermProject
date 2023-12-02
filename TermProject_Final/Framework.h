@@ -12,7 +12,6 @@ private:
 	//패킷을 서버로부터 받았다는 이벤트
 	HANDLE recvPacket;
 	HANDLE serverConnect;
-
 private:
 	std::thread clientNetwork{};
 	RECT rectClientWindow{};
@@ -25,7 +24,7 @@ private:
 
 	PacketLoader packetLoader;
 
-	void WaitForPacket();
+	bool WaitForPacket();
 	void ProcessCommand();
 	void WriteData();
 	void SendPacket();
@@ -33,6 +32,8 @@ private:
 
 	void UpdateWithServer();
 	void UpdateSingle();
+	void SetUpdateFuncToServer() { UpdateFunc = std::bind(&Framework::UpdateWithServer, this); }
+	void SetUpdateFuncToSingle() { UpdateFunc = std::bind(&Framework::UpdateSingle, this); }
 
 public:
 	void GetInput();
@@ -65,7 +66,7 @@ public:
 
 
 private:
-	std::function<void()> UpdateFunc{ std::bind(&Framework::UpdateSingle, this) };
+	std::function<void()> UpdateFunc{};
 
 };
 

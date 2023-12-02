@@ -4,6 +4,7 @@
 #include "Framework.h"
 #include "ClientNetMgr.h"
 
+static constexpr int FPS = 60;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -99,7 +100,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void CALLBACK Update(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
-	Timer::Inst()->Tick(60.f);
+	Timer::Inst()->Tick(FPS);
 
 	InputManager::Inst()->Update();
 	framework->Update();

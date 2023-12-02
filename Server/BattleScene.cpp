@@ -47,12 +47,12 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 
 	switch (clientCmd)
 	{
-	case ClientBattleCmd::Terminate:
-	{
-		players.erase(clientID);
-		curPlayerCnt -= 1;
-	}
-		break;
+	//case ClientBattleCmd::Terminate:
+	//{
+	//	players.erase(clientID);
+	//	curPlayerCnt -= 1;
+	//}
+	//	break;
 	case ClientBattleCmd::MoveLeft:
 	{
 

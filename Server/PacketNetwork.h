@@ -20,6 +20,7 @@ public:
 public:
 	virtual TResult SendPacket();
 	virtual TResult RecvPacket();
+	TResult SendTerminatePacket();
 
 public:
 	PacketBuffer& GetPacketBuffer() { return PacketBuf; }

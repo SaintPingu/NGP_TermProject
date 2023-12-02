@@ -2,7 +2,8 @@
 #include "TCPNetwork.h"
 #include "ClientPacket.h"
 
-// 2023-11-19-SUN (장재문) : 클라이언트 전용 패킷 네트워크 생성 
+// 2023-11-05-SUN (장재문) : 큰 틀을 잡기 위해서 미리 생성되었습니다.
+// 2023-11-10-FRI (장재문) : PacketBuffer 생성 및 기본 함수 생성
 
 /// +--------------
 ///	 PacketNetwork
@@ -19,6 +20,7 @@ public:
 public:
 	virtual TResult SendPacket();
 	virtual TResult RecvPacket();
+	TResult SendTerminatePacket();
 
 public:
 	PacketBuffer& GetPacketBuffer() { return PacketBuf; }

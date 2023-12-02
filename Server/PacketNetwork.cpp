@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PacketNetwork.h"
 
+constexpr uint8 terminateCode = UINT8_MAX;
 TResult PacketNetwork::Init()
 {
     return TResult();
@@ -32,6 +33,10 @@ TResult PacketNetwork::RecvPacket()
         return TResult::FAIL;
     }
 
+    if (dataLen == terminateCode) {
+        return TResult::CLIENT_DISCONNECT;
+    }
+
     if (dataLen > 0) {
         PacketBuf.resize(dataLen);
         retval = recv(TCP_Socket, (char*)PacketBuf.data(), dataLen, MSG_WAITALL);
@@ -45,6 +50,13 @@ TResult PacketNetwork::RecvPacket()
     //std::cout << "수신 완료 : 포트 번호 [" << ntohs(TCP_SockAddr.sin_port) << "] 데이터 길이[" << PacketBuf.size() << "]\n";
 
     return TResult::NONE;
+}
+
+TResult PacketNetwork::SendTerminatePacket()
+{
+    PacketBuf.clear();
+    PacketBuf.insert(PacketBuf.begin(), &terminateCode, &terminateCode + sizeof(uint8));
+    return SendPacket();
 }
 
 void PacketNetwork::SetPacketBuffer(const Packet& packet)

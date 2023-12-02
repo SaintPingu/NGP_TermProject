@@ -26,11 +26,6 @@ void ClientNetMgr::Execute()
 	}
 }
 
-void ClientNetMgr::Disconnect()
-{
-	clientNet->Disconnect();
-}
-
 TResult ClientNetMgr::Init(short portnum)
 {
 	AllocConsole();
