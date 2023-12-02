@@ -66,8 +66,7 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType s
 			cmdList.push_back((BYTE)(*buffer->begin()));
 			buffer->erase(buffer->begin());
 
-			//cmdList.begin() => type
-			cmdList.insert(cmdList.begin() + 1, buffer->begin(), buffer->begin() + (sizeof(float) * 2));
+			cmdList.insert(cmdList.begin(), buffer->begin(), buffer->begin() + (sizeof(float) * 2));
 			buffer->erase(buffer->begin(), buffer->begin() + (sizeof(float) * 2));
 		}
 
