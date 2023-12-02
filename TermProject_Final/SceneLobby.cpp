@@ -156,7 +156,7 @@ void SceneLobby::GetInput(CommandList* cmdList)
 	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
 
 	if (KEY_TAP(VK_ESCAPE)) {
-		cmdList->PushCommand((BYTE)ClientLobbyCmd::Terminate, nullptr, 0);
+		// 종료 코드
 	}
 }
 
@@ -171,10 +171,6 @@ void SceneLobby::ProcessCommand()
 
 	switch (cmd)
 	{
-	case (BYTE)ServerLobbyCmd::GoMenu:
-		framework->DisconnectServer();
-		SceneMgr->LoadScene(SceneType::Intro);
-		break;
 	case (BYTE)ServerLobbyCmd::GoStage:
 		SceneMgr->LoadScene(SceneType::Stage);
 		break;
@@ -186,6 +182,7 @@ void SceneLobby::ProcessCommand()
 		// Terminate 명령
 		break;
 	default:
+		assert(0);
 		break;
 	}
 }

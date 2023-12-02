@@ -12,7 +12,7 @@ Packet PacketGenerator::GeneratePacket()
 	isGenPacket = true;
 
 	uint8 len = pCommandList.size();
-	packet.insert(packet.begin(), &len, &len + sizeof(uint8));
+	PushData(packet, &len, sizeof(uint8));
 
 	for (int i = 0;i < pCommandList.size();++i) {
 		packet.push_back(pCommandList[i]); // commandList
@@ -22,7 +22,12 @@ Packet PacketGenerator::GeneratePacket()
 }
 
 bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType scenetype)
-{ //dataLen은 버퍼에 들어오지 않음.
+{
+	if (buffer->empty()) {
+		return false;
+	}
+
+	//dataLen은 버퍼에 들어오지 않음.
 	//항상 cmdList는 비운다.
 	cmdList.clear();
 

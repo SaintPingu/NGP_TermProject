@@ -18,6 +18,7 @@ private:
 	ServerNetwork*		serverNet{};			// 클라이언트 서버 네트워크
 	bool				executeLogic{};			// 클라이언트 로직 구동 여부
 	bool				active = true;
+	bool				isDisconnected{};		// 연결 종료?
 
 	CommandList			cmdList{};
 	PacketBuffer		packetBuffer{};
@@ -52,6 +53,7 @@ public:
 	void Stop() { active = false; }
 	void Run() { active = true; }
 	void Exit() { executeLogic = false; }
+	void Disconnect() { isDisconnected = true; SetEvent(sendEvent); }
 
 public:
 	bool IsConnected(); 

@@ -37,6 +37,9 @@ TResult ClientInfo::Logic()
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
 
 		WaitForSingleObject(sendEvent, INFINITE);
+		if (isDisconnected) {	// 연결 종료 시 종료
+			break;
+		}
 
 		curConnectFlag = ConnectFlag::SendStart;		// 전송 대기
 		if (SendPacket() == TResult::FAIL) {
@@ -57,6 +60,7 @@ TResult ClientInfo::Logic()
 		ResetEvent(sendEvent);
 	}
 
+	serverNet->SendTerminatePacket();
 	CLIENT_MGR->RegisterTerminateClientID(ID); // 클라이언트 매니저에게 자신이 종료 됐다는 것을 알린다. 이후 이벤트 처리 할 것임 
 	std::cout << "\n\t\t-> Client [" << ID << "] 종료... -> ClientMgr 에서 이벤트 처리\n";
 

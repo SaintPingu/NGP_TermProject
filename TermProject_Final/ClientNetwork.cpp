@@ -13,6 +13,13 @@ ClientNetwork::~ClientNetwork()
 {
 }
 
+void ClientNetwork::DisConnect()
+{
+	isConnected = false;
+	framework->DisconnectServer();
+	framework->WakeForPacket();
+}
+
 TResult ClientNetwork::Init()
 {
 
@@ -35,17 +42,20 @@ void ClientNetwork::Logic()
 		//std::cout << "수신 대기\n";
 		// recv 구동
 		curConnectFlag = ConnectFlag::RecvStart;
-		if (RecvPacket() == TResult::FAIL) {
+		TResult result = RecvPacket();
+		if (result == TResult::FAIL || result == TResult::CLIENT_DISCONNECT) {
+			DisConnect();	// 연결 종료
 			break;
 		}
 		curConnectFlag = ConnectFlag::RecvFinish;
 		framework->WakeForPacket();
+
 		//std::cout << "수신 완료 및 송신 대기\n";
 		// send 대기
 		WaitForSingleObject(sendPacket, INFINITE);
 		ResetEvent(sendPacket);
 
-		// 12/02 민동현 : 수신 과정에서 종료 커맨트 수신 시 서버 연결 종료
+		// 12/02 민동현 : 수신 과정에서 종료 커맨드 수신 시 서버 연결 종료
 		if (!executeClientNet) {
 			break;
 		}
@@ -80,15 +90,12 @@ TResult ClientNetwork::SendPacket()
 
 	SetPacketBuffer(packet);
 
-	PacketNetwork::SendPacket();
-	return TResult();
+	return PacketNetwork::SendPacket();
 }
 
 TResult ClientNetwork::RecvPacket()
 {
-	PacketNetwork::RecvPacket();
-
-	return TResult();
+	return PacketNetwork::RecvPacket();
 }
 
 TResult ClientNetwork::RecvClientID(int& id)

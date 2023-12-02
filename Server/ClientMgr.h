@@ -59,6 +59,7 @@ public:
 	std::pair<int, TResult> RegisterConnectedClient(std::string clientIP, SOCKET& sock); // 접속된 클라이언트 ClientPool 에 등록 ( 해당 인덱스는 곧 본인의 ID ) 
 	// 접속 종료된 클라이언트들을 처리한다 ( 이벤트 처리 )
 	void RegisterTerminateClientID(int id); // 접속 종료 아이디 이벤트 등록 - 클라이언트 쓰레드에서 접속이 종료된 것을 클라이언트 매니저에게 알린다. 이를 이벤트 처리한다. 
+	void Disconnect(int id);				// clientID에 해당하는 ClientInfo를 중단한다.
 	
 	int GetPoolIndex() const { return clientPoolIndex; }
 	ClientInfo* GetClient(int ID);

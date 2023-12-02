@@ -52,6 +52,8 @@ using uint64 = unsigned __int64;
 
 // 2023-11-14-TUE (민동현) - Common.h 에 추가 -> Command
 using Command = BYTE;
+using PacketBuffer = std::vector<BYTE>;
+using Packet = std::vector<BYTE>;
 
 template<typename T>
 using Atomic = std::atomic<T>;
@@ -430,6 +432,12 @@ public:
 	std::vector<BYTE> GetCmdList();
 };
 
+template<class T>
+void PushData(PacketBuffer& buffer, T* data, size_t size)
+{
+	buffer.insert(buffer.end(), data, data + size);
+}
+
 
 // 2023-11-14-TUE (민동현) - Types.h -> Common.h로 이동
 /// +------------------
@@ -437,7 +445,6 @@ public:
 /// ------------------+	
 enum class ServerLobbyCmd : BYTE
 {
-	GoMenu,
 	GoStage,
 	Quit,
 	None,
@@ -471,8 +478,6 @@ enum class ServerBattleCmd : BYTE
 /// ------------------+	
 enum class ClientLobbyCmd : BYTE
 {
-	Terminate,
-
 	MoveLeft,
 	MoveRight,
 	MoveUp,
@@ -485,7 +490,6 @@ enum class ClientLobbyCmd : BYTE
 /// ------------------+	
 enum class ClientStageCmd : BYTE
 {
-	Terminate,
 	EnterStage,
 	ExitStage,
 	GoLobby,
@@ -496,8 +500,6 @@ enum class ClientStageCmd : BYTE
 /// ------------------+	
 enum class ClientBattleCmd : BYTE
 {
-	Terminate,
-
 	MoveLeft,
 	MoveRight,
 	MoveUp,
@@ -507,7 +509,6 @@ enum class ClientBattleCmd : BYTE
 	SkillQ,
 	SkillW,
 	SkillE,
-
 };
 
 
@@ -720,8 +721,7 @@ namespace Battle
 };
 
 
-using PacketBuffer = std::vector<BYTE>;
-using Packet = std::vector<BYTE>;
+
 
 /// +--------------
 ///	    LOBBY

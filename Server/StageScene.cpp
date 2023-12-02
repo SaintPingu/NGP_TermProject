@@ -47,13 +47,13 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	/// +----------------------------------
 	///		 해당 클라이언트 연결 종료  
 	/// ----------------------------------+	
-	case ClientStageCmd::Terminate:
-	{
-		// 해당 클라이언트와 연결 종료 코드 추가 필요.
-		players.erase(clientID);
-		curPlayerCnt -= 1;
-		battleReady = false;
-	}
+	//case ClientStageCmd::Terminate:
+	//{
+	//	// 해당 클라이언트와 연결 종료 코드 추가 필요.
+	//	players.erase(clientID);
+	//	curPlayerCnt -= 1;
+	//	battleReady = false;
+	//}
 		break;
 	/// +----------------------------------
 	///				캐릭터 선택  

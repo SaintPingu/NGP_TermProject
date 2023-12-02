@@ -27,13 +27,14 @@ private:
 
 	// 서버와 연결되었는가?
 	bool isConnected = false;
+
+	void DisConnect();
 public:
 	virtual TResult Init() override;
 	TResult Init(std::string serverIP, short portnum);
 
 	void Logic();
 	void Send() { SetEvent(sendPacket); }
-	void Disconnect() { executeClientNet = false; }
 
 	PacketGenerator& GetPacketGenerator() { return packetGenerator; }
 public:

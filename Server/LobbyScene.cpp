@@ -61,9 +61,7 @@ bool LobbyScene::CheckMoveScene(const std::shared_ptr<LobbyPlayer>& player)
 	}
 	else if (player->pos.x - 20 <= rectWindow.left) {
 		int clientID = player->GetID();
-		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerLobbyCmd::GoMenu, nullptr, 0);
-		CLIENT_MGR->RegisterTerminateClientID(clientID);
-		RemovePlayer(clientID);
+		CLIENT_MGR->Disconnect(clientID);
 		return true;
 	}
 
@@ -85,10 +83,6 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 	ClientLobbyCmd clientCmd = (ClientLobbyCmd)command;
 
 	switch (clientCmd) {
-	case ClientLobbyCmd::Terminate:
-		// 해당 클라이언트와 연결 종료 코드 추가 필요.
-		players.erase(clientID);
-		return;
 	case ClientLobbyCmd::MoveLeft:
 		player->isMoving = true;
 		player->dir = Dir::Left;
@@ -147,15 +141,21 @@ const std::shared_ptr<LobbyPlayer>& LobbyScene::GetPlayer(int id)
 // 하나의 키 입력으로 지속적으로 플레이어를 움직여야 한다.
 void LobbyScene::Update()
 {
+	std::vector<int> removedID{};
 	for (auto& [clientID, player] : players) {
 		player->befpos = player->pos;
 		player->Move();
 		if (CheckMoveScene(player)) {
+			removedID.push_back(clientID);
 			continue;
 		}
 		else if (CheckCollision(player->GetRect())) {
 			player->pos = player->befpos;
 		}
+	}
+
+	for (int clientID : removedID) {
+		RemovePlayer(clientID);
 	}
 }
 

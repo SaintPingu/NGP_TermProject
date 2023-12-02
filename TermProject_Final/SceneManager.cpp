@@ -94,6 +94,11 @@ void SceneManager::AnimateScene()
 	}
 }
 
+void SceneManager::DisConnect()
+{
+	LoadScene(SceneType::Intro);
+}
+
 bool SceneManager::IsLoading()
 {
 	return !loading->IsLoaded();
