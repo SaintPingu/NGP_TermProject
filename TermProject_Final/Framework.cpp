@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "ClientNetMgr.h"
 #include "ClientNetwork.h"
+#include "SceneStage.h"
 
 SINGLETON_PATTERN_DEFINITION(Framework)
 
@@ -22,15 +23,40 @@ void Framework::Start(HWND hWnd)
 	SetUpdateFuncToSingle();
 }
 
+// SceneStage는 WriteData를 수행하지 않는다.
+void Framework::UpdateWithServer_Stage()
+{
+	if (!SceneMgr->IsLoading()) {
+		const std::shared_ptr<SceneStage>& sceneStage = std::static_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
+		if (sceneStage->IsRecvPacket()) {
+			if (WaitForPacket_Stage()) {
+				// 패킷 수신됨
+				ProcessCommand();
+			}
+		}
+
+		GetInput();
+		if (sceneStage->IsSendPacket()) {
+			SendPacket();
+			sceneStage->SendComplete();
+		}
+	}
+	AnimateScene();
+}
+
 void Framework::UpdateWithServer()
 {
-	if (WaitForPacket() == false) {
-		return;
+	if (!SceneMgr->IsLoading()) {
+		if (WaitForPacket() == false) {
+			return;
+		}
+		if (ProcessCommand() == false) {
+			return;
+		}
+		WriteData();
+		GetInput();
+		SendPacket();
 	}
-	ProcessCommand();
-	WriteData();
-	GetInput();
-	SendPacket();
 	AnimateScene();
 }
 
@@ -49,9 +75,30 @@ void Framework::Update()
 	
 }
 
+bool Framework::WaitForPacket_Stage()
+{
+	constexpr int waitMSec = 100;
+	DWORD result = WaitForSingleObject(recvPacket, waitMSec);
+
+	// 시그널 상태(SetEvent)
+	if (result == WAIT_OBJECT_0) {
+		return true;
+	}
+	// timeout
+	else {
+		return false;
+	}
+}
 bool Framework::WaitForPacket()
 {
-	WaitForSingleObject(recvPacket, INFINITE);
+	constexpr int timeoutMSec = 5 * 1000;
+	DWORD result = WaitForSingleObject(recvPacket, timeoutMSec);
+	if (result == WAIT_TIMEOUT) {
+		std::cout << "서버 연결시간 초과\n";
+		Sleep(2000);
+		Terminate();
+		return false;
+	}
 	ResetEvent(recvPacket);
 
 	if (CLIENT_NETWORK->IsConnected() == false) {
@@ -66,9 +113,9 @@ bool Framework::WaitForPacket()
 	return true;
 }
 
-void Framework::ProcessCommand()
+bool Framework::ProcessCommand()
 {
-	CrntScene->ProcessCommand();
+	return CrntScene->ProcessCommand();
 }
 
 void Framework::WriteData()
@@ -119,10 +166,12 @@ void Framework::Render()
 
 void Framework::Terminate()
 {
-	CloseHandle(recvPacket);
+	CLIENT_NETWORK->Terminate();
 	if (clientNetwork.joinable()) {
 		clientNetwork.join();
 	}
+
+	PostQuitMessage(0);
 }
 
 void Framework::ConnectToServer()
@@ -136,9 +185,10 @@ void Framework::ConnectToServer()
 		});
 
 	// 서버 연결 대기
-	WaitForSingleObject(serverConnect, INFINITE);
+	constexpr int timeoutMSec = 10 * 1000;
+	DWORD result = WaitForSingleObject(serverConnect, timeoutMSec);
 
-	if (CLIENT_NETWORK->IsConnected() == false) {
+	if (result == WAIT_TIMEOUT || CLIENT_NETWORK->IsConnected() == false) {
 		MessageBox(hWnd, L"서버 연결에 실패하였습니다.", L"연결 에러", MB_ICONERROR | MB_OK);
 		PostQuitMessage(0);
 		return;
@@ -156,4 +206,14 @@ void Framework::DisconnectServer()
 void Framework::DefaultPacketSend()
 {
 	CLIENT_NETWORK->Send();
+}
+
+void Framework::EnterStage()
+{
+	SetUpdateFuncToServer_Stage();
+}
+
+void Framework::ExitStage()
+{
+	SetUpdateFuncToServer();
 }

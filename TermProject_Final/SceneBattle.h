@@ -70,7 +70,7 @@ public:
 	virtual void GetInput(CommandList* cmdList) override;
 
 	virtual void WriteData(void* data) override;
-	virtual void ProcessCommand() override;
+	virtual bool ProcessCommand() override;
 
 	void CreatePlayer(int id, Type type, Type subType);
 };

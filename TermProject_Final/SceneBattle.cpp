@@ -202,6 +202,10 @@ void SceneBattle::Animate()
 
 void SceneBattle::GetInput(CommandList* cmdList)
 {
+	if (cmdList == nullptr) {
+		return;
+	}
+
 	if (KEY_TAP('O')) {
 		//player->Heal();
 	}
@@ -321,7 +325,7 @@ void SceneBattle::WriteData(void* data)
 	}
 }
 
-void SceneBattle::ProcessCommand()
+bool SceneBattle::ProcessCommand()
 {
 	BYTE cmd;
 	PacketBuffer buffer;
@@ -361,6 +365,7 @@ void SceneBattle::ProcessCommand()
 		}
 	}
 
+	return true;
 }
 
 void SceneBattle::CreatePlayer(int id, Type type, Type subType)

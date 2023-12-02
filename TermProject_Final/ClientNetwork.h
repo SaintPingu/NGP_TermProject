@@ -11,7 +11,7 @@ class ClientNetwork: public PacketNetwork
 {
 
 private:
-	bool			IsTerminated{};
+	bool			isTerminated{};
 	bool			IsReceived{};
 
 	ConnectFlag		curConnectFlag{}; // revc || send  
@@ -37,8 +37,10 @@ public:
 	void Send() { SetEvent(sendPacket); }
 
 	PacketGenerator& GetPacketGenerator() { return packetGenerator; }
+
+	void Terminate() { isTerminated = true; SetEvent(sendPacket); }
 public:
-	bool IsTerminate() { return IsTerminated; }
+	bool IsTerminate() { return isTerminated; }
 
 	bool IsConnected() { return isConnected; }
 

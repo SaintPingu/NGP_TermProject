@@ -55,8 +55,9 @@ void ClientNetwork::Logic()
 		WaitForSingleObject(sendPacket, INFINITE);
 		ResetEvent(sendPacket);
 
-		// 12/02 민동현 : 수신 과정에서 종료 커맨드 수신 시 서버 연결 종료
-		if (!executeClientNet) {
+		// 12-03 민동현 : 클라이언트 framework 업데이트 도중 연결 종료 요청 시 종료 패킷을 보내고 종료한다.
+		if (IsTerminate()) {
+			SendTerminatePacket();
 			break;
 		}
 		//std::cout << "송신 중\n";

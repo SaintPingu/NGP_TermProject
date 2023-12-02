@@ -254,7 +254,7 @@ void SceneIntro::GetInput(CommandList* cmdList)
 	menu.fingerController();
 }
 
-void SceneIntro::ProcessCommand()
+bool SceneIntro::ProcessCommand()
 {
-	
+	return true;
 }

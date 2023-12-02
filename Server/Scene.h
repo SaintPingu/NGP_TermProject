@@ -6,4 +6,5 @@ public:
 	virtual void Init() abstract;
 	virtual void Update() abstract;
 	virtual void ProcessCommand(int clientID, Command command, void* data) abstract;
+	virtual void RemoveClient(int clientID) abstract;
 };

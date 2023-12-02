@@ -64,12 +64,15 @@ private:
 
 	bool _allHide = false;
 	int _select_pokemon_move = 0;
+
+	bool isSendPacket{};	// 커맨드를 실어서   패킷을 송신해야 하는가?
+	bool isRecvPacket{};	// 대기열에 진입해서 패킷을 수신해야 하는가?
 public:
 	virtual void Init();
 	virtual void Render(HDC hdc);
 	virtual void Animate();
 	virtual void GetInput(CommandList* cmdList);
-	virtual void ProcessCommand();
+	virtual bool ProcessCommand();
 	virtual void WriteData(void* data);
 
 
@@ -78,4 +81,8 @@ public:
 	void SetStageElement(StageElement stageElement) {
 		_phase = stageElement;
 	}
+
+	void SendComplete() { isSendPacket = false; }
+	bool IsSendPacket() const { return isSendPacket; }
+	bool IsRecvPacket() const { return isRecvPacket; }
 };

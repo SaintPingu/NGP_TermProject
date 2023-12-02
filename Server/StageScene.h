@@ -17,8 +17,7 @@ public:
 class StageScene : public Scene
 {
 private:
-	bool battleReady = false;
-	int  curPlayerCnt = 0;
+	int enterPlayerCnt{};
 	std::unordered_map<int, std::shared_ptr<StagePlayer>> players{};
 
 public:
@@ -28,7 +27,8 @@ public:
 
 	const std::unordered_map<int, std::shared_ptr<StagePlayer>>& GetPlayers() const { return players; }
 
-	bool AddPlayer(int clientID);
+	void AddClient(int clientID);
+	void RemoveClient(int clientID);
 	void Clear();
 
 };

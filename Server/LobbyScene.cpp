@@ -2,7 +2,10 @@
 #include "LobbyScene.h"
 #include "DataBase.h"
 #include "ClientMgr.h"
+#include "SceneMgr.h"
+#include "ServerFramework.h"
 
+#define MAX_RIGHT	750
 #define TPLAYER_IMAGESIZE_X 32
 #define TPLAYER_IMAGESIZE_Y 32
 
@@ -40,7 +43,7 @@ void LobbyPlayer::Move()
 	}
 }
 
-RECT LobbyPlayer::GetRect()
+RECT LobbyPlayer::GetRect() const
 {
 	RECT rect{};
 	rect.left = pos.x - TPLAYER_IMAGESIZE_X / 2;
@@ -56,11 +59,18 @@ RECT LobbyPlayer::GetRect()
 
 bool LobbyScene::CheckMoveScene(const std::shared_ptr<LobbyPlayer>& player)
 {
-	if (player->pos.x + 20 >= rectWindow.right) {
+	RECT temp{};
+
+	int clientID = player->GetID();
+	// 우측 수풀 사이 도로 건널 시 스테이지 이동
+	if (player->pos.x + 20 >= MAX_RIGHT) {
+		BYTE crntStageType = (BYTE)SCENE_MGR->GetCrntStageType();
+		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerLobbyCmd::GoStage, &crntStageType, sizeof(BYTE));
+		SCENE_MGR->PushChangeLocationEvent(clientID, SceneEventType::ChangeClientLocation_ToStage);
 		return true;
 	}
+	// 좌측 다리 건너 메뉴 이동 시 연결 종료
 	else if (player->pos.x - 20 <= rectWindow.left) {
-		int clientID = player->GetID();
 		CLIENT_MGR->Disconnect(clientID);
 		return true;
 	}
@@ -108,19 +118,25 @@ void LobbyScene::ProcessCommand(int clientID, Command command, void* data)
 	}
 }
 
-void LobbyScene::AddPlayer(int clientID)
+void LobbyScene::AddClient(int clientID)
 {
 	players[clientID] = std::make_shared<LobbyPlayer>();
 	players[clientID]->SetID(clientID);
 }
 
-bool LobbyScene::CheckCollision(RECT playerRect)
+bool LobbyScene::CheckCollision(const std::shared_ptr<LobbyPlayer>& player)
 {
 	RECT temp;
-	for (int i = 0; i < 18; ++i) {
+	RECT playerRect = player->GetRect();
+
+	for (int i = 17; i >= 0; --i) {
 		RECT rect = DATABASE->buildingLocations[i];
 		if (IntersectRect(&temp, &playerRect, &rect))
 		{
+			// EXIT 건물 충돌 시 Quit 커맨드 전송
+			if (i == 17) {
+				CLIENT_MGR->PushCommand(player->GetID(), (BYTE)ServerLobbyCmd::Quit, nullptr, 0);
+			}
 			return true;
 		}
 	}
@@ -141,25 +157,19 @@ const std::shared_ptr<LobbyPlayer>& LobbyScene::GetPlayer(int id)
 // 하나의 키 입력으로 지속적으로 플레이어를 움직여야 한다.
 void LobbyScene::Update()
 {
-	std::vector<int> removedID{};
 	for (auto& [clientID, player] : players) {
 		player->befpos = player->pos;
 		player->Move();
 		if (CheckMoveScene(player)) {
-			removedID.push_back(clientID);
 			continue;
 		}
-		else if (CheckCollision(player->GetRect())) {
+		else if (CheckCollision(player)) {
 			player->pos = player->befpos;
 		}
 	}
-
-	for (int clientID : removedID) {
-		RemovePlayer(clientID);
-	}
 }
 
-void LobbyScene::RemovePlayer(int clientID)
+void LobbyScene::RemoveClient(int clientID)
 {
 	players.erase(clientID);
 }

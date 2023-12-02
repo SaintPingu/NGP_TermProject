@@ -10,5 +10,5 @@ public:
 	virtual void GetInput(CommandList* cmdList) abstract;
 
 	virtual void WriteData(void* data) abstract;
-	virtual void ProcessCommand() abstract;
+	virtual bool ProcessCommand() abstract;
 };
