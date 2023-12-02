@@ -21,7 +21,7 @@ Packet PacketGenerator::GeneratePacket()
 	return packet;
 }
 
-bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType scenetype)
+bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType scenetype)
 {
 	if (buffer->empty()) {
 		return false;
@@ -29,7 +29,7 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType s
 
 	//dataLen은 버퍼에 들어오지 않음.
 	//항상 cmdList는 비운다.
-	cmdList.clear();
+	cmdData.clear();
 
 	if (scenetype == SceneType::Lobby)
 	{
@@ -37,8 +37,8 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType s
 		buffer->erase(buffer->begin());
 
 		if (cmd == (BYTE)ServerLobbyCmd::GoStage) {
-			cmdList.push_back(*buffer->begin()); // 1byte StageElement
-			buffer->erase(buffer->begin()); 	
+			cmdData.push_back(buffer->front()); // 1byte StageElement
+			buffer->clear();
 		}
 		return false;
 	}
@@ -48,8 +48,8 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType s
 		buffer->erase(buffer->begin());
 
 		if (cmd == (BYTE)ServerStageCmd::GoBattle) { // ClientStageData other
-			for (int i = 0; i < buffer->size();++i) {
-				cmdList.push_back((*buffer)[i]);
+			for (int i = 0; i < buffer->size(); ++i) {
+				cmdData.push_back((*buffer)[i]);
 			}
 		}
 		buffer->clear(); // stage는 data가 따로 없으므로 여기서 Clear
@@ -63,15 +63,16 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdList, SceneType s
 
 		if (cmd == (BYTE)ServerBattleCmd::Hit || cmd == (BYTE)ServerBattleCmd::UpdateMP) {
 			// float hp || float mp
-			cmdList.insert(cmdList.begin(), buffer->begin(), buffer->begin() + sizeof(float));
+			cmdData.insert(cmdData.begin(), buffer->begin(), buffer->begin() + sizeof(float));
 			buffer->erase(buffer->begin(), buffer->begin() + sizeof(float));
 		}
 		else if (cmd == (BYTE)ServerBattleCmd::CreateEffect) {
 			// char type , Vector2 pos ==> float[2]
-			cmdList.push_back((BYTE)(*buffer->begin()));
+			cmdData.push_back((BYTE)(*buffer->begin()));
 			buffer->erase(buffer->begin());
 
-			cmdList.insert(cmdList.begin(), buffer->begin(), buffer->begin() + (sizeof(float) * 2));
+			//cmdData.begin() => type
+			cmdData.insert(cmdData.begin() + 1, buffer->begin(), buffer->begin() + (sizeof(float) * 2));
 			buffer->erase(buffer->begin(), buffer->begin() + (sizeof(float) * 2));
 		}
 

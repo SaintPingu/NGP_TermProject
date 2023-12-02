@@ -247,6 +247,10 @@ void SceneStage::Animate()
 
 void SceneStage::GetInput(CommandList* cmdList)
 {
+	if (cmdList == nullptr) {
+		return;
+	}
+
 	RECT rect;
 	target->_cam = { target->_rectDraw.left - CAMSIZE_X, rectWindow.top, target->_rectDraw.right + CAMSIZE_X, rectWindow.bottom };
 
@@ -318,6 +322,7 @@ void SceneStage::GetInput(CommandList* cmdList)
 		if (target->_select_index == StageElement::Lobby)
 		{
 			moveX = 300;
+			cmdList->PushCommand((BYTE)ClientStageCmd::GoLobby, nullptr, 0);
 			SceneMgr->LoadScene(SceneType::Lobby);
 			return;
 		}
@@ -399,7 +404,7 @@ void SceneStage::GetInput(CommandList* cmdList)
 	}
 }
 
-void SceneStage::ProcessCommand()
+bool SceneStage::ProcessCommand()
 {
 	BYTE cmd;
 	PacketBuffer buffer;
@@ -409,9 +414,6 @@ void SceneStage::ProcessCommand()
 
 	switch ((ServerStageCmd)cmd)
 	{
-	case ServerStageCmd::GoLobby:
-		SceneMgr->LoadScene(SceneType::Lobby);
-		break;
 	case ServerStageCmd::GoBattle:
 		SceneMgr->LoadScene(SceneType::Battle);
 		//typeFly(4)
@@ -421,6 +423,8 @@ void SceneStage::ProcessCommand()
 	default:
 		break;
 	}
+
+	return true;
 }
 
 void SceneStage::WriteData(void* data)

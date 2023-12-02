@@ -74,7 +74,7 @@ public:
 	virtual void Render(HDC hdc) override;
 	virtual void Animate() override;
 	virtual void GetInput(CommandList* cmdList);
-	virtual void ProcessCommand();
+	virtual bool ProcessCommand();
 
 	virtual void WriteData(void* data) override {}
 };

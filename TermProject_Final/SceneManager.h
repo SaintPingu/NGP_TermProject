@@ -21,7 +21,7 @@ public:
 
 	void DisConnect();
 
-	std::shared_ptr<Scene> GetCurrentScene() { return crntScene; }
+	const std::shared_ptr<Scene>& GetCurrentScene() const { return crntScene; }
 	SceneType GetCurrentSceneType() { return crntSceneType; }
 
 	bool IsLoading();

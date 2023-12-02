@@ -129,7 +129,7 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 	}
 }
 
-void BattleScene::AddPlayer(int clientID)
+void BattleScene::AddClient(int clientID)
 {
 	 players[clientID] = std::make_shared<Player>(); 
 

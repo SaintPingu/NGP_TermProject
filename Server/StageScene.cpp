@@ -16,24 +16,24 @@ void StageScene::Update()
 {
 
 	// 배틀을 할 준비가 완료되면 각각의 클라이언트에게 GoBattle 명령어와 함께 팀원의 타입을 전달한다. ( 각각의 클라이언트의 타입은 이미 자신이 알고있다 )  
-	if (battleReady)
-	{
-		std::unordered_map<int, std::shared_ptr<StagePlayer>>::iterator it = players.begin();
-		std::shared_ptr<StagePlayer> P1 = it->second;	it++;
-		std::shared_ptr<StagePlayer> P2 = it->second;
+	//if (battleReady)
+	//{
+	//	std::unordered_map<int, std::shared_ptr<StagePlayer>>::iterator it = players.begin();
+	//	std::shared_ptr<StagePlayer> P1 = it->second;	it++;
+	//	std::shared_ptr<StagePlayer> P2 = it->second;
 
-		P1->PushCommand(ServerStageCmd::GoBattle, P2->typeFly, P2->typeGnd);
-		P2->PushCommand(ServerStageCmd::GoBattle, P1->typeFly, P1->typeGnd);
+	//	P1->PushCommand(ServerStageCmd::GoBattle, P2->typeFly, P2->typeGnd);
+	//	P2->PushCommand(ServerStageCmd::GoBattle, P1->typeFly, P1->typeGnd);
 
-		/// +----------------------------------
-		///			 씬 변경 ( 이벤트 )
-		/// ----------------------------------+	
-		int* P1_ID = new int(P1->ID);
-		int* P2_ID = new int(P2->ID);
-		SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P1_ID));
-		SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P2_ID));
+	//	/// +----------------------------------
+	//	///			 씬 변경 ( 이벤트 )
+	//	/// ----------------------------------+	
+	//	int* P1_ID = new int(P1->ID);
+	//	int* P2_ID = new int(P2->ID);
+	//	SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P1_ID));
+	//	SCENE_MGR->PushChangeLocationEvent(SceneEventType::ChangeClientLocation_ToBattle, &(P2_ID));
 
-	}
+	//}
 }
 
 void StageScene::ProcessCommand(int clientID, Command command, void* data)
@@ -44,17 +44,6 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 
 	switch (clientCmd)
 	{
-	/// +----------------------------------
-	///		 해당 클라이언트 연결 종료  
-	/// ----------------------------------+	
-	//case ClientStageCmd::Terminate:
-	//{
-	//	// 해당 클라이언트와 연결 종료 코드 추가 필요.
-	//	players.erase(clientID);
-	//	curPlayerCnt -= 1;
-	//	battleReady = false;
-	//}
-		break;
 	/// +----------------------------------
 	///				캐릭터 선택  
 	/// ----------------------------------+	
@@ -72,8 +61,8 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 		player.get()->typeGnd = typeGnd;
 
 		// 두명의 클라이언트가 모두 캐릭터를 선택한 상황으로 battle을 할 준비가 완료됨  
-		if (curPlayerCnt == maxStagePlayer)
-			battleReady = true;
+		//if (enterPlayerCnt == maxStagePlayer)
+		//	battleReady = true;
 
 	}
 		break;
@@ -97,8 +86,7 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	{
 
 		players.erase(clientID);
-		curPlayerCnt -= 1;
-		battleReady   = false;
+		//battleReady   = false;
 
 	}
 		break;
@@ -107,23 +95,25 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 
 }
 
-bool StageScene::AddPlayer(int clientID)
+void StageScene::AddClient(int clientID)
 {
-	// 2 명 이상은 못들어 오게 막는다. 
-	if (curPlayerCnt < maxStagePlayer)
-		curPlayerCnt += 1;
-	else
-		return false;
+	if (!players.count(clientID)) {
+		return;
+	}
 
 	players[clientID] = std::make_shared<StagePlayer>();
-	players[clientID].get()->ID = clientID;
-	return true;
+	players[clientID]->ID = clientID;
+}
+
+void StageScene::RemoveClient(int clientID)
+{
+	players.erase(clientID);
 }
 
 void StageScene::Clear()
 {
-	battleReady  = false;
-	curPlayerCnt = 0;
+	//battleReady  = false;
+	enterPlayerCnt = 0;
 	players.clear();
 }
 

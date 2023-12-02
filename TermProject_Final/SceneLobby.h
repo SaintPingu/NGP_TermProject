@@ -52,7 +52,7 @@ private:
 
 	CImage exits;
 	CImage glowing_black;
-	bool lobbyexit = false;
+	bool isQuitDialog = false;
 
 	RECT rectImage = { 0, };
 	RECT rectDraw = { 0, };
@@ -71,7 +71,7 @@ public:
 	virtual void Render(HDC hdc);
 	virtual void Animate();
 	virtual void GetInput(CommandList* cmdList);
-	virtual void ProcessCommand();
+	virtual bool ProcessCommand();
 
 	void WriteData(void* data);
 

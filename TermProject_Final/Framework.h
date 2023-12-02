@@ -24,14 +24,17 @@ private:
 
 	PacketLoader packetLoader;
 
+	bool WaitForPacket_Stage();
 	bool WaitForPacket();
-	void ProcessCommand();
+	bool ProcessCommand();
 	void WriteData();
 	void SendPacket();
 	void AnimateScene();
 
+	void UpdateWithServer_Stage();
 	void UpdateWithServer();
 	void UpdateSingle();
+	void SetUpdateFuncToServer_Stage() { UpdateFunc = std::bind(&Framework::UpdateWithServer_Stage, this); }
 	void SetUpdateFuncToServer() { UpdateFunc = std::bind(&Framework::UpdateWithServer, this); }
 	void SetUpdateFuncToSingle() { UpdateFunc = std::bind(&Framework::UpdateSingle, this); }
 
@@ -64,6 +67,8 @@ public:
 	// 23-11-25 민동현 : WaitForPacket() 함수를 꺠우기 위한 함수
 	void WakeForPacket() { SetEvent(recvPacket); }
 
+	void EnterStage();
+	void ExitStage();
 
 private:
 	std::function<void()> UpdateFunc{};

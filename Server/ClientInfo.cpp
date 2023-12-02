@@ -37,7 +37,9 @@ TResult ClientInfo::Logic()
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
 
 		WaitForSingleObject(sendEvent, INFINITE);
-		if (isDisconnected) {	// 연결 종료 시 종료
+		// 12-03 민동현 : 서버 framework 시뮬레이션 도중 클라이언트 연결 종료 요청 시 종료 패킷을 보내고 종료한다.
+		if (isDisconnected) {
+			serverNet->SendTerminatePacket();
 			break;
 		}
 
@@ -50,7 +52,8 @@ TResult ClientInfo::Logic()
 		//std::cout << "\t\t-> Client [" << ID << "] 송신 완료 및 수신 대기\n";
 
 		curConnectFlag = ConnectFlag::RecvStart;
-		if (RecvPacket() == TResult::FAIL) {
+		TResult result = RecvPacket();
+		if (result == TResult::FAIL || result == TResult::CLIENT_DISCONNECT) {
 			break;
 		}
 		curConnectFlag = ConnectFlag::RecvFinish;
@@ -60,7 +63,6 @@ TResult ClientInfo::Logic()
 		ResetEvent(sendEvent);
 	}
 
-	serverNet->SendTerminatePacket();
 	CLIENT_MGR->RegisterTerminateClientID(ID); // 클라이언트 매니저에게 자신이 종료 됐다는 것을 알린다. 이후 이벤트 처리 할 것임 
 	std::cout << "\n\t\t-> Client [" << ID << "] 종료... -> ClientMgr 에서 이벤트 처리\n";
 

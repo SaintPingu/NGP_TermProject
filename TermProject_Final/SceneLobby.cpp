@@ -5,8 +5,6 @@
 #include "SceneManager.h"
 #include "InputManager.h"
 
-#define TPLAYER_SPEED 4;
-
 SceneLobby::SceneLobby()
 {
 
@@ -53,7 +51,6 @@ void SceneLobby::Render(HDC hdc)
 	LobbyPlayer myPlayer = lobbyPlayers[framework->client_ID];
 	int camLeft = myPlayer.pos.x - CAMSIZE_X;
 	int camRight = myPlayer.pos.x + CAMSIZE_X;
-
 	RECT rectBackground = rectImage;
 	
 	if (camLeft < 0) {
@@ -81,7 +78,7 @@ void SceneLobby::Render(HDC hdc)
 			player.rectImage.left, player.rectImage.top, player.rectImage.right, player.rectImage.bottom);
 	}
 
-	if (lobbyexit == true)
+	if (isQuitDialog == true)
 	{
 		glowing_black.AlphaBlend(hdc, 0, 0, 500, 750, 0, 0, 500, 750, ALPHA);
 		exits.Draw(hdc, rectImage.right / 2 - 100, rectImage.bottom / 2 + 60, 200, 51, 0, 0, 810, 210);
@@ -106,6 +103,10 @@ void SceneLobby::Animate()
 
 void SceneLobby::GetInput(CommandList* cmdList)
 {
+	if (cmdList == nullptr) {
+		return;
+	}
+
 	if (KEY_TAP(VK_UP)) {
 		h -= 1;
 	}
@@ -136,17 +137,25 @@ void SceneLobby::GetInput(CommandList* cmdList)
 	if (v != 0) {
 		if (v == -1) {
 			cmd = ClientLobbyCmd::MoveLeft;
+			isQuitDialog = false;
 		} 
 		else {
 			cmd = ClientLobbyCmd::MoveRight;
+			isQuitDialog = false;
 		}
 	}
 	else if (h != 0) {
 		if (h == -1) {
-			cmd = ClientLobbyCmd::MoveUp;
+			if (isQuitDialog) {
+				cmd = ClientLobbyCmd::Stop;
+			}
+			else {
+				cmd = ClientLobbyCmd::MoveUp;
+			}
 		}
 		else {
 			cmd = ClientLobbyCmd::MoveDown;
+			isQuitDialog = false;
 		}
 	}
 	else {
@@ -155,36 +164,42 @@ void SceneLobby::GetInput(CommandList* cmdList)
 
 	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
 
-	if (KEY_TAP(VK_ESCAPE)) {
-		// 종료 코드
+	if (KEY_TAP(VK_ESCAPE) || (isQuitDialog && KEY_TAP(VK_RETURN))) {
+		framework->Terminate();
 	}
 }
 
-void SceneLobby::ProcessCommand()
+bool SceneLobby::ProcessCommand()
 {
 	BYTE cmd;
-	PacketBuffer buffer;
+	std::vector<BYTE> cmdData;
 	PacketLoader packetLoader = framework->GetPacketLoader();
 
 	// 로비는 명령이 항상 1개 이므로 바로 반복 필요x
-	packetLoader.PopCommand(cmd, buffer, SceneType::Lobby);
+	packetLoader.PopCommand(cmd, cmdData, SceneType::Lobby);
 
 	switch (cmd)
 	{
 	case (BYTE)ServerLobbyCmd::GoStage:
+	{
 		SceneMgr->LoadScene(SceneType::Stage);
+		StageElement crntStageType = (StageElement)cmdData.front();
+		framework->EnterStage();
+		return false;
+	}
 		break;
 	case (BYTE)ServerLobbyCmd::None:
 		// 아무것도 하지 않는 명령어를 의미
 		break;
 	case (BYTE)ServerLobbyCmd::Quit:
-		PostQuitMessage(0);
-		// Terminate 명령
+		isQuitDialog = true;
 		break;
 	default:
 		assert(0);
 		break;
 	}
+	return true;
+
 }
 
 void SceneLobby::WriteData(void* data)

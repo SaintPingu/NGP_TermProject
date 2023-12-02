@@ -249,7 +249,7 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 	clientEvents.push(std::make_pair(type, NewUser));
 
 	++clientPoolIndex;
-	SCENE_MGR->Lobby()->AddPlayer(id);
+	SCENE_MGR->Lobby()->AddClient(id);
 
 	return std::pair<int, TResult>(id, TResult::SUCCESS);
 }

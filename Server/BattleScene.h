@@ -36,7 +36,8 @@ public:
 	const EnemyController* GetEnemyController() { return enemies; }
 	const PlayerBullet* GetPlayerController() { return playerbullet; }
 
-	void AddPlayer(int clientID);
+	void AddClient(int clientID);
+	void RemoveClient(int clientID) {};
 
 
 public:
