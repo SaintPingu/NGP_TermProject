@@ -179,6 +179,7 @@
     <ClCompile Include="ClientNetwork.cpp" />
     <ClCompile Include="ClientPacket.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="ClientPacket.h" />
     <ClInclude Include="ClientStructs.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="Image.h" />

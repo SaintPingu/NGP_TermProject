@@ -14,7 +14,7 @@ struct EnemyData {
 };
 
 struct BulletData {
-	BulletType enemyType;
+	BulletType bulletType;
 	Vector2 pos;
 	Vector2 dir;
 };

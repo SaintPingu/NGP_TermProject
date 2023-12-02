@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Enemy.h"
 
 class BattleMap
 {
@@ -35,8 +36,9 @@ public:
 class Player;
 class SceneBattle : public Scene {
 private:
-	struct Eenemy {
-		Type type{};
+	// 12-03 최정일 Enemy 클래스 생성으로 주석 처리 
+	struct EnemyData {
+		Enemytype type{};
 		Vector2 pos{};
 		Dir dir{};
 		bool isAction;
@@ -51,18 +53,26 @@ private:
 		Vector2 pos{};
 	};
 
+	ObjectImage imgMelee;
+	ObjectImage imgRange;
+
+	Melee* meleeEnemy = nullptr; // 객체 하나씩만 생성해서 여러번 그리는 방식으로.
+	Range* rangeEnemy = nullptr;
+
 	std::unordered_map<BulletType, ObjectImage> bulletImages;
 
 	StageElement stage;
 	BattleMap battleMap;
 	std::unordered_map<int, std::shared_ptr<Player>> players;
 	std::vector<Bullet> bullets{};
-	std::vector<Eenemy> enemies{};
+	std::vector<EnemyData> enemies{};
 	std::vector<Effect> effects{};
+
 
 	void RenderPlayers(HDC hdc);
 	void RenderBullets(HDC hdc);
 	void RenderEffects(HDC hdc);
+	void RenderEnemies(HDC hdc);
 public:
 	virtual void Init() override;
 	virtual void Render(HDC hdc) override;

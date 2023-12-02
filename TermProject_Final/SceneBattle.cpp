@@ -119,6 +119,20 @@ void SceneBattle::RenderEffects(HDC hdc)
 {
 }
 
+void SceneBattle::RenderEnemies(HDC hdc)
+{
+	for (auto& enemy : enemies) {
+		if (enemy.type == Enemytype::Melee) {
+			meleeEnemy->SetPos(enemy.pos);
+			meleeEnemy->Render(hdc);
+		}
+		else if (enemy.type == Enemytype::Range) {
+			rangeEnemy->SetPos(enemy.pos);
+			rangeEnemy->Render(hdc);
+		}
+	}
+}
+
 void SceneBattle::Init()
 {
 	// 맵 초기화
@@ -175,6 +189,36 @@ void SceneBattle::Init()
 		break;
 	}
 
+	EnemyDataStatus enemydata;
+
+	imgMelee.Load(L"images\\battle\\sprite_wingull.png", { 34,33 }, { 4,6 }, { 28,22 });
+	imgMelee.ScaleImage(1.2f, 1.2f);
+	imgRange.Load(L"images\\battle\\sprite_seadra.png", { 29,31 }, { 3,3 }, { 25,28 });
+	imgRange.ScaleImage(1.2f, 1.2f);
+	enemydata.type = Type::Water;
+
+	meleeEnemy = new Melee(imgMelee, { 0.0f,0.0f }, enemydata);
+	rangeEnemy = new Range(imgRange,{ 0.0f,0.0f }, enemydata);
+
+	/*EnemyData data;
+	data.dir = Dir::Down;
+	data.isAction = true;
+	data.pos = Vector2(100.0f, 100.0f);
+	data.type = Enemytype::Melee;
+	for (int i = 0; i < 10;++i) {
+		for (int j = 0;j < 10;++j) {
+			data.pos = Vector2(100.0f + i * 30, 100.0f + j * 20);
+			if (rand() % 2) {
+				data.type = Enemytype::Range;
+			}
+			else {
+				data.type = Enemytype::Melee;
+
+			}
+			enemies.push_back(data);
+		}
+	}*/
+
 	// 테스트 플레이어 생성
 	CreatePlayer(0, Type::Elec, Type::Fire);
 }
@@ -185,9 +229,9 @@ void SceneBattle::Render(HDC hdc)
 	RenderPlayers(hdc);
 	RenderBullets(hdc);
 	/*boss->Render(hdc);
-	player->Render(hdc);
-	enemies->Render(hdc);
-	player->RenderSkill(hdc);
+	player->Render(hdc);*/
+	RenderEnemies(hdc);
+	/*player->RenderSkill(hdc);
 	effects->Render(hdc);
 	gui->Render(hdc);*/
 }
@@ -277,10 +321,15 @@ void SceneBattle::WriteData(void* data)
 		std::bitset<3> dir(byte.to_string().substr(2, 3));
 		std::bitset<1> action(byte.to_string().substr(5, 1));
 
-		enemies[i].type = static_cast<Type>(type.to_ulong());
-		enemies[i].dir = static_cast<Dir>(dir.to_ulong());
-		enemies[i].isAction = static_cast<bool>(action.to_ulong());
-		enemies[i].pos = enemyData->Pos;
+		enemies[i].type = (static_cast<Enemytype>(type.to_ulong()));
+		enemies[i].dir = (static_cast<Dir>(dir.to_ulong()));
+		enemies[i].isAction = (static_cast<bool>(action.to_ulong()));
+		enemies[i].pos = (enemyData->Pos);
+
+		/*enemies[i].SetType(static_cast<Enemytype>(type.to_ulong()));
+		enemies[i].SetDir(static_cast<Dir>(dir.to_ulong()));
+		enemies[i].SetIsAction(static_cast<bool>(action.to_ulong()));
+		enemies[i].SetPos(enemyData->Pos);*/
 	}
 
 	// BulletsBattleData - Cnt
@@ -350,23 +399,26 @@ void SceneBattle::ProcessCommand()
 		case ServerBattleCmd::AcceptSkillQ:
 			players[framework->client_ID]->ActiveSkill(Skill::Identity);
 			break;
-		case ServerBattleCmd::Hit:
+		case ServerBattleCmd::Hit: {
 			float hp;
 			memcpy(&hp, &(*buffer.begin()), sizeof(float));
 			players[framework->client_ID]->SetHp(hp);
 			break;
-		case ServerBattleCmd::UpdateMP:
+		}
+		case ServerBattleCmd::UpdateMP: {
 			float mp;
 			memcpy(&mp, &(*buffer.begin()), sizeof(float));
 			players[framework->client_ID]->SetMp(mp);
 			break;
-		case ServerBattleCmd::CreateEffect:
+		}
+		case ServerBattleCmd::CreateEffect: {
 			Effect createEffect;
 			memcpy(&createEffect.type, &(*buffer.begin()), sizeof(BYTE));
 			buffer.erase(buffer.begin());
 			memcpy(&createEffect.pos, &(*buffer.begin()), sizeof(float) * 2);
 			effects.push_back(createEffect);
 			break;
+		}
 		default:
 			break;
 		}

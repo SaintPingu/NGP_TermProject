@@ -44,8 +44,8 @@ void Framework::UpdateSingle()
 
 void Framework::Update()
 {
-	//UpdateSingle(); 
-	UpdateFunc();
+	UpdateSingle(); 
+	//UpdateFunc();
 	
 }
 

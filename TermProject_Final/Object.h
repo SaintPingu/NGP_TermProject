@@ -16,7 +16,7 @@ protected:
 	GameObject(ObjectImage& image, const Vector2& pos);
 	void Render(const HDC& hdc, const RECT* rectImage = nullptr);
 	void Init(ObjectImage& image, const Vector2& pos);
-	void SetPos(const Vector2& pos);
+	
 
 	inline const ObjectImage& GetImage()
 	{
@@ -44,6 +44,11 @@ public:
 	{
 		return rectBody.bottom - rectBody.top;
 	}
+	inline void SetObjectImage(ObjectImage& img)
+	{
+		image = &img;
+	}
+	void SetPos(const Vector2& pos);
 };
 
 class IMovable abstract {

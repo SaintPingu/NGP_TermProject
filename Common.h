@@ -116,6 +116,7 @@ enum class Action { Idle = 0, Attack, Hurt, Death };
 enum class Pokemon { Null = 0, Moltres, Articuno, Thunder };
 enum class SubPokemon { Null = 0, Pikachu = 0, Squirtle, Charmander };
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
+enum class Enemytype { Melee = 0, Range };
 enum class BulletType { Empty = 0, Main_Fire, Main_Elec, Main_Water, Sub_Fire, Sub_Elec, Sub_Water, Enemy, Boss, _count };
 enum class EffectType { Empty = 0, Explode_Fire, Explode_Water, Explode_Elec, Cloud_Fire, Cloud_Water, Cloud_Elec };
 enum class Skill { Empty = 0, Identity, Sector, Circle };
