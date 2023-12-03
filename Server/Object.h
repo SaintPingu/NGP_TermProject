@@ -52,12 +52,9 @@ inline float GetRadius(float x, float y)
 
 class IControllable abstract {
 private:
-	virtual void SetPosDest() abstract;
 	bool isMove = false;
 public:
-	virtual void SetMove() abstract;
 	virtual void Move() abstract;
-	virtual void Stop(Dir dir) abstract;
 
 	inline void StartMove()
 	{

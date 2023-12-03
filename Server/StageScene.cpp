@@ -5,6 +5,7 @@
 #include "SceneMgr.h"
 #include "Scene.h"
 #include "ServerFramework.h"
+#include "BattleScene.h"
 
 
 void StageScene::StartBattle()
@@ -31,6 +32,8 @@ void StageScene::StartBattle()
 	/// ----------------------------------+	
 	SCENE_MGR->PushChangeLocationEvent(P1->ID, SceneEventType::ChangeClientLocation_ToBattle);
 	SCENE_MGR->PushChangeLocationEvent(P2->ID, SceneEventType::ChangeClientLocation_ToBattle);
+
+	BattleStart();
 }
 
 void StageScene::Init()

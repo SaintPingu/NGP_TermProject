@@ -45,7 +45,6 @@ private:
 	SubPokemon subPokemon = SubPokemon::Null;
 
 	void Death();
-	void SetPosDest() override;
 	inline bool IsClearShotDelay() const
 	{
 		return (playerData.crntShotDelay <= 0);
@@ -61,9 +60,7 @@ public:
 	void Init();
 
 	void SetDirection(Dir dir);
-	void SetMove() override;
 	void Move() override;
-	void Stop(Dir dir) override;
 	void CheckCollideWindow(Vector2& pos) const;
 
 	void CheckShot();

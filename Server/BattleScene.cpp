@@ -6,6 +6,11 @@
 #include "ClientMgr.h"
 #include "Bullet.h"
 
+bool isBattleStarted{};
+void BattleStart()
+{
+	isBattleStarted = true;
+}
 
 void BattleScene::Init()
 {
@@ -19,10 +24,11 @@ void BattleScene::Update()
 	}
 
 	for (auto& [clientID, player] : players) {
-		if (player->IsMove())
-			player->Move();
+		player->Move();
 		player->CheckShot();
 	}
+
+	return;
 	enemies->CreateCheckMelee();
 	enemies->CreateCheckRange();
 	enemies->CheckAttackDelay();
@@ -60,35 +66,27 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 	/// ----------------------------------+	
 	case ClientBattleCmd::MoveLeft:
 	{
-		player->Stop(Dir::Right);
 		player->SetDirection(Dir::Left);
-		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveRight:
 	{
-		player->Stop(Dir::Left);
 		player->SetDirection(Dir::Right);
-		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveUp:
 	{
-		player->Stop(Dir::Down);
 		player->SetDirection(Dir::Up);
-		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveDown:
 	{
-		player->Stop(Dir::Up);
 		player->SetDirection(Dir::Down);
-		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::Stop:
 	{
-		player->StopMove();
+		player->SetDirection(Dir::Empty);
 	}
 		break;
 	/// +----------------------------------

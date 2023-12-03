@@ -283,8 +283,6 @@ void SceneBattle::Animate()
 }
 
 
-//#define PLAYERMOVETEST //define시 플레이어 움직임을 싱글에서 테스트 해볼수 있음.
-
 void SceneBattle::GetInput(CommandList* cmdList)
 {
 	if (cmdList == nullptr) {
@@ -336,32 +334,6 @@ void SceneBattle::GetInput(CommandList* cmdList)
 		v -= 1;
 	}
 
-
-#ifdef PLAYERMOVETEST
-	// 플레이어 움직임 테스트
-	Vector2 pos = players[framework->client_ID]->GetPosCenter();
-	if (v != 0) {
-		if (v == -1) {
-			players[framework->client_ID]->SetPos(Vector2(pos.x - 10.0f, pos.y));
-		}
-		else {
-			players[framework->client_ID]->SetPos(Vector2(pos.x + 10.0f, pos.y));
-		}
-	}
-	pos = players[framework->client_ID]->GetPosCenter();
-	if (h != 0) {
-		if (h == -1) {
-			if (isQuitDialog) {
-			}
-			else {
-				players[framework->client_ID]->SetPos(Vector2(pos.x, pos.y - 10.0f));
-			}
-		}
-		else {
-			players[framework->client_ID]->SetPos(Vector2(pos.x, pos.y + 10.0f));
-		}
-	}
-#else
 	ClientBattleCmd cmd;
 	if (v != 0) {
 		if (v == -1) {
@@ -371,7 +343,7 @@ void SceneBattle::GetInput(CommandList* cmdList)
 			cmd = ClientBattleCmd::MoveRight;
 		}
 	}
-	if (h != 0) {
+	else if (h != 0) {
 		if (h == -1) {
 			cmd = ClientBattleCmd::MoveUp;
 		}
@@ -382,9 +354,7 @@ void SceneBattle::GetInput(CommandList* cmdList)
 	else {
 		cmd = ClientBattleCmd::Stop;
 	}
-
 	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
-#endif PLAYERMOVETEST
 }
 
 void SceneBattle::WriteData(void* data)
@@ -392,14 +362,12 @@ void SceneBattle::WriteData(void* data)
 	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 
 	Battle::BattleData battleData;
-	return;
 	// PlayerBattleData
+	memcpy(battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData) * 2);
+	RemoveData(*buffer, sizeof(Battle::PlayerBattleData) * 2);
 	for (int i = 0; i < 2; ++i) {
-		memcpy(&battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData));
-		RemoveData(*buffer, sizeof(Battle::PlayerBattleData));
-
-		int clientID = battleData.PlayerBattleData->PlayerID;
-		Vector2 pos = battleData.PlayerBattleData->Pos;
+		int clientID = battleData.PlayerBattleData[i].PlayerID;
+		Vector2 pos = battleData.PlayerBattleData[i].Pos;
 		if (!players.count(clientID)) {
 			players[clientID] = std::make_shared<Player>(otherPlayer.fly, otherPlayer.gnd);
 		}
@@ -486,7 +454,7 @@ bool SceneBattle::ProcessCommand()
 	BYTE cmdCnt = 1;
 	//BYTE cmdCnt = packetLoader.buffer->front();
 	//packetLoader.buffer->erase(packetLoader.buffer->begin());
-	std::cout << "CmdCnt = [" << (int)cmdCnt << "]\n";
+	//std::cout << "CmdCnt = [" << (int)cmdCnt << "]\n";
 	for (BYTE i = 0; i < cmdCnt; ++i) {
 		BYTE cmd{};
 		PacketBuffer cmdData;

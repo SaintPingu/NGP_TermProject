@@ -113,161 +113,52 @@ void Player::Death()
 	playerData.isDeath = true;
 	playerData.hp = 0;
 }
-void Player::SetPosDest()
-{
-	const int movementAmount = playerData.speed * 2;
-	switch (direction)
-	{
-	case Dir::Left:
-		vectorMove.x = -movementAmount;
-		break;
-	case Dir::Right:
-		vectorMove.x = movementAmount;
-		break;
-	case Dir::Up:
-		vectorMove.y = -movementAmount;
-		break;
-	case Dir::Down:
-		vectorMove.y = movementAmount;
-		break;
-	case Dir::LD:
-		vectorMove.x = -movementAmount;
-		vectorMove.y = movementAmount;
-		break;
-	case Dir::LU:
-		vectorMove.x = -movementAmount;
-		vectorMove.y = -movementAmount;
-		break;
-	case Dir::RD:
-		vectorMove.x = movementAmount;
-		vectorMove.y = movementAmount;
-		break;
-	case Dir::RU:
-		vectorMove.x = movementAmount;
-		vectorMove.y = -movementAmount;
-		break;
-	default:
-		break;
-	}
-
-	posDest = Vector2::GetDest(GetPosCenter(), vectorMove);
-}
 
 void Player::SetDirection(Dir inputDir)
 {
-	if (direction == inputDir || direction == Dir::Empty)
-	{
-		direction = inputDir;
-		return;
+	direction = inputDir;
+	if (direction != Dir::Empty) {
+		StartMove();
 	}
-
-	switch (direction)
-	{
-	case Dir::Left:
-		if (inputDir == Dir::Up)		direction = Dir::LU;
-		else if (inputDir == Dir::Down)	direction = Dir::LD;
-		break;
-	case Dir::Right:
-		if (inputDir == Dir::Up)		direction = Dir::RU;
-		else if (inputDir == Dir::Down)	direction = Dir::RD;
-		break;
-	case Dir::Up:
-		if (inputDir == Dir::Left)		direction = Dir::LU;
-		else if (inputDir == Dir::Right)direction = Dir::RU;
-		break;
-	case Dir::Down:
-		if (inputDir == Dir::Left)		direction = Dir::LD;
-		else if (inputDir == Dir::Right)direction = Dir::RD;
-		break;
-	default:
-		return;
+	else {
+		StopMove();
 	}
-	StopMove();
-}
-
-void Player::SetMove()
-{
-	if (playerData.isDeath == true)
-	{
-		return;
-	}
-	else if (IsMove() == true && alpha > 0)
-	{
-		return;
-	}
-
-	SetPosDest();
-
-	if (IsMove() == false && alpha == 0)
-	{
-	}
-	else if (alpha > 0.5f)
-	{
-		alpha = 0.5f;
-	}
-	StartMove();
 }
 
 void Player::Move()
 {
-	Vector2 posCenter = GetPosCenter();
-	Vector2 posNext = Vector2::Lerp(posCenter, posDest, alpha);
-
-	CheckCollideWindow(posNext);
-	SetPos(posNext);
-	posCenter = GetPosCenter();
-	vectorMove = posDest - posCenter;
-
-	alpha += 0.1f;
-	if (alpha > 0.5f)
-	{
-		if (direction != Dir::Empty)
-		{
-			SetPosDest();
-
-			alpha = 0.5f;
-		}
-		else if (alpha > 1)
-		{
-			vectorMove = { 0.0f, };
-			StopMove();
-			alpha = 0;
-		}
+	if (!IsMove()) {
+		return;
 	}
-}
 
-void Player::Stop(Dir inputDir)
-{
-	switch (direction)
-	{
+	constexpr float speed = 200.f;
+	Vector2 posCenter = GetPosCenter();
+	Vector2 pos{};
+	int v{}, h{};
+
+	switch (direction) {
 	case Dir::Left:
-		if (inputDir != Dir::Left) return;
+		v = -1;
 		break;
 	case Dir::Right:
-		if (inputDir != Dir::Right) return;
+		v = 1;
 		break;
 	case Dir::Up:
-		if (inputDir != Dir::Up) return;
+		h = -1;
 		break;
 	case Dir::Down:
-		if (inputDir != Dir::Down) return;
-		break;
-	case Dir::LU:
-		if (inputDir != Dir::Left && inputDir != Dir::Up) return;
-		break;
-	case Dir::LD:
-		if (inputDir != Dir::Left && inputDir != Dir::Down) return;
-		break;
-	case Dir::RU:
-		if (inputDir != Dir::Right && inputDir != Dir::Up) return;
-		break;
-	case Dir::RD:
-		if (inputDir != Dir::Right && inputDir != Dir::Down) return;
-		break;
-	default:
+		h = 1;
 		break;
 	}
-	direction = direction - inputDir;
+
+	if (v != 0) {
+		pos.x += DeltaTime() * speed * v;
+	}
+	else if (h != 0) {
+		pos.y += DeltaTime() * speed * h;
+	}
+	Vector2 posDest = posCenter + pos;
+	SetPos(posDest);
 }
 
 void Player::CheckCollideWindow(Vector2& pos) const

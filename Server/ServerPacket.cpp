@@ -58,6 +58,8 @@ void PacketGenerator::GenerateData()
 			playerbattledata[plCount].Pos = player->GetPosCenter();
 			++plCount;
 		}
+		battleData.PlayerBattleData[0] = playerbattledata[0];
+		battleData.PlayerBattleData[1] = playerbattledata[1];
 
 		return;
 		Battle::EnemyBattleData enemybattledata{};
@@ -99,8 +101,6 @@ void PacketGenerator::GenerateData()
 		Battle::BossSkillBattleData bossskillbattledata{};
 		//bossskillbattledata.EffectCnt = // 이펙트 어떤 데이터인지 잘 모르겠음..
 
-		battleData.PlayerBattleData[0] = playerbattledata[0];
-		battleData.PlayerBattleData[1] = playerbattledata[1];
 		battleData.EnemyData.EnemyCnt = enemybattledata.EnemyCnt;
 		battleData.EnemyData.Enemys = enemybattledata.Enemys;
 		battleData.BulletData.BulletCnt = bulletbattledata.BulletCnt;
@@ -180,9 +180,9 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerBattleCmd::None);
 		}
-		uint8 len = pCommandList.size();
+		uint8 len = pCommandList.size()
 			//sizeof(BYTE)
-			//(sizeof(battleData.PlayerBattleData) * 2);
+			+ (sizeof(Battle::PlayerBattleData) * 2);
 
 		//데이터 길이
 		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
@@ -193,7 +193,6 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			buffer.push_back(pCommandList[i]); //ServerBattleCmd
 		}
 		
-		return true;
 		{//PlayerBattleData[2] 
 			BYTE bytes[sizeof(Battle::PlayerBattleData) * 2];
 			std::memcpy(bytes, battleData.PlayerBattleData, sizeof(Battle::PlayerBattleData) * 2);

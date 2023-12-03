@@ -67,7 +67,7 @@ void Framework::Update()
 bool Framework::WaitForPacket()
 {
 RestartRecv:
-	std::cout << " Framework 수신 대기\n";
+	//std::cout << " Framework 수신 대기\n";
 	constexpr int timeoutMSec = 5 * 1000;
 	DWORD result = WaitForSingleObject(recvPacket, timeoutMSec);
 	if (result == WAIT_TIMEOUT) {
@@ -77,7 +77,7 @@ RestartRecv:
 		return false;
 	}
 	ResetEvent(recvPacket);
-	std::cout << " Framework 수신 완료\n";
+	//std::cout << " Framework 수신 완료\n";
 
 	if (CLIENT_NETWORK->IsConnected() == false) {
 		return false;
