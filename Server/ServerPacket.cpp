@@ -267,15 +267,15 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 
 	if (type == SceneType::Lobby || type == SceneType::Battle) {
 		cmd = (BYTE)(packetBuffer->front()); // 1byte
-		packetBuffer->erase(packetBuffer->begin());
+		packetBuffer->clear();
 	}
 	else if (type == SceneType::Stage) {
-		cmd = (BYTE)(*(packetBuffers[crntClientID]->begin() + 1)); // 1byte
-		packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
+		cmd = (BYTE)(packetBuffer->front()); // 1byte
+		packetBuffer->erase(packetBuffer->begin());
 
 		if (cmd == (BYTE)ClientStageCmd::EnterStage) {
-			data.push_back(*(packetBuffers[crntClientID]->begin() + 1)); // ClientStageData
-			packetBuffers[crntClientID]->erase(packetBuffers[crntClientID]->begin() + 1);
+			data.push_back(packetBuffer->front()); // ClientStageData
+			packetBuffer->erase(packetBuffer->begin());
 		}
 	}
 

@@ -84,10 +84,7 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	/// ----------------------------------+	
 	case ClientStageCmd::GoLobby:
 	{
-
-		players.erase(clientID);
-		//battleReady   = false;
-
+		SCENE_MGR->PushChangeLocationEvent(player->ID, SceneEventType::ChangeClientLocation_ToLobby);
 	}
 		break;
 
@@ -97,10 +94,6 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 
 void StageScene::AddClient(int clientID)
 {
-	if (!players.count(clientID)) {
-		return;
-	}
-
 	players[clientID] = std::make_shared<StagePlayer>();
 	players[clientID]->ID = clientID;
 }

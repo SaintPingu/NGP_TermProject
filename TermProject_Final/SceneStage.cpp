@@ -18,6 +18,14 @@
 
 #define VK_R 0x52
 
+StageElement crntPhase{ StageElement::Water };
+
+void SetStageElement(StageElement stageElement)
+{
+	crntPhase = stageElement;
+}
+
+
 SceneStage::SceneStage()
 {
 }
@@ -59,8 +67,6 @@ void SceneStage::Init()
 	_ready_Articuno[0].Load(L"images\\stage\\Articuno_1.png");
 	_ready_Articuno[1].Load(L"images\\stage\\Articuno_2.png");
 
-	_phase = StageElement::Water;
-
 	target->_rectDraw = { (rectWindow.right / 2 - 40), (rectWindow.bottom / 2 - 40), rectWindow.right / 2 + 40,  (rectWindow.bottom / 2 + 40) }; // 중간에 위치 타겟을
 	target->_rectImage = { 0, 0, TARGET_IMAGESIZE_X, TARGET_IMAGESIZE_Y };
 
@@ -74,7 +80,7 @@ void SceneStage::Init()
 
 void SceneStage::Render(HDC hdc)
 {
-	switch (_phase)
+	switch (crntPhase)
 	{
 	case StageElement::Water:
 		_water.Draw(hdc, 0, 0, 800, 1200, moveX, 0, 800, 1200);
@@ -324,10 +330,11 @@ void SceneStage::GetInput(CommandList* cmdList)
 			moveX = 300;
 			cmdList->PushCommand((BYTE)ClientStageCmd::GoLobby, nullptr, 0);
 			SceneMgr->LoadScene(SceneType::Lobby);
+			isSendPacket = true;
 			return;
 		}
 
-		switch (_phase)
+		switch (crntPhase)
 		{
 		case StageElement::Water:
 		{

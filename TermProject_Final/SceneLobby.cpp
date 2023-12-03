@@ -4,6 +4,7 @@
 #include "Framework.h"
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "SceneStage.h"
 
 SceneLobby::SceneLobby()
 {
@@ -182,8 +183,9 @@ bool SceneLobby::ProcessCommand()
 	{
 	case (BYTE)ServerLobbyCmd::GoStage:
 	{
-		SceneMgr->LoadScene(SceneType::Stage);
 		StageElement crntStageType = (StageElement)cmdData.front();
+		SetStageElement(crntStageType);
+		SceneMgr->LoadScene(SceneType::Stage);
 		framework->EnterStage();
 		return false;
 	}

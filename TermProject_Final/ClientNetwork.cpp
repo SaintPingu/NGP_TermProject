@@ -39,7 +39,7 @@ void ClientNetwork::Logic()
 	framework->CompleteServerConnect();
 	while (executeClientNet)
 	{
-		//std::cout << "수신 대기\n";
+		std::cout << "수신 대기\n";
 		// recv 구동
 		curConnectFlag = ConnectFlag::RecvStart;
 		TResult result = RecvPacket();
@@ -50,7 +50,7 @@ void ClientNetwork::Logic()
 		curConnectFlag = ConnectFlag::RecvFinish;
 		framework->WakeForPacket();
 
-		//std::cout << "수신 완료 및 송신 대기\n";
+		std::cout << "수신 완료 및 송신 대기\n";
 		// send 대기
 		WaitForSingleObject(sendPacket, INFINITE);
 		ResetEvent(sendPacket);
@@ -60,7 +60,7 @@ void ClientNetwork::Logic()
 			SendTerminatePacket();
 			break;
 		}
-		//std::cout << "송신 중\n";
+		std::cout << "송신 중\n";
 
 		// send 구동
 		curConnectFlag = ConnectFlag::SendStart;
@@ -69,7 +69,7 @@ void ClientNetwork::Logic()
 		}
 		curConnectFlag = ConnectFlag::SendFinish;
 
-		//std::cout << "송신 완료\n";
+		std::cout << "송신 완료\n";
 
 	}
 

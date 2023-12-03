@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GUIManager.h"
 #include "Framework.h"
 #include "player.h"

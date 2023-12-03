@@ -28,17 +28,17 @@ void Framework::UpdateWithServer_Stage()
 {
 	if (!SceneMgr->IsLoading()) {
 		const std::shared_ptr<SceneStage>& sceneStage = std::static_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
-		if (sceneStage->IsRecvPacket()) {
-			if (WaitForPacket_Stage()) {
+		if (sceneStage->IsRecvPacket()) {	// 패킷을 수신해야 한다면
+			if (WaitForPacket_Stage()) {	// 패킷 수신 대기
 				// 패킷 수신됨
 				ProcessCommand();
 			}
 		}
 
 		GetInput();
-		if (sceneStage->IsSendPacket()) {
-			SendPacket();
-			sceneStage->SendComplete();
+		if (sceneStage->IsSendPacket()) {	// 패킷을 송신해야 한다면
+			SendPacket();					// 패킷 송신
+			sceneStage->SendComplete();		// 패킷 송신 완료
 		}
 	}
 	AnimateScene();

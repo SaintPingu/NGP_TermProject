@@ -3,6 +3,7 @@
 
 
 class SceneStage : public Scene {
+
 public:
 	SceneStage();
 	~SceneStage();
@@ -12,14 +13,12 @@ private:
 	public:
 		RECT _rectDraw = { 0, };
 		RECT _rectImage = { 0, };
-		CImage _img;
-		CImage _select_img;
-		RECT _cam = { 0, };
-		bool _select = false;
-		StageElement _select_index;
+		CImage _img;					// 일반 타겟 이미지
+		CImage _select_img;				// 빨간 타겟 이미지
+		RECT _cam = { 0, };				// 카메라 RECT
+		bool _select = false;			// 선택가능한가?
+		StageElement _select_index;		// 현재 타겟이 위치한 스테이지
 	};
-
-	StageElement _phase = StageElement::Water;
 
 	RECT _rectDraw = { 0, };
 	RECT _rectImage = { 0, };
@@ -78,11 +77,9 @@ public:
 
 	void FingerController();
 
-	void SetStageElement(StageElement stageElement) {
-		_phase = stageElement;
-	}
-
 	void SendComplete() { isSendPacket = false; }
 	bool IsSendPacket() const { return isSendPacket; }
 	bool IsRecvPacket() const { return isRecvPacket; }
 };
+
+void SetStageElement(StageElement stageElement);

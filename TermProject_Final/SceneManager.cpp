@@ -40,6 +40,10 @@ void SceneManager::InitScene(SceneType scene)
 		framework->ConnectToServer();
 	}
 
+	if (crntSceneType == SceneType::Stage) {
+		framework->ExitStage();
+	}
+
 	switch (scene) {
 	case SceneType::Intro:
 		crntScene = std::make_shared<SceneIntro>();
@@ -49,6 +53,7 @@ void SceneManager::InitScene(SceneType scene)
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
+		framework->EnterStage();
 		break;
 	case SceneType::Battle:
 		crntScene = std::make_shared<SceneBattle>();
