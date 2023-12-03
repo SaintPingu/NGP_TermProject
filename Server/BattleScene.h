@@ -44,7 +44,6 @@ public:
 private:
 	void CollideCheck_EnemyBullets_Player(int clientID,  Player* player);
 	void CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player);
-	void CollideCheck_PlayerBullets_Boss(int clientID,  Player* player);
 
 public:
 	RECT GetRectDisplay() const

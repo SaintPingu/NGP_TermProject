@@ -152,8 +152,6 @@ void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skil
 
 void BattleScene::CollideCheck()
 {
-
-
 	for (auto& [clientID, player] : players) {
 		
 	/// +----------------------------------
@@ -162,22 +160,11 @@ void BattleScene::CollideCheck()
 		CollideCheck_EnemyBullets_Player(clientID, player.get());
 
 	/// +----------------------------------
-	///	     PLAYER BULLETS <-> ENEMIES
+	///	  PLAYER BULLETS <-> ENEMIES, BOSS
 	/// ----------------------------------+	
 		CollideCheck_PlayerBullets_Enemies(clientID, player.get());
-
-	/// +----------------------------------
-	///	     PLAYER BULLETS <-> BOSS
-	/// ----------------------------------+	
-		CollideCheck_PlayerBullets_Boss(clientID, player.get());
-
-
 	}
 
-
-	/// +----------------------------------
-	///	     PLAYER <-> RECT WINDOW
-	/// ----------------------------------+	
 
 }
 
@@ -205,14 +192,30 @@ void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player
 
 void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player)
 {
-	
+	const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
+	const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
+
+
+	for (size_t i = 0; i < playerBullets.size(); ++i)
+	{
+		const RECT	rectBullet    = playerBullets.at(i)->GetRect();
+		const float bulletDamage  = playerBullets.at(i)->GetDamage();
+		const Type	bulletType    = playerBullets.at(i)->GetType();
+		const POINT bulletPos     = playerBullets.at(i)->GetPos();
+		
+		if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
+			(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
+		{
+			if (playerBullets.at(i)->IsSkillBullet() == false)
+			{
+				player->AddMP(0.15f);
+			}
+			player->GetPlayerBullets()->Pop(i);
+		}
+		else if (playerBullets.at(i)->Move() == false)
+		{
+			player->GetPlayerBullets()->Pop(i);
+		}
+	}
 }
-
-void BattleScene::CollideCheck_PlayerBullets_Boss(int clientID,  Player* player)
-{
-
-}
-
-
-
 

@@ -2,9 +2,9 @@
 #include "DataBase.h"
 #include "object.h"
 
-//struct BulletData;
-//class PlayerBullet;
-//class SkillManager;
+struct BulletData;
+class PlayerBullet;
+class SkillManager;
 
 //typedef struct PlayerData {
 //	Type type = Type::Empty;
@@ -31,15 +31,15 @@
 class Player : public GameObject, public IControllable {
 private:
 	PlayerData playerData;
-	//PlayerBullet* bullets = nullptr;
-	//PlayerBullet* subBullets = nullptr;
-	Vector2 posDest = { 0, };
-	Vector2 vectorMove = { 0, };
-	float alpha = 0;
+	PlayerBullet* bullets      = nullptr;
+	PlayerBullet* subBullets   = nullptr;
+	Vector2 posDest            = { 0, };
+	Vector2 vectorMove         = { 0, };
+	float alpha                = 0;
 
-	//SkillManager* skillManager = nullptr;
-	int skillCount = 0;
-	int deathFrame = 40;
+	SkillManager* skillManager = nullptr;
+	int skillCount             = 0;
+	int deathFrame             = 40;
 
 	Pokemon pokemon = Pokemon::Null;
 	SubPokemon subPokemon = SubPokemon::Null;
@@ -70,6 +70,14 @@ public:
 	void Shot();
 	//void CreateSubBullet(const POINT& center, const BulletData& data, Vector2 unitVector, bool isRotateImg, bool isSkillBullet = false);
 	void Hit(float damage, Type hitType, POINT effectPoint = { -1, });
+
+public:
+
+	/// +----------------------------------
+	///			GET PLAYE BULLETS
+	/// ----------------------------------+	
+	 PlayerBullet* GetPlayerBullets() { return bullets; }
+	 PlayerBullet* GetPlayerSubBullets() { return subBullets; }
 
 
 	void ActiveSkill(Skill skill);

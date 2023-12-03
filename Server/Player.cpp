@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "player.h"
 #include "scene.h"
+#include "Skill.h"
+#include "Bullet.h"
 
 Player::Player(Type type, Type subType)
 {
@@ -371,15 +373,15 @@ void Player::ActiveSkill(Skill skill)
 		return;
 	}
 
-	//skillManager->ActiveSkill(skill);
+	skillManager->ActiveSkill(skill);
 }
 void Player::MoveBullets()
 {
-	//bullets->Move();
-	//subBullets->Move();
+	bullets->Move();
+	subBullets->Move();
 }
 bool Player::IsUsingSkill() const
 {
-//	return skillManager->IsUsingSkill();
-	return true;
+	return skillManager->IsUsingSkill();
+	//return true;
 }
