@@ -94,6 +94,10 @@ enum class TResult : short
 	// CLIENT 관련 FAIL
 	CLIENT_NOT_CONNECTED,  
 	FORCING_CLOSE,
+
+	// 12-03 민동현 : 수신취소를 위한 코드 필요
+	// 송/수신 관련
+	CANCLE_RECV								// 수신 취소
 };
 
 //  2023-11-19-SUN (장재문) 패킷 송수신 플래그
@@ -456,6 +460,7 @@ enum class ServerLobbyCmd : BYTE
 /// ------------------+	
 enum class ServerStageCmd : BYTE
 {
+	None,
 	GoLobby,
 	GoBattle,
 
@@ -491,6 +496,7 @@ enum class ClientLobbyCmd : BYTE
 /// ------------------+	
 enum class ClientStageCmd : BYTE
 {
+	None,
 	EnterStage,
 	ExitStage,
 	GoLobby,

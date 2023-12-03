@@ -111,7 +111,7 @@ void PacketGenerator::GenerateData()
 	}
 }
 
-void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
+bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
 {
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 
@@ -151,8 +151,11 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		}
 	}
 	else if (type == DataType::Stage) {
-		BYTE len = pCommandList.size();
-		buffer.push_back(len); // Datalen
+		if (pCommandList.empty()) {
+			pCommandList.push_back((BYTE)ServerStageCmd::None);
+		}
+		uint8 len = pCommandList.size();
+		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
 
 		for (int i = 0; i < pCommandList.size(); ++i) {
 			buffer.push_back(pCommandList[i]); //ServerStageCmd
@@ -231,6 +234,8 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			}
 		}
 	}
+
+	return true;
 }
 
 void PacketGenerator::DeleteData()

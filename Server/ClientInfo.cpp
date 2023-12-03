@@ -34,7 +34,7 @@ TResult ClientInfo::Logic()
 	// 2023-11-16-TUR (민동현) : 리시브 완료 시 외부에서 "Send() { SetEvent(sendEvent) }" 를 호출해 전송하도록 한다.
 	while(executeLogic)
 	{
-		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\r";
+		//std::cout << "\t\t-> Client [" << ID << "] 송신 대기...\n";
 
 		WaitForSingleObject(sendEvent, INFINITE);
 		// 12-03 민동현 : 서버 framework 시뮬레이션 도중 클라이언트 연결 종료 요청 시 종료 패킷을 보내고 종료한다.

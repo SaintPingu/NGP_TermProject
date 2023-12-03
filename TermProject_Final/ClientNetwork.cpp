@@ -47,10 +47,10 @@ void ClientNetwork::Logic()
 			DisConnect();	// 연결 종료
 			break;
 		}
+		//std::cout << "수신 완료 및 송신 대기\n";
 		curConnectFlag = ConnectFlag::RecvFinish; 
 		framework->WakeForPacket();
 
-		//std::cout << "수신 완료 및 송신 대기\n";
 		// send 대기
 		WaitForSingleObject(sendPacket, INFINITE);
 		ResetEvent(sendPacket);

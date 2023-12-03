@@ -18,7 +18,7 @@ public:
 	Battle::BattleData battleData;
 	
 	void GenerateData();
-	void GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type);
+	bool GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type);
 
 	void DeleteData();
 

@@ -25,27 +25,6 @@ void Framework::Start(HWND hWnd)
 	SetUpdateFuncToSingle();
 }
 
-// SceneStage는 WriteData를 수행하지 않는다.
-void Framework::UpdateWithServer_Stage()
-{
-	AnimateScene();
-	if (!SceneMgr->IsLoading()) {
-		const std::shared_ptr<SceneStage>& sceneStage = std::static_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
-		if (sceneStage->IsRecvPacket()) {	// 패킷을 수신해야 한다면
-			if (WaitForPacket_Stage()) {	// 패킷 수신 대기
-				// 패킷 수신됨
-				ProcessCommand();
-			}
-		}
-
-		GetInput();
-		if (sceneStage->IsSendPacket()) {	// 패킷을 송신해야 한다면
-			SendPacket();					// 패킷 송신
-			sceneStage->SendComplete();		// 패킷 송신 완료
-		}
-	}
-}
-
 void Framework::UpdateWithServer()
 {
 	if (!SceneMgr->IsLoading()) {
@@ -79,34 +58,11 @@ void Framework::Update()
 #endif // SINGLEPLAY	
 }
 
-bool Framework::WaitForPacket_Stage()
-{
-	constexpr int waitMSec = 100;
-	DWORD result = WaitForSingleObject(recvPacket, waitMSec);
 
-	// 시그널 상태(SetEvent)
-	if (result == WAIT_OBJECT_0) {
-		ResetEvent(recvPacket);
-
-		if (CLIENT_NETWORK->IsConnected() == false) {
-			return false;
-		}
-
-		packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
-		if (packetLoader.buffer->empty()) {	// 예외 처리
-			SetEvent(recvPacket);
-			return false;
-		}
-
-		return true;
-	}
-	// timeout
-	else {
-		return false;
-	}
-}
 bool Framework::WaitForPacket()
 {
+RestartRecv:
+	//std::cout << " Framework 수신 대기\n";
 	constexpr int timeoutMSec = 5 * 1000;
 	DWORD result = WaitForSingleObject(recvPacket, timeoutMSec);
 	if (result == WAIT_TIMEOUT) {
@@ -116,16 +72,24 @@ bool Framework::WaitForPacket()
 		return false;
 	}
 	ResetEvent(recvPacket);
+	//std::cout << " Framework 수신 완료\n";
 
 	if (CLIENT_NETWORK->IsConnected() == false) {
 		return false;
 	}
+	else if (CLIENT_NETWORK->GetConnectFlag() != ConnectFlag::RecvFinish) {
+		// Stage에서 왜 WakeForPacket 함수가 호출되지 않았는데도 실행되는가...
+		goto RestartRecv;
+	}
 
 	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
 	if (packetLoader.buffer->empty()) {	// 예외 처리
+		std::cout << "[ERROR - WaitForPacket()] :: 수신한 패킷이 비어있습니다!\n";
 		SetEvent(recvPacket);
 		return false;
 	}
+	//std::cout << "패킷 정상 수신 / 데이터 크기 : (" << packetLoader.buffer->size() << ")\n";
+
 	return true;
 }
 
@@ -225,17 +189,13 @@ void Framework::DisconnectServer()
 
 void Framework::DefaultPacketSend()
 {
+	ResetEvent(recvPacket);
 	CLIENT_NETWORK->Send();
-}
-
-void Framework::EnterStage()
-{
-	SetUpdateFuncToServer_Stage();
 }
 
 void Framework::ExitStage()
 {
-	SetUpdateFuncToServer();
-	CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
-	cmdList->PushCommand((BYTE)ClientLobbyCmd::Stop, nullptr, 0);
+	// 스테이지에서 벗어나 로비로 입장 전, Stop 커맨드를 한 번 보낸다. (동기화)
+	//CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
+	//cmdList->PushCommand((BYTE)ClientLobbyCmd::Stop, nullptr, 0);
 }

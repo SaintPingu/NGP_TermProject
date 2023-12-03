@@ -20,6 +20,11 @@ private:
 		StageElement _select_index;		// 현재 타겟이 위치한 스테이지
 	};
 
+	struct OtherType {
+		Type fly{};
+		Type gnd{};
+	};
+
 	RECT _rectDraw = { 0, };
 	RECT _rectImage = { 0, };
 	RECT rectStage[5] = { 0, };
@@ -64,11 +69,9 @@ private:
 	bool _allHide = false;
 	int _select_pokemon_move = 0;
 
-	bool isSendPacket{};	// 커맨드를 실어서   패킷을 송신해야 하는가?
-	bool isRecvPacket{};	// 대기열에 진입해서 패킷을 수신해야 하는가?
-
 	bool inWaitingRoom{};
 
+	void ExitStage(CommandList* cmdList);
 	void EnterLobby(CommandList* cmdList);
 	void RequestEnterBattle(CommandList* cmdList);
 public:
@@ -79,12 +82,7 @@ public:
 	virtual bool ProcessCommand();
 	virtual void WriteData(void* data);
 
-
 	void FingerController();
-
-	void SendComplete() { isSendPacket = false; }
-	bool IsSendPacket() const { return isSendPacket; }
-	bool IsRecvPacket() const { return isRecvPacket; }
 };
 
 void SetStageElement(StageElement stageElement);

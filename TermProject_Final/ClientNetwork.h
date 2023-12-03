@@ -44,6 +44,8 @@ public:
 
 	bool IsConnected() { return isConnected; }
 
+	ConnectFlag GetConnectFlag() const { return curConnectFlag; }
+
 public:
 	ClientNetwork();
 	~ClientNetwork();

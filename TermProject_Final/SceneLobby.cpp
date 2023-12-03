@@ -186,7 +186,6 @@ bool SceneLobby::ProcessCommand()
 		StageElement crntStageType = (StageElement)cmdData.front();
 		SetStageElement(crntStageType);
 		SceneMgr->LoadScene(SceneType::Stage);
-		framework->EnterStage();
 		return false;
 	}
 		break;

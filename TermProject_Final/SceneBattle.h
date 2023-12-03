@@ -55,6 +55,7 @@ private:
 		Vector2 pos{};
 	};
 
+
 	ObjectImage imgMelee;
 	ObjectImage imgRange;
 
@@ -95,4 +96,7 @@ public:
 	virtual bool ProcessCommand() override;
 
 	void CreatePlayer(int id, Type type, Type subType);
+
 };
+
+void SetOtherPlayer(Type fly, Type gnd);

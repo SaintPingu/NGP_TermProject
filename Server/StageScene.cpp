@@ -9,7 +9,28 @@
 
 void StageScene::StartBattle()
 {
+	if (players.size() < 2) {
+		return;
+	}
+
 	std::cout << "플레이어 2인 입장 완료. 배틀 시작\n";
+
+	/*BYTE crntStageType = (BYTE)SCENE_MGR->GetCrntStageType();
+	CLIENT_MGR->PushCommand(clientID, (BYTE)ServerLobbyCmd::GoStage, &crntStageType, sizeof(BYTE));
+	SCENE_MGR->PushChangeLocationEvent(clientID, SceneEventType::ChangeClientLocation_ToStage);*/
+
+	std::unordered_map<int, std::shared_ptr<StagePlayer>>::iterator it = players.begin();
+	std::shared_ptr<StagePlayer> P1 = it->second;	it++;
+	std::shared_ptr<StagePlayer> P2 = it->second;
+
+	P1->PushCommand(ServerStageCmd::GoBattle, P2->typeFly, P2->typeGnd);
+	P2->PushCommand(ServerStageCmd::GoBattle, P1->typeFly, P1->typeGnd);
+
+	/// +----------------------------------
+	///			 씬 변경 ( 이벤트 )
+	/// ----------------------------------+	
+	SCENE_MGR->PushChangeLocationEvent(P1->ID, SceneEventType::ChangeClientLocation_ToBattle);
+	SCENE_MGR->PushChangeLocationEvent(P2->ID, SceneEventType::ChangeClientLocation_ToBattle);
 }
 
 void StageScene::Init()
@@ -49,6 +70,8 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 
 	switch (clientCmd)
 	{
+	case ClientStageCmd::None:
+		break;
 	/// +----------------------------------
 	///				캐릭터 선택  
 	/// ----------------------------------+	
@@ -86,6 +109,7 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 		/*
 			캐릭터 선택하기 이전단계로 돌아간다. 
 		*/
+		std::cout << "Batlle 대기열 입장 취소 :: Client [" << player->ID << "]\n";
 		player->typeFly = Type::Empty;
 		player->typeGnd = Type::Empty;
 		enterPlayers.erase(player->ID);
@@ -99,7 +123,9 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 		SCENE_MGR->PushChangeLocationEvent(player->ID, SceneEventType::ChangeClientLocation_ToLobby);
 	}
 		break;
-
+	default:
+		assert(0);
+		break;
 	}
 
 }
@@ -130,5 +156,8 @@ void StagePlayer::PushCommand(ServerStageCmd cmd, Type other_fly, Type other_gnd
 	// 하위 4비트 : gnd Type  
 	BYTE packedTypeData = ((BYTE)other_fly << 4) | (BYTE)other_gnd;
 	BYTE bCmd           = (BYTE)cmd;
+
+	std::cout << "[" << ID << "] - " << (int)bCmd << std::endl;
+
 	CLIENT_MGR->PushCommand(ID, bCmd, &packedTypeData, sizeof(BYTE));
 }

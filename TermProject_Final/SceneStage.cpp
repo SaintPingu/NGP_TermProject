@@ -3,6 +3,9 @@
 #include "Framework.h"
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "SceneBattle.h"
+#include "ClientNetwork.h"
+#include "ClientNetMgr.h"
 
 #define TARGET_IMAGESIZE_X 512
 #define TARGET_IMAGESIZE_Y 512
@@ -34,11 +37,16 @@ SceneStage::~SceneStage()
 {
 }
 
+void SceneStage::ExitStage(CommandList* cmdList)
+{
+	cmdList->PushCommand((BYTE)ClientStageCmd::ExitStage, nullptr, 0);
+	inWaitingRoom = false;
+}
+
 void SceneStage::EnterLobby(CommandList* cmdList)
 {
 	cmdList->PushCommand((BYTE)ClientStageCmd::GoLobby, nullptr, 0);
 	SceneMgr->LoadScene(SceneType::Lobby);
-	isSendPacket = true;
 }
 
 void SceneStage::RequestEnterBattle(CommandList* cmdList)
@@ -53,8 +61,6 @@ void SceneStage::RequestEnterBattle(CommandList* cmdList)
 	Stage::ClientStageData clientStageData = (Stage::ClientStageData)data.to_ulong();
 
 	cmdList->PushCommand((BYTE)ClientStageCmd::EnterStage, &clientStageData, sizeof(BYTE));
-	isSendPacket = true;
-	isRecvPacket = true;
 	inWaitingRoom = true;
 }
 
@@ -103,6 +109,10 @@ void SceneStage::Init()
 	_ready_Air_pokemon = false;
 	_ready_Land_pokemon = false;
 	inWaitingRoom = false;
+	
+	CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
+	cmdList->PushCommand((BYTE)ClientStageCmd::None, nullptr, 0);
+	framework->DefaultPacketSend();
 }
 
 void SceneStage::Render(HDC hdc)
@@ -290,6 +300,88 @@ void SceneStage::Animate()
 
 void SceneStage::GetInput(CommandList* cmdList)
 {
+	if (_select_pokemon && SceneMgr->IsLoading() == false)
+	{
+		if (!_ready_Air_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 0)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 2)
+				_finger += 1;
+		}
+		else if (!_ready_Land_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 3)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 5)
+				_finger += 1;
+		}
+
+		if (KEY_TAP(VK_RETURN) && _enter_select)
+		{
+			if (!_ready_Air_pokemon)
+			{
+				_play_Air_pokemon = _finger;
+				_finger = 3;
+				_ready_Air_pokemon = true;
+
+				switch (_play_Air_pokemon)
+				{
+				case 0:
+					airPokemon = Type::Elec;
+					//soundManager->PlayHitSound(HitSound::Elec);
+					break;
+				case 1:
+					airPokemon = Type::Fire;
+					//soundManager->PlayHitSound(HitSound::Fire);
+					break;
+				case 2:
+					airPokemon = Type::Water;
+					//soundManager->PlayHitSound(HitSound::Water);
+					break;
+				default:
+					assert(0);
+					break;
+				}
+			}
+			else if (!_ready_Land_pokemon)
+			{
+				_play_Land_pokemon = _finger;
+				_ready_Land_pokemon = true;
+
+				switch (_play_Land_pokemon)
+				{
+				case 3:
+				{
+					landPokemon = Type::Elec;
+
+					const int randSound = rand() % 2;
+					if (randSound != 0)
+					{
+						//soundManager->PlaySelectSound(SelectSound::Pikachu1);
+					}
+					else
+					{
+						//soundManager->PlaySelectSound(SelectSound::Pikachu2);
+					}
+				}
+				break;
+				case 4:
+					landPokemon = Type::Fire;
+					//soundManager->PlaySelectSound(SelectSound::Charmander);
+					break;
+				case 5:
+					landPokemon = Type::Water;
+					//soundManager->PlaySelectSound(SelectSound::Squirtle);
+					break;
+				default:
+					assert(0);
+					break;
+				}
+			}
+		}
+	}
+
 	if (cmdList == nullptr) {
 		return;
 	}
@@ -358,23 +450,20 @@ void SceneStage::GetInput(CommandList* cmdList)
 		_dialogflag = false;
 	}
 
-	if (KEY_TAP(VK_RETURN) && target->_select == true)
-	{
+	if (KEY_TAP(VK_RETURN) && target->_select == true) {
+
 		_enter_select = true;
 
 		if (target->_select_index == StageElement::Lobby)
 		{
-			moveX = 300;
 			EnterLobby(cmdList);
 			return;
 		}
 		if (_ready_Air_pokemon && _ready_Land_pokemon)
 		{
-			moveX = 300;
 			RequestEnterBattle(cmdList);
 			return;
 		}
-
 
 		switch (crntPhase)
 		{
@@ -436,6 +525,7 @@ void SceneStage::GetInput(CommandList* cmdList)
 		}
 	}
 
+
 	if (SceneMgr->IsLoading() == false && KEY_TAP(VK_BACK))
 	{
 		_select_pokemon = false;
@@ -443,8 +533,13 @@ void SceneStage::GetInput(CommandList* cmdList)
 		_ready_Land_pokemon = false;
 		_enter_select = false;
 		_finger = 0;
+
+		if (inWaitingRoom) {
+			ExitStage(cmdList);
+		}
 	}
-	if (KEY_TAP(VK_R)) // "R"키 누르면 선택 리셋
+
+	if (inWaitingRoom == false && KEY_TAP(VK_R)) // "R"키 누르면 선택 리셋
 	{
 		_ready_Air_pokemon = false;
 		_ready_Land_pokemon = false;
@@ -452,21 +547,8 @@ void SceneStage::GetInput(CommandList* cmdList)
 		_finger = 0;
 	}
 
-	if (_select_pokemon) {
-		if (!_ready_Air_pokemon)
-		{
-			if (KEY_TAP(VK_LEFT) && _finger > 0)
-				_finger -= 1;
-			if (KEY_TAP(VK_RIGHT) && _finger < 2)
-				_finger += 1;
-		}
-		else if (!_ready_Land_pokemon)
-		{
-			if (KEY_TAP(VK_LEFT) && _finger > 3)
-				_finger -= 1;
-			if (KEY_TAP(VK_RIGHT) && _finger < 5)
-				_finger += 1;
-		}
+	if (cmdList->buffer.empty()) {
+		cmdList->PushCommand((BYTE)ClientStageCmd::None, nullptr, 0);
 	}
 }
 
@@ -481,12 +563,27 @@ bool SceneStage::ProcessCommand()
 	switch ((ServerStageCmd)cmd)
 	{
 	case ServerStageCmd::GoBattle:
+	{
 		SceneMgr->LoadScene(SceneType::Battle);
-		//typeFly(4)
-		//typeGnd(4)
-		// Battle 구현시 삽입해줘야함.
+
+		Stage::ClientStageData clientStageData = (Stage::ClientStageData)buffer.front();
+		buffer.clear();
+
+		std::bitset<8> type((BYTE)clientStageData.Fly_Gnd);
+		std::bitset<4> fly(type.to_string().substr(0, 4));
+		std::bitset<4> gnd(type.to_string().substr(4, 4));
+
+		Type typeFly = static_cast<Type>(fly.to_ulong());
+		Type typeGnd = static_cast<Type>(gnd.to_ulong());
+
+		std::cout << "Go Battle - Other Type :: Fly=[" << (int)typeFly << "] Gnd=[" << (int)typeGnd << "]\n";
+		SetOtherPlayer(typeFly, typeGnd);
+	}
+	break;
+	case ServerStageCmd::None:
 		break;
 	default:
+		assert(0);
 		break;
 	}
 
@@ -499,71 +596,5 @@ void SceneStage::WriteData(void* data)
 
 void SceneStage::FingerController()
 {
-	_finger_twinkle += DeltaTime() * 2.f;
-	if (_select_pokemon && SceneMgr->IsLoading() == false)
-	{
-		if (KEY_TAP(VK_RETURN) && _enter_select)
-		{
-			if (!_ready_Air_pokemon)
-			{
-				_play_Air_pokemon = _finger;
-				_finger = 3;
-				_ready_Air_pokemon = true;
-
-				switch (_play_Air_pokemon)
-				{
-				case 0:
-					airPokemon = Type::Elec;
-					//soundManager->PlayHitSound(HitSound::Elec);
-					break;
-				case 1:
-					airPokemon = Type::Fire;
-					//soundManager->PlayHitSound(HitSound::Fire);
-					break;
-				case 2:
-					airPokemon = Type::Water;
-					//soundManager->PlayHitSound(HitSound::Water);
-					break;
-				default:
-					assert(0);
-					break;
-				}
-			}
-			else if (!_ready_Land_pokemon)
-			{
-				_play_Land_pokemon = _finger;
-				_ready_Land_pokemon = true;
-
-				switch (_play_Land_pokemon)
-				{
-				case 3:
-				{
-					landPokemon = Type::Elec;
-
-					const int randSound = rand() % 2;
-					if (randSound != 0)
-					{
-						//soundManager->PlaySelectSound(SelectSound::Pikachu1);
-					}
-					else
-					{
-						//soundManager->PlaySelectSound(SelectSound::Pikachu2);
-					}
-				}
-				break;
-				case 4:
-					landPokemon = Type::Fire;
-					//soundManager->PlaySelectSound(SelectSound::Charmander);
-					break;
-				case 5:
-					landPokemon = Type::Water;
-					//soundManager->PlaySelectSound(SelectSound::Squirtle);
-					break;
-				default:
-					assert(0);
-					break;
-				}
-			}
-		}
-	}
+	_finger_twinkle += DeltaTime() * 4.f;
 }

@@ -5,6 +5,11 @@
 #include "Framework.h"
 #include "SceneManager.h"
 
+struct OtherPlayer {
+	Type fly{};
+	Type gnd{};
+};
+OtherPlayer otherPlayer{};
 
 BattleMap::BattleMap()
 {
@@ -319,7 +324,6 @@ void SceneBattle::GetInput(CommandList* cmdList)
 		v -= 1;
 	}
 
-	ClientBattleCmd cmd;
 
 #ifdef PLAYERMOVETEST
 	// 플레이어 움직임 테스트
@@ -346,6 +350,7 @@ void SceneBattle::GetInput(CommandList* cmdList)
 		}
 	}
 #else
+	ClientBattleCmd cmd;
 	if (v != 0) {
 		if (v == -1) {
 			cmd = ClientBattleCmd::MoveLeft;
@@ -520,4 +525,10 @@ bool SceneBattle::ProcessCommand()
 void SceneBattle::CreatePlayer(int id, Type type, Type subType)
 {
 	players[id] = std::make_shared<Player>(type, subType);
+}
+
+void SetOtherPlayer(Type fly, Type gnd)
+{
+	otherPlayer.fly = fly;
+	otherPlayer.gnd = gnd;
 }

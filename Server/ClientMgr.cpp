@@ -102,8 +102,10 @@ bool ClientMgr::SendPacket()
 		}
 		
 		DataType dataType = GetDataType(client);
-		packetGenerator.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType);
-		client->Send();
+		// 패킷 생성에 성공했다면 전송
+		if (packetGenerator.GeneratePacket(client->GetPacketBuffer(), client->GetCmdList(), dataType)) {
+			client->Send();
+		}
 	}
 
 	packetLoader.Clear();
@@ -178,6 +180,9 @@ void ClientMgr::PushCommand(int clientID, BYTE cmd, void* data, size_t size)
 	ClientInfo* client = GetClient(clientID);
 	if (client) {
 		client->PushCommand(cmd, data, size);
+	}
+	else {
+		std::cout << "[ERROR - PushCommand ] Client ID doesn't exist :: [" << clientID << "]\n";
 	}
 }
 

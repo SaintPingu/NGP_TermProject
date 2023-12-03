@@ -53,7 +53,6 @@ void SceneManager::InitScene(SceneType scene)
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
-		framework->EnterStage();
 		
 		break;
 	case SceneType::Battle:

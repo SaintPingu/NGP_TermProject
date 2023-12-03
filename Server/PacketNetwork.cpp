@@ -9,6 +9,10 @@ TResult PacketNetwork::Init()
 
 TResult PacketNetwork::SendPacket()
 {
+    if (PacketBuf.empty()) {
+        std::cout << "[ERROR - SendPacket()] 송신할 버퍼가 비어있습니다!!\n";
+        return TResult::SEND_SIZE_ZERO;
+    }
     //std::cout << "송신 대기\n";
     int retval = send(TCP_Socket, (const char*)PacketBuf.data(), PacketBuf.size(), 0);
     if (retval == SOCKET_ERROR) {
