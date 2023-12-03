@@ -209,6 +209,9 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* play
 			if (playerBullets.at(i)->IsSkillBullet() == false)
 			{
 				player->AddMP(0.15f);
+				float MP = player->GetMP();
+				CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+
 			}
 			player->GetPlayerBullets()->Pop(i);
 		}
