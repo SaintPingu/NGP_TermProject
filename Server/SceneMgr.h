@@ -43,8 +43,8 @@ public:
 
 public:
 	void Init();
-	void InsertClient(int id) { gameData.clientLocations[id] = SceneType::Lobby; }
-	void DeleteClient(int id) { gameData.clientLocations.erase(id); }
+	void InsertClient(int id);
+	void DeleteClient(int id);
 
 
 

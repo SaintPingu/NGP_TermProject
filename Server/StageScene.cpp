@@ -7,6 +7,11 @@
 #include "ServerFramework.h"
 
 
+void StageScene::StartBattle()
+{
+	std::cout << "플레이어 2인 입장 완료. 배틀 시작\n";
+}
+
 void StageScene::Init()
 {
 
@@ -49,20 +54,27 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	/// ----------------------------------+	
 	case ClientStageCmd::EnterStage:
 	{
+		PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
+		Stage::ClientStageData clientStageData = (Stage::ClientStageData)buffer->front();
+		buffer->clear();
 
-		std::bitset<8> type = *(int*)data;
+		std::bitset<8> type ((BYTE)clientStageData.Fly_Gnd);
 		std::bitset<4> fly(type.to_string().substr(0, 4));
 		std::bitset<4> gnd(type.to_string().substr(4, 4));
 
 		Type typeFly = static_cast<Type>(fly.to_ulong());
 		Type typeGnd = static_cast<Type>(gnd.to_ulong());
 
-		player.get()->typeFly = typeFly;
-		player.get()->typeGnd = typeGnd;
+		player->typeFly = typeFly;
+		player->typeGnd = typeGnd;
+
+		std::cout << "Batlle 대기열 입장 :: Client [" << player->ID << "], Fly=[" << (int)typeFly << "] Gnd=[" << (int)typeGnd << "]\n";
 
 		// 두명의 클라이언트가 모두 캐릭터를 선택한 상황으로 battle을 할 준비가 완료됨  
-		//if (enterPlayerCnt == maxStagePlayer)
-		//	battleReady = true;
+		enterPlayers.insert(std::make_pair(player->ID, player));
+		if (enterPlayers.size() == maxStagePlayer) {
+			StartBattle();
+		}
 
 	}
 		break;
@@ -74,9 +86,9 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 		/*
 			캐릭터 선택하기 이전단계로 돌아간다. 
 		*/
-		player.get()->typeFly = Type::Empty;
-		player.get()->typeGnd = Type::Empty;
-
+		player->typeFly = Type::Empty;
+		player->typeGnd = Type::Empty;
+		enterPlayers.erase(player->ID);
 	}
 		break;
 	/// +----------------------------------
@@ -101,12 +113,13 @@ void StageScene::AddClient(int clientID)
 void StageScene::RemoveClient(int clientID)
 {
 	players.erase(clientID);
+	enterPlayers.erase(clientID);
 }
 
 void StageScene::Clear()
 {
 	//battleReady  = false;
-	enterPlayerCnt = 0;
+	enterPlayers.clear();
 	players.clear();
 }
 

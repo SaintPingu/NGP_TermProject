@@ -157,6 +157,7 @@ const std::shared_ptr<LobbyPlayer>& LobbyScene::GetPlayer(int id)
 // 하나의 키 입력으로 지속적으로 플레이어를 움직여야 한다.
 void LobbyScene::Update()
 {
+
 	for (auto& [clientID, player] : players) {
 		player->befpos = player->pos;
 		player->Move();

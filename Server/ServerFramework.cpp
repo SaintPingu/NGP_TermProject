@@ -115,11 +115,12 @@ void ServerFramework::Logic()
 			cnt = 0;
 		}
 
-		Event();
-		Update();
+		bool isSendPacket{ false };
 		if (cnt & 1) {	// (60FPS에서 30프레임마다 데이터 송신)
-			SendPakcet();
+			isSendPacket = true;
 		}
+		Event();
+		Update(isSendPacket);
 	}
 	std::cout << "\t-> Server Logic Exit\n";
 
@@ -142,13 +143,19 @@ TResult ServerFramework::Event()
 	return TResult();
 }
 
-TResult ServerFramework::Update()
+TResult ServerFramework::Update(bool isSendPacket)
 {
 	Timer::Inst()->Tick(FPS);
 
-	CLIENT_MGR->SetPacketBuffer();
-	CLIENT_MGR->ProcessCommand();
-	ServerFramework::UpdateScene();
+	if (isSendPacket) {
+		CLIENT_MGR->SetPacketBuffer();
+		CLIENT_MGR->ProcessCommand();
+		UpdateScene();
+		SendPakcet();
+	}
+	else {
+		UpdateScene();
+	}
 
 	//if (GetAsyncKeyState('~') & 0x8000)
 	//	SERVER_FRAMEWORK->Exit();

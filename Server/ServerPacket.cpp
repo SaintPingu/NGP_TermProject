@@ -235,11 +235,13 @@ void PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 
 void PacketGenerator::DeleteData()
 {
+	delete[] lobbyData.PlayersData;
 }
 
 void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
 {
 	packetBuffers[clientID] = buffer;
+	receivedPacketBuffers[clientID] = buffer;
 }
 
 int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
@@ -254,16 +256,16 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	}
 	PacketBuffer* packetBuffer = packetBuffers[crntClientID];
 
-	//클라이언트가 보내는 패킷을 항상 cmdCnt와 commands뿐.
-	//항상 data는 비운다.
-
-	data.clear();
-
-	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
-
 	if (packetBuffer == nullptr || packetBuffer->empty()) {
-		return notAlloc; // error
+		packetBuffers.erase(crntClientID);
+		crntClientID = notAlloc;
+		return -2; // buffer is empty
 	}
+
+	// 클라이언트가 보내는 패킷은 항상 commands다.
+	// data는 항상 비운다.
+	data.clear();
+	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
 
 	if (type == SceneType::Lobby || type == SceneType::Battle) {
 		cmd = (BYTE)(packetBuffer->front()); // 1byte

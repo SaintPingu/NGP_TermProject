@@ -11,6 +11,35 @@ void SceneMgr::Init()
 	battleScene = std::make_shared<BattleScene>();
 }
 
+void SceneMgr::InsertClient(int id)
+{
+	gameData.clientLocations[id] = SceneType::Lobby;
+	lobbyScene->AddClient(id);
+}
+void SceneMgr::DeleteClient(int id)
+{
+	if (!gameData.clientLocations.count(id)) {
+		return;
+	}
+
+	SceneType crntClientLocation = gameData.clientLocations[id];
+
+	switch (crntClientLocation) {
+	case SceneType::Lobby:
+		lobbyScene->RemoveClient(id);
+		break;
+	case SceneType::Stage:
+		stageScene->RemoveClient(id);
+		break;
+	case SceneType::Battle:
+		battleScene->RemoveClient(id);
+		break;
+	default:
+		break;
+	}
+	gameData.clientLocations.erase(id);
+}
+
 void SceneMgr::SetClientLocation(int id, SceneType type)
 {
 	SceneType crntClientLocation = gameData.clientLocations[id];

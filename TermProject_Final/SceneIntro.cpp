@@ -144,7 +144,7 @@ void Menu::Render(HDC hdc)
 		DeleteObject(hFont);
 	}
 
-	// 화살표의 깜빡거리는 부분 설정으로 1.5초에 한번씩 깜빡거림
+	// 화살표의 깜빡거리는 부분 설정
 	if (static_cast<int>(finger_twinkle) & 1 && !isProducer)
 		TextOut(hdc, fingerPos.x, fingerPos.y, L"▶", 1);
 

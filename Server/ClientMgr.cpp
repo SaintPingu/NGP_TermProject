@@ -26,6 +26,10 @@ bool ClientMgr::Event()
 		case clientEventType::terminateID:
 		{
 			int  ID = *(int*)event.second;
+
+			//12-03 민동현 : SCENE_MGR에서 클라이언트가 위치한 씬에서 해당 클라이언트를 제거하도록 한다.
+			SCENE_MGR->DeleteClient(ID);
+
 			TResult result = clientPool[ID]->Clear();
 			if (result == TResult::SUCCESS)
 			{
@@ -90,7 +94,7 @@ bool ClientMgr::SendPacket()
 	packetGenerator.GenerateData();
 
 	// Send
-	for (auto& [clientID, packetBuffer] : packetLoader.packetBuffers) {
+	for (auto& [clientID, packetBuffer] : packetLoader.GetReceivedPacketBuffers()) {
 
 		auto& client = clientPool[clientID];
 		if (client == nullptr) {
@@ -102,6 +106,7 @@ bool ClientMgr::SendPacket()
 		client->Send();
 	}
 
+	packetLoader.Clear();
 	packetGenerator.DeleteData();
 
 	return true;
@@ -213,6 +218,9 @@ TResult ClientMgr::ProcessCommand()
 		if (clientID == -1) {
 			break;
 		}
+		else if (clientID == -2) {
+			continue;
+		}
 
 		switch (SCENE_MGR->GetClientLocation(clientID)) {
 		case SceneType::Lobby:
@@ -225,7 +233,7 @@ TResult ClientMgr::ProcessCommand()
 			SCENE_MGR->Battle()->ProcessCommand(clientID, cmd, &data);
 			break;
 		default:
-			assert(0);
+			SCENE_MGR->DeleteClient(clientID);	// [ERROR] 클라이언트가 위 씬에 존재하지 않음
 			break;
 		}
 	}
@@ -249,7 +257,6 @@ std::pair<int, TResult> ClientMgr::RegisterConnectedClient(std::string clientIP,
 	clientEvents.push(std::make_pair(type, NewUser));
 
 	++clientPoolIndex;
-	SCENE_MGR->Lobby()->AddClient(id);
 
 	return std::pair<int, TResult>(id, TResult::SUCCESS);
 }
