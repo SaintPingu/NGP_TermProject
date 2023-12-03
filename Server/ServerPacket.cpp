@@ -166,7 +166,7 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		// battle씬은 int형 길이로 보낸다.
 		// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
 		// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
-		int len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
+		uint8 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
 			sizeof(battleData.PlayerBattleData[1]) +
 			sizeof(battleData.EnemyData.EnemyCnt) +
 			(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
@@ -175,11 +175,8 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			sizeof(battleData.BossEffectData.EffectCnt) +
 			(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
 
-		void* vlen = &len;
 		//데이터 길이
-		for (int i = 0; i < sizeof(int); ++i) {
-			buffer.push_back(((BYTE*)vlen)[i]); // Datalen	
-		}
+		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
 
 		//커맨드리스트
 		buffer.push_back(pCommandList.size()); // cmdCnt
@@ -273,11 +270,11 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	SceneType type = SCENE_MGR->GetGameData().clientLocations[crntClientID];
 
 	if (type == SceneType::Lobby || type == SceneType::Battle) {
-		cmd = (BYTE)(packetBuffer->front()); // 1byte
+		cmd = packetBuffer->front(); // 1byte
 		packetBuffer->clear();
 	}
 	else if (type == SceneType::Stage) {
-		cmd = (BYTE)(packetBuffer->front()); // 1byte
+		cmd = packetBuffer->front(); // 1byte
 		packetBuffer->erase(packetBuffer->begin());
 
 		if (cmd == (BYTE)ClientStageCmd::EnterStage) {

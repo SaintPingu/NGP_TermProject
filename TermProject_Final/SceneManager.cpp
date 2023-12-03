@@ -6,6 +6,8 @@
 #include "SceneBattle.h"
 #include "Loading.h"
 #include "Framework.h"
+#include "ClientNetwork.h"
+#include "ClientNetMgr.h"
 
 void SceneManager::Init(HWND hWnd)
 {
@@ -69,6 +71,9 @@ void SceneManager::InitScene(SceneType scene)
 
 void SceneManager::LoadScene(SceneType scene)
 {
+	if (crntSceneType != SceneType::Intro) {
+		CLIENT_NETWORK->GetPacketBuffer().clear();
+	}
 	loading->ResetLoading();
 	nextSceneType = scene;
 }

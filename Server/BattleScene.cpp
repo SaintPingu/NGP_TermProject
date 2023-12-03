@@ -14,6 +14,10 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
+	if (!isBattleStarted) {
+		return;
+	}
+
 	for (auto& [clientID, player] : players) {
 		if (player->IsMove())
 			player->Move();

@@ -96,7 +96,10 @@ public:
 	virtual bool ProcessCommand() override;
 
 	void CreatePlayer(int id, Type type, Type subType);
-
+	const std::shared_ptr<Player>& GetPlayer(int id) const { return players.at(id); }
 };
 
+void SetMyPlayer(Type fly, Type gnd);
 void SetOtherPlayer(Type fly, Type gnd);
+Type GetPlayerFlyType();
+Type GetPlayerGndType();

@@ -578,6 +578,7 @@ bool SceneStage::ProcessCommand()
 
 		std::cout << "Go Battle - Other Type :: Fly=[" << (int)typeFly << "] Gnd=[" << (int)typeGnd << "]\n";
 		SetOtherPlayer(typeFly, typeGnd);
+		SetMyPlayer(airPokemon, landPokemon);
 	}
 	break;
 	case ServerStageCmd::None:

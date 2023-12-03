@@ -35,7 +35,9 @@ void Framework::UpdateWithServer()
 			return;
 		}
 		WriteData();
-		GetInput();
+		if (!SceneMgr->IsLoading()) {
+			GetInput();
+		}
 		SendPacket();
 	}
 	AnimateScene();

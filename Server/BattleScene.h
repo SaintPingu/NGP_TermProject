@@ -10,6 +10,11 @@ class BattleScene : public Scene
 {
 private:
 	/// +----------------------------------
+	///				GAME_INFO 
+	/// ----------------------------------+	
+	bool isBattleStarted{};
+
+	/// +----------------------------------
 	///				  PLAYER 
 	/// ----------------------------------+	
 	int curPlayerCnt = 0; // 현재 배틀씬에 접속된 플레이어 수 
@@ -52,5 +57,6 @@ public:
 		return rectDisplay;
 	}
 
+	void BattleStart() { isBattleStarted = true; }// 배틀 시작
 };
 

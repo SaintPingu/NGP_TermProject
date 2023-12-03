@@ -219,7 +219,7 @@ void CheckKeyUp(const HWND& hWnd, const WPARAM& wParam)
 	}
 }
 
-GUIManager::GUIManager(const RECT& rectWindow, std::unordered_map<int, std::shared_ptr<Player>>* battleplayers) : players{ battleplayers }
+GUIManager::GUIManager()
 {
 
 	int fieldLength = 360; // 페이즈인가? 잘모르겠어서 기본설정
@@ -268,48 +268,40 @@ GUIManager::GUIManager(const RECT& rectWindow, std::unordered_map<int, std::shar
 	hurtGUI_Elec.gui = new GUIImage();
 	hurtGUI_Dark.gui = new GUIImage();
 
-	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함
-	if (players->empty()) {
-		return;
+	switch (GetPlayerFlyType())
+	{
+	case Type::Elec:
+		icon_Q->Load(_T("images\\battle\\icon_elec_Q.png"), { 35, 35 });
+		icon_pokemon->Load(_T("images\\battle\\icon_thunder.png"), { 480, 480 });
+		gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_elec.png"), { 14, 217 });
+		break;
+	case Type::Water:
+		icon_Q->Load(_T("images\\battle\\icon_water_Q.png"), { 260, 260 });
+		icon_pokemon->Load(_T("images\\battle\\icon_articuno.png"), { 480, 480 });
+		gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_water.png"), { 14, 217 });
+		break;
+	case Type::Fire:
+		icon_Q->Load(_T("images\\battle\\icon_fire_Q.png"), { 130, 130 });
+		icon_pokemon->Load(_T("images\\battle\\icon_moltres.png"), { 480, 480 });
+		gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_fire.png"), { 14, 217 });
+		break;
 	}
-	for (int i = 0; i < 2; ++i) {
-		switch ((*players)[framework->client_ID]->GetType())
-		{
-		case Type::Elec:
-			icon_Q->Load(_T("images\\battle\\icon_elec_Q.png"), { 35, 35 });
-			icon_pokemon->Load(_T("images\\battle\\icon_thunder.png"), { 480, 480 });
-			gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_elec.png"), { 14, 217 });
-			break;
-		case Type::Water:
-			icon_Q->Load(_T("images\\battle\\icon_water_Q.png"), { 260, 260 });
-			icon_pokemon->Load(_T("images\\battle\\icon_articuno.png"), { 480, 480 });
-			gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_water.png"), { 14, 217 });
-			break;
-		case Type::Fire:
-			icon_Q->Load(_T("images\\battle\\icon_fire_Q.png"), { 130, 130 });
-			icon_pokemon->Load(_T("images\\battle\\icon_moltres.png"), { 480, 480 });
-			gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_fire.png"), { 14, 217 });
-			break;
-		}
-		switch ((*players)[framework->client_ID]->GetSubType())
-		{
-		case Type::Elec:
-			icon_W->Load(_T("images\\battle\\icon_elec_W.png"), { 130, 130 });
-			icon_E->Load(_T("images\\battle\\icon_elec_E.png"), { 130, 130 });
-			break;
-		case Type::Water:
-			icon_W->Load(_T("images\\battle\\icon_water_W.png"), { 130, 130 });
-			icon_E->Load(_T("images\\battle\\icon_water_E.png"), { 130, 130 });
-			break;
-		case Type::Fire:
-			icon_W->Load(_T("images\\battle\\icon_fire_W.png"), { 130, 130 });
-			icon_E->Load(_T("images\\battle\\icon_fire_E.png"), { 130, 130 });
-			break;
-		}
+	switch (GetPlayerGndType())
+	{
+	case Type::Elec:
+		icon_W->Load(_T("images\\battle\\icon_elec_W.png"), { 130, 130 });
+		icon_E->Load(_T("images\\battle\\icon_elec_E.png"), { 130, 130 });
+		break;
+	case Type::Water:
+		icon_W->Load(_T("images\\battle\\icon_water_W.png"), { 130, 130 });
+		icon_E->Load(_T("images\\battle\\icon_water_E.png"), { 130, 130 });
+		break;
+	case Type::Fire:
+		icon_W->Load(_T("images\\battle\\icon_fire_W.png"), { 130, 130 });
+		icon_E->Load(_T("images\\battle\\icon_fire_E.png"), { 130, 130 });
+		break;
 	}
 
-	this->rectWindow = &rectWindow;
-	rectMain = rectWindow;
 	rectMain.top = rectMain.bottom - main_guiHeight;
 
 	constexpr POINT skillBoxSize = { 38,39 };
@@ -378,17 +370,12 @@ GUIManager::GUIManager(const RECT& rectWindow, std::unordered_map<int, std::shar
 	hurtGUI_Dark.gui->Load(_T("images\\battle\\frame_hurt_dark.png"), { 239, 371 }, 0x00);
 }
 
-void GUIManager::Render(HDC& hdc)
-{
-	Paint(hdc);
-}
-
 void GUIManager::Animate(HWND& hWnd)
 {
 	Update(hWnd);
 }
 
-void GUIManager::Paint(const HDC& hdc)
+void GUIManager::Render(HDC hdc)
 {
 	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
 
@@ -397,11 +384,11 @@ void GUIManager::Paint(const HDC& hdc)
 	mainGUI->Render(hdc, rectMain);
 
 	gagueGUI_main->Render(hdc, rectHP);
-	gagueGUI_hp->RenderGauge(hdc, rectHP, (*players)[framework->client_ID]->GetHP(), (*players)[framework->client_ID]->GetMaxHP());
+	gagueGUI_hp->RenderGauge(hdc, rectHP, player->GetHP(), player->GetMaxHP());
 	gagueGUI_border->Render(hdc, rectHP);
 
 	gagueGUI_main->Render(hdc, rectMP);
-	gagueGUI_mp->RenderGauge(hdc, rectMP, (*players)[framework->client_ID]->GetMP(), (*players)[framework->client_ID]->GetMaxMP());
+	gagueGUI_mp->RenderGauge(hdc, rectMP, player->GetMP(), player->GetMaxMP());
 	gagueGUI_border->Render(hdc, rectMP);
 
 	icon_Q->Render(hdc, rectSkill_Q);
@@ -415,10 +402,10 @@ void GUIManager::Paint(const HDC& hdc)
 		icon_pokemon->Render(hdc, rectPokemonIcon);
 	}
 
-	hurtGUI_Fire.gui->Render(hdc, *rectWindow);
-	hurtGUI_Water.gui->Render(hdc, *rectWindow);
-	hurtGUI_Elec.gui->Render(hdc, *rectWindow);
-	hurtGUI_Dark.gui->Render(hdc, *rectWindow);
+	hurtGUI_Fire.gui->Render(hdc, rectWindow);
+	hurtGUI_Water.gui->Render(hdc, rectWindow);
+	hurtGUI_Elec.gui->Render(hdc, rectWindow);
+	hurtGUI_Dark.gui->Render(hdc, rectWindow);
 }
 
 void GUIManager::Update(const HWND& hWnd)
@@ -428,32 +415,11 @@ void GUIManager::Update(const HWND& hWnd)
 	hurtGUI_Elec.ReduceAlpha();
 	hurtGUI_Dark.ReduceAlpha();
 	
-	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
-
-	if (players->empty()) {
+	if (player->IsDeath() == true)
+	{
 		return;
 	}
 
-	for (auto& [id, player] : *players) {
-		if (player->IsDeath() == true)
-		{
-			return;
-		}
-		else if (isIconStop == true)
-		{
-			//if (crntPhase < 2 && isClearPhase == false && enemies->IsEmenyClear() == true)
-			//{
-			//	isClearPhase = true;
-
-			//	phase.ClearPhase();
-			//	soundManager->StopEffectSound();
-			//	soundManager->StopBGMSound();
-			//	soundManager->PlayEffectSound(EffectSound::Win);
-			//	SceneMgr->StartLoading(hWnd); // 로딩 시작하는 함수?
-			//}
-			return;
-		}
-	}
 	rectPokemonIcon.top -= iconMoveAmount;
 	rectPokemonIcon.bottom -= iconMoveAmount;
 	if (rectPokemonIcon.top <= iconMoveMaxY)
@@ -468,7 +434,7 @@ void GUIManager::Update(const HWND& hWnd)
 }
 RECT GUIManager::GetRectDisplay() const
 {
-	RECT rectDisplay = *rectWindow;
+	RECT rectDisplay = rectWindow;
 	rectDisplay.bottom = rectMain.top;
 	return rectDisplay;
 }

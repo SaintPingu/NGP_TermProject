@@ -4,12 +4,15 @@
 #include "Player.h"
 #include "Framework.h"
 #include "SceneManager.h"
+#include "ClientNetwork.h"
+#include "ClientNetMgr.h"
 
-struct OtherPlayer {
+struct PlayerType {
 	Type fly{};
 	Type gnd{};
 };
-OtherPlayer otherPlayer{};
+PlayerType otherPlayer{};
+PlayerType myPlayer{};
 
 BattleMap::BattleMap()
 {
@@ -238,9 +241,15 @@ void SceneBattle::Init()
 	boss->SetPos(Vector2(100.0f, 100.0f));*/
 
 	// 테스트 플레이어 생성
-	CreatePlayer(0, Type::Elec, Type::Fire);
+	//CreatePlayer(0, Type::Elec, Type::Fire);
 
-	gui = std::make_shared<GUIManager>(GUIManager(framework->GetRectWindow(), &players));
+	gui = std::make_shared<GUIManager>();
+	players[framework->client_ID] = std::make_shared<Player>(myPlayer.fly, myPlayer.gnd);
+	gui->SetPlayer(players[framework->client_ID]);
+
+	CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
+	cmdList->PushCommand((BYTE)ClientBattleCmd::Stop, nullptr, 0);
+	framework->DefaultPacketSend();
 }
 
 void SceneBattle::Render(HDC hdc)
@@ -248,7 +257,9 @@ void SceneBattle::Render(HDC hdc)
 	battleMap.Render(hdc, stage);
 	RenderPlayers(hdc);
 	RenderBullets(hdc);
-	boss->Render(hdc);
+	if (boss) {
+		boss->Render(hdc);
+	}
 	/*boss->Render(hdc);
 	player->Render(hdc);*/
 	RenderEnemies(hdc);
@@ -394,8 +405,18 @@ void SceneBattle::WriteData(void* data)
 	Battle::BattleData battleData;
 
 	// PlayerBattleData
-	memcpy(&battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData));
-	RemoveData(*buffer, sizeof(Battle::PlayerBattleData));
+	for (int i = 0; i < 2; ++i) {
+		memcpy(&battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData));
+		RemoveData(*buffer, sizeof(Battle::PlayerBattleData));
+
+		int clientID = battleData.PlayerBattleData->PlayerID;
+		Vector2 pos = battleData.PlayerBattleData->Pos;
+		if (!players.count(clientID)) {
+			players[clientID] = std::make_shared<Player>(otherPlayer.fly, otherPlayer.gnd);
+		}
+
+		players[clientID]->SetPos(pos);
+	}
 
 	// EnemyBattleData - Cnt
 	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(BYTE));
@@ -527,8 +548,21 @@ void SceneBattle::CreatePlayer(int id, Type type, Type subType)
 	players[id] = std::make_shared<Player>(type, subType);
 }
 
+void SetMyPlayer(Type fly, Type gnd)
+{
+	myPlayer.fly = fly;
+	myPlayer.gnd = gnd;
+}
 void SetOtherPlayer(Type fly, Type gnd)
 {
 	otherPlayer.fly = fly;
 	otherPlayer.gnd = gnd;
+}
+Type GetPlayerFlyType()
+{
+	return myPlayer.fly;
+}
+Type GetPlayerGndType()
+{
+	return myPlayer.gnd;
 }

@@ -93,6 +93,7 @@ void SceneMgr::UpdateScenes()
 {
 	lobbyScene->Update();
 	stageScene->Update();
+	battleScene->Update();
 }
 
 bool SceneMgr::Event()
