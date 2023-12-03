@@ -60,22 +60,30 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 	/// ----------------------------------+	
 	case ClientBattleCmd::MoveLeft:
 	{
+		player->Stop(Dir::Right);
 		player->SetDirection(Dir::Left);
+		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveRight:
 	{
+		player->Stop(Dir::Left);
 		player->SetDirection(Dir::Right);
+		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveUp:
 	{
+		player->Stop(Dir::Down);
 		player->SetDirection(Dir::Up);
+		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::MoveDown:
 	{
+		player->Stop(Dir::Up);
 		player->SetDirection(Dir::Down);
+		player->StartMove();
 	}
 		break;
 	case ClientBattleCmd::Stop:

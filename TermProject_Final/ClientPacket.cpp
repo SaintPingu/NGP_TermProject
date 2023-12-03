@@ -57,7 +57,7 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType s
 		return false;
 	}
 	else if (scenetype == SceneType::Battle)
-	{ // 배틀에서는 cmdCnt 는 buffer로 들어오기때문에 PopCommand 이전에 1바이트를 지우고 시작하자.
+	{
 		cmd = (BYTE)(*buffer->begin());
 		buffer->erase(buffer->begin());
 

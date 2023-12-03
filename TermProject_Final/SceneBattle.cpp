@@ -283,12 +283,12 @@ void SceneBattle::Animate()
 }
 
 
-#define PLAYERMOVETEST //define시 플레이어 움직임을 싱글에서 테스트 해볼수 있음.
+//#define PLAYERMOVETEST //define시 플레이어 움직임을 싱글에서 테스트 해볼수 있음.
 
 void SceneBattle::GetInput(CommandList* cmdList)
 {
 	if (cmdList == nullptr) {
-		//return;
+		return;
 	}
 
 	if (KEY_TAP('O')) {
@@ -310,7 +310,6 @@ void SceneBattle::GetInput(CommandList* cmdList)
 		//player->ActiveSkill(Skill::Circle);
 	}
 
-	bool isMove = false;
 	if (KEY_TAP(VK_UP)) {
 		h -= 1;
 	}
@@ -367,25 +366,17 @@ void SceneBattle::GetInput(CommandList* cmdList)
 	if (v != 0) {
 		if (v == -1) {
 			cmd = ClientBattleCmd::MoveLeft;
-			isQuitDialog = false;
 		}
 		else {
 			cmd = ClientBattleCmd::MoveRight;
-			isQuitDialog = false;
 		}
 	}
 	if (h != 0) {
 		if (h == -1) {
-			if (isQuitDialog) {
-				cmd = ClientBattleCmd::Stop;
-			}
-			else {
-				cmd = ClientBattleCmd::MoveUp;
-			}
+			cmd = ClientBattleCmd::MoveUp;
 		}
 		else {
 			cmd = ClientBattleCmd::MoveDown;
-			isQuitDialog = false;
 		}
 	}
 	else {
@@ -393,10 +384,6 @@ void SceneBattle::GetInput(CommandList* cmdList)
 	}
 
 	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
-
-	if (KEY_TAP(VK_ESCAPE) || (isQuitDialog && KEY_TAP(VK_RETURN))) {
-		framework->Terminate();
-	}
 #endif PLAYERMOVETEST
 }
 
@@ -405,7 +392,7 @@ void SceneBattle::WriteData(void* data)
 	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 
 	Battle::BattleData battleData;
-
+	return;
 	// PlayerBattleData
 	for (int i = 0; i < 2; ++i) {
 		memcpy(&battleData.PlayerBattleData, buffer->data(), sizeof(Battle::PlayerBattleData));
@@ -491,14 +478,19 @@ void SceneBattle::WriteData(void* data)
 
 bool SceneBattle::ProcessCommand()
 {
-	BYTE cmd;
-	PacketBuffer buffer;
 	PacketLoader packetLoader = framework->GetPacketLoader();
 
 	std::shared_ptr<SceneBattle> scene;
 	
 	// 배틀은 명령이 여러개이므로 반복필요
-	while (packetLoader.PopCommand(cmd, buffer, SceneType::Battle)) {
+	BYTE cmdCnt = 1;
+	//BYTE cmdCnt = packetLoader.buffer->front();
+	//packetLoader.buffer->erase(packetLoader.buffer->begin());
+	std::cout << "CmdCnt = [" << (int)cmdCnt << "]\n";
+	for (BYTE i = 0; i < cmdCnt; ++i) {
+		BYTE cmd{};
+		PacketBuffer cmdData;
+		packetLoader.PopCommand(cmd, cmdData, SceneType::Battle);
 		switch ((ServerBattleCmd)cmd)
 		{
 		case ServerBattleCmd::None:
@@ -526,23 +518,23 @@ bool SceneBattle::ProcessCommand()
 		case ServerBattleCmd::Hit: {
 			std::cout << "[CMD] Hit\n";
 			float hp;
-			memcpy(&hp, &(*buffer.begin()), sizeof(float));
+			memcpy(&hp, &(*cmdData.begin()), sizeof(float));
 			players[framework->client_ID]->SetHp(hp);
 			break;
 		}
 		case ServerBattleCmd::UpdateMP: {
 			std::cout << "[CMD] UpdateMP\n";
 			float mp;
-			memcpy(&mp, &(*buffer.begin()), sizeof(float));
+			memcpy(&mp, &(*cmdData.begin()), sizeof(float));
 			players[framework->client_ID]->SetMp(mp);
 			break;
 		}
 		case ServerBattleCmd::CreateEffect: {
 			std::cout << "[CMD] CreateEffect\n";
 			Effect createEffect;
-			memcpy(&createEffect.type, &(*buffer.begin()), sizeof(BYTE));
-			buffer.erase(buffer.begin());
-			memcpy(&createEffect.pos, &(*buffer.begin()), sizeof(float) * 2);
+			memcpy(&createEffect.type, &(*cmdData.begin()), sizeof(BYTE));
+			cmdData.erase(cmdData.begin());
+			memcpy(&createEffect.pos, &(*cmdData.begin()), sizeof(float) * 2);
 			effects.push_back(createEffect);
 			break;
 		}

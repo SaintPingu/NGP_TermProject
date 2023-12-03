@@ -112,6 +112,7 @@ void PacketGenerator::GenerateData()
 
 bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
 {
+	BYTE cmdCnt = cmdList->GetCmdCnt();
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 
 	buffer.clear();
@@ -176,18 +177,23 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		//	(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
 
 		// 테스트용
-		uint8 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
-			sizeof(battleData.PlayerBattleData[1]);
+		if (pCommandList.empty()) {
+			pCommandList.push_back((BYTE)ServerBattleCmd::None);
+		}
+		uint8 len = pCommandList.size();
+			//sizeof(BYTE)
+			//(sizeof(battleData.PlayerBattleData) * 2);
 
 		//데이터 길이
 		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
 
 		//커맨드리스트
-		buffer.push_back(pCommandList.size()); // cmdCnt
+		//buffer.push_back(cmdCnt); // cmdCnt
 		for (int i = 0; i < pCommandList.size(); ++i) {
 			buffer.push_back(pCommandList[i]); //ServerBattleCmd
 		}
 		
+		return true;
 		{//PlayerBattleData[2] 
 			BYTE bytes[sizeof(Battle::PlayerBattleData) * 2];
 			std::memcpy(bytes, battleData.PlayerBattleData, sizeof(Battle::PlayerBattleData) * 2);

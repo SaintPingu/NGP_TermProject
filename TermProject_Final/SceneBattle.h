@@ -82,8 +82,6 @@ private:
 
 	void AnimatePlayers();
 
-	bool isQuitDialog = false;
-
 	int v{}, h{};
 
 public:

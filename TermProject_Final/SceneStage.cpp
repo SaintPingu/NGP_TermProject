@@ -564,7 +564,9 @@ bool SceneStage::ProcessCommand()
 	{
 	case ServerStageCmd::GoBattle:
 	{
-		SceneMgr->LoadScene(SceneType::Battle);
+		if (!inWaitingRoom) {
+			break;
+		}
 
 		Stage::ClientStageData clientStageData = (Stage::ClientStageData)buffer.front();
 		buffer.clear();
@@ -579,6 +581,8 @@ bool SceneStage::ProcessCommand()
 		std::cout << "Go Battle - Other Type :: Fly=[" << (int)typeFly << "] Gnd=[" << (int)typeGnd << "]\n";
 		SetOtherPlayer(typeFly, typeGnd);
 		SetMyPlayer(airPokemon, landPokemon);
+
+		SceneMgr->LoadScene(SceneType::Battle);
 	}
 	break;
 	case ServerStageCmd::None:

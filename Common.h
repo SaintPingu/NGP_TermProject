@@ -426,6 +426,7 @@ float CalculateDamage(float damage, Type destType, Type srcType);
 
 class CommandList
 {
+	BYTE cmdCnt{};
 public:
 	CommandList();
 	~CommandList();
@@ -434,6 +435,7 @@ public:
 
 	void PushCommand(BYTE cmd, void* data, size_t size);
 
+	BYTE GetCmdCnt();
 	std::vector<BYTE> GetCmdList();
 };
 
@@ -461,7 +463,6 @@ enum class ServerLobbyCmd : BYTE
 enum class ServerStageCmd : BYTE
 {
 	None,
-	GoLobby,
 	GoBattle,
 
 };

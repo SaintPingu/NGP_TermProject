@@ -40,8 +40,8 @@ void Framework::UpdateWithServer()
 
 		if (!SceneMgr->IsLoading()) {
 			GetInput();
+			SendPacket();
 		}
-		SendPacket();
 	}
 	AnimateScene();
 }
@@ -67,7 +67,7 @@ void Framework::Update()
 bool Framework::WaitForPacket()
 {
 RestartRecv:
-	//std::cout << " Framework 수신 대기\n";
+	std::cout << " Framework 수신 대기\n";
 	constexpr int timeoutMSec = 5 * 1000;
 	DWORD result = WaitForSingleObject(recvPacket, timeoutMSec);
 	if (result == WAIT_TIMEOUT) {
@@ -77,7 +77,7 @@ RestartRecv:
 		return false;
 	}
 	ResetEvent(recvPacket);
-	//std::cout << " Framework 수신 완료\n";
+	std::cout << " Framework 수신 완료\n";
 
 	if (CLIENT_NETWORK->IsConnected() == false) {
 		return false;
@@ -90,7 +90,7 @@ RestartRecv:
 	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
 	if (packetLoader.buffer->empty()) {	// 예외 처리
 		std::cout << "[ERROR - WaitForPacket()] :: 수신한 패킷이 비어있습니다!\n";
-		//return false;
+		return false;
 	}
 	//std::cout << "패킷 정상 수신 / 데이터 크기 : (" << packetLoader.buffer->size() << ")\n";
 
