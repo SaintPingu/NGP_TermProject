@@ -142,6 +142,7 @@ void StageScene::RemoveClient(int clientID)
 	enterPlayers.erase(clientID);
 }
 
+
 void StageScene::Clear()
 {
 	//battleReady  = false;

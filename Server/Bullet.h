@@ -8,7 +8,7 @@ typedef struct BulletData {
 }BulletData;
 
 class BulletController abstract {
-protected:
+public:
 	class Bullet {
 	private:
 		BulletData data;

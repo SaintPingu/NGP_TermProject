@@ -2,6 +2,10 @@
 #include "BattleScene.h"
 #include "DataBase.h"
 
+#include "ClientInfo.h"
+#include "ClientMgr.h"
+#include "Bullet.h"
+
 
 void BattleScene::Init()
 {
@@ -10,11 +14,6 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
-	//UpdatePlayer();
-	//UpdateEnemy();
-	//UpdateBoss();
-	//UpdatePlayerSkill();
-	//UpdateBossSkill();
 	for (auto& [clientID, player] : players) {
 		if (player->IsMove())
 			player->Move();
@@ -37,6 +36,11 @@ void BattleScene::Update()
 	enemies->Move();
 	boss->Move();
 
+	// player->Animate(hWnd);
+	// enemies->Animate();
+	// boss->Animate();
+	//boss->AnimateSkill();
+
 }
 
 void BattleScene::ProcessCommand(int clientID, Command command, void* data)
@@ -47,86 +51,54 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 
 	switch (clientCmd)
 	{
-	//case ClientBattleCmd::Terminate:
-	//{
-	//	players.erase(clientID);
-	//	curPlayerCnt -= 1;
-	//}
-	//	break;
+	/// +----------------------------------
+	///				 M O V E 
+	/// ----------------------------------+	
 	case ClientBattleCmd::MoveLeft:
-	{
-
-	}
-	break;
-		/// +----------------------------------
-		///				   T A P
-		/// ----------------------------------+	
-	//case ClientBattleCmd::MoveLeftTap:
 	{
 		player->SetDirection(Dir::Left);
 	}
 		break;
-	//case ClientBattleCmd::MoveRightTap:
+	case ClientBattleCmd::MoveRight:
 	{
 		player->SetDirection(Dir::Right);
 	}
 		break;
-	//case ClientBattleCmd::MoveUpTap:
+	case ClientBattleCmd::MoveUp:
 	{
 		player->SetDirection(Dir::Up);
 	}
 		break;
-	//case ClientBattleCmd::MoveDownTap:
+	case ClientBattleCmd::MoveDown:
 	{
 		player->SetDirection(Dir::Down);
 	}
 		break;
-		
-		/// +----------------------------------
-		///				A W A Y
-		/// ----------------------------------+	
-	//case ClientBattleCmd::MoveLeftAway:
-	//case ClientBattleCmd::MoveRightAway:
-	//case ClientBattleCmd::MoveUpAway:
-	//case ClientBattleCmd::MoveDownAway:
-	{
-		player->StopMove();
-	}
-		break;
-
-		/// +----------------------------------
-		///				S T O P
-		/// ----------------------------------+	
 	case ClientBattleCmd::Stop:
 	{
 		player->StopMove();
 	}
 		break;
-
-
-		/// +----------------------------------
-		///				S K I L L 
-		/// ----------------------------------+	
+	/// +----------------------------------
+	///				S K I L L 
+	/// ----------------------------------+	
 	case ClientBattleCmd::SkillQ:
-		player->ActiveSkill(Skill::Identity);
-		/*
-			AcceptSkillQ
-			-> SEver가 클라한테 클라가 Q 를 쓸수있는지를 판단한다. 
-
-		*/
-		Skill_Q();
+	{
+		ActiveSkill(clientID, player, Skill::Identity);
+	}
 		break;
 	case ClientBattleCmd::SkillW:
-		player->ActiveSkill(Skill::Sector);
-
-		Skill_W();
+	{
+		ActiveSkill(clientID, player, Skill::Sector); 
+	}
 		break;
 	case ClientBattleCmd::SkillE:
-		player->ActiveSkill(Skill::Circle);
-
-		Skill_E();
+	{
+		ActiveSkill(clientID, player, Skill::Circle); 
+	}
 		break;
 	}
+
 }
 
 void BattleScene::AddClient(int clientID)
@@ -135,56 +107,118 @@ void BattleScene::AddClient(int clientID)
 
 }
 
-void BattleScene::UpdatePlayer()
+void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skill)
+{
+	if (player->IsDeath())
+		return;
+	player->ActiveSkill(skill);
+
+	switch (skill)
+	{
+	case Skill::Identity:
+	{
+		int RedMP = 30;
+		if (player->ReduceMP(RedMP))
+		{
+			float MP = player->GetMP();
+			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::AcceptSkillQ, nullptr, 0);
+			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+		}
+	}
+		break;
+	case Skill::Sector:
+	{
+		int RedMP = 15;
+		if (player->ReduceMP(RedMP))
+		{
+			float MP = player->GetMP();
+			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+		}
+	}
+		break;
+	case Skill::Circle:
+	{
+		int RedMP = 10;
+		if (player->ReduceMP(RedMP))
+		{
+			float MP = player->GetMP();
+			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+		}
+	}
+		break;
+	}
+
+}
+
+void BattleScene::CollideCheck()
 {
 	for (auto& [clientID, player] : players) {
-		if(player->IsMove())
-			player->Move();
+		
+	/// +----------------------------------
+	///	     ENEMY BULLETS <-> PLAYER 
+	/// ----------------------------------+	
+		CollideCheck_EnemyBullets_Player(clientID, player.get());
 
-		player->CheckShot();
+	/// +----------------------------------
+	///	  PLAYER BULLETS <-> ENEMIES, BOSS
+	/// ----------------------------------+	
+		CollideCheck_PlayerBullets_Enemies(clientID, player.get());
+	}
 
+
+}
+
+void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player)
+{
+	const std::vector<BulletController::Bullet*> enemyBullets = enemies->GetEnemyBullets()->GetBullets();
+	for (size_t i = 0; i < enemyBullets.size(); ++i)
+	{
+		if (player->IsCollide(enemyBullets.at(i)->GetRect()) == true)
+		{
+			player->Hit(enemyBullets.at(i)->GetDamage()
+				, enemyBullets.at(i)->GetType()
+				, enemyBullets.at(i)->GetPos());
+
+			enemies->GetEnemyBullets()->Pop(i);
+
+		}
+		else if (enemyBullets.at(i)->Move() == false)
+		{
+			enemies->GetEnemyBullets()->Pop(i);
+
+		}
 	}
 }
 
-void BattleScene::UpdateEnemy()
+void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player)
 {
-	enemies->CreateCheckMelee();
-	enemies->CreateCheckRange();
-	enemies->CheckAttackDelay();
+	const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
+	const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
 
+
+	for (size_t i = 0; i < playerBullets.size(); ++i)
+	{
+		const RECT	rectBullet    = playerBullets.at(i)->GetRect();
+		const float bulletDamage  = playerBullets.at(i)->GetDamage();
+		const Type	bulletType    = playerBullets.at(i)->GetType();
+		const POINT bulletPos     = playerBullets.at(i)->GetPos();
+		
+		if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
+			(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
+		{
+			if (playerBullets.at(i)->IsSkillBullet() == false)
+			{
+				player->AddMP(0.15f);
+				float MP = player->GetMP();
+				CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+
+			}
+			player->GetPlayerBullets()->Pop(i);
+		}
+		else if (playerBullets.at(i)->Move() == false)
+		{
+			player->GetPlayerBullets()->Pop(i);
+		}
+	}
 }
-
-void BattleScene::UpdateBoss(Player* player)
-{
-	boss->CheckActDelay(player);
-	boss->CheckAttackDelay();
-
-}
-
-void BattleScene::UpdatePlayerSkill()
-{
-
-}
-
-void BattleScene::UpdateBossSkill()
-{
-
-}
-
-
-void BattleScene::Skill_Q()
-{
-	
-}
-
-void BattleScene::Skill_W()
-{
-
-}
-
-void BattleScene::Skill_E()
-{
-
-}
-
 

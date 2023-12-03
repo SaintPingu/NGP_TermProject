@@ -16,9 +16,6 @@
     <Filter Include="DataBase">
       <UniqueIdentifier>{dc35b781-1a48-4423-8831-ea4d7a23e600}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Log">
-      <UniqueIdentifier>{2c985de6-b295-4449-8423-3a804b869666}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{458944ab-7081-49ca-bb0e-5182c0f22d3d}</UniqueIdentifier>
     </Filter>
@@ -27,9 +24,6 @@
     </Filter>
     <Filter Include="Timer">
       <UniqueIdentifier>{2b6ccd62-469e-482f-b823-412ccb78a034}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\Battle">
-      <UniqueIdentifier>{041d131f-07a5-4e0f-8341-488f09f45b84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,12 +56,6 @@
     </ClCompile>
     <ClCompile Include="ServerPacket.cpp">
       <Filter>Packet</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleLog.cpp">
-      <Filter>Log</Filter>
-    </ClCompile>
-    <ClCompile Include="Log.cpp">
-      <Filter>Log</Filter>
     </ClCompile>
     <ClCompile Include="LobbyScene.cpp">
       <Filter>Scene</Filter>
@@ -145,15 +133,6 @@
     </ClInclude>
     <ClInclude Include="ServerPacket.h">
       <Filter>Packet</Filter>
-    </ClInclude>
-    <ClInclude Include="conmanip.h">
-      <Filter>Log</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleLog.h">
-      <Filter>Log</Filter>
-    </ClInclude>
-    <ClInclude Include="Log.h">
-      <Filter>Log</Filter>
     </ClInclude>
     <ClInclude Include="LobbyScene.h">
       <Filter>Scene</Filter>

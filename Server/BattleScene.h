@@ -4,8 +4,6 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "Boss.h"
-//#include "Battle.h"
-
 
 const int maxBlattlePlayer = 2;
 class BattleScene : public Scene	
@@ -23,7 +21,6 @@ private:
 	PlayerBullet*		playerbullet;
 	EnemyController*	enemies;
 	Boss*				boss;
-	//BattleInfo*			battle;
 
 public:
 	virtual void Init() override;
@@ -32,7 +29,6 @@ public:
 
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
 	Boss* GetBoss() { return boss; }
-	//BattleInfo* GetBattle() { return battle; }
 	const EnemyController* GetEnemyController() { return enemies; }
 	const PlayerBullet* GetPlayerController() { return playerbullet; }
 
@@ -40,17 +36,16 @@ public:
 	void RemoveClient(int clientID) {};
 
 
+
 public:
-	void UpdatePlayer();
-	void UpdateEnemy();
-	void UpdateBoss(Player* player);
-	void UpdatePlayerSkill();
-	void UpdateBossSkill();
+	void ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skill);
+	void CollideCheck();
 
-	void Skill_Q();
-	void Skill_W();
-	void Skill_E();
+private:
+	void CollideCheck_EnemyBullets_Player(int clientID,  Player* player);
+	void CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player);
 
+public:
 	RECT GetRectDisplay() const
 	{
 		RECT rectDisplay = RECT{};
