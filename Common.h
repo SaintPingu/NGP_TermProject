@@ -446,9 +446,9 @@ void PushData(PacketBuffer& buffer, T* data, size_t size)
 /// ------------------+	
 enum class ServerLobbyCmd : BYTE
 {
-	GoStage,
-	Quit,
 	None,
+	Quit,
+	GoStage,
 
 };
 /// +------------------
@@ -625,6 +625,13 @@ namespace Lobby
 	};
 
 };
+
+namespace Stage
+{
+	struct ClientStageData {
+		BYTE	Fly_Gnd;
+	};
+}
 
 
 /* +--------------------------------------------------------------------------

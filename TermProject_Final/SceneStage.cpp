@@ -34,6 +34,30 @@ SceneStage::~SceneStage()
 {
 }
 
+void SceneStage::EnterLobby(CommandList* cmdList)
+{
+	cmdList->PushCommand((BYTE)ClientStageCmd::GoLobby, nullptr, 0);
+	SceneMgr->LoadScene(SceneType::Lobby);
+	isSendPacket = true;
+}
+
+void SceneStage::RequestEnterBattle(CommandList* cmdList)
+{
+	if (inWaitingRoom) {
+		return;
+	}
+
+	std::bitset<4> fly = (BYTE)airPokemon;
+	std::bitset<4> gnd = (BYTE)landPokemon;
+	std::bitset<8> data(fly.to_string() + gnd.to_string());
+	Stage::ClientStageData clientStageData = (Stage::ClientStageData)data.to_ulong();
+
+	cmdList->PushCommand((BYTE)ClientStageCmd::EnterStage, &clientStageData, sizeof(BYTE));
+	isSendPacket = true;
+	isRecvPacket = true;
+	inWaitingRoom = true;
+}
+
 void SceneStage::Init()
 {
 	target = std::make_unique<Target>();
@@ -76,6 +100,9 @@ void SceneStage::Init()
 	rectStage[static_cast<int>(StageElement::Dark)] = { -230, 100, 30, 250 };
 	rectStage[4] = { 150, 200, 250, 260 };
 
+	_ready_Air_pokemon = false;
+	_ready_Land_pokemon = false;
+	inWaitingRoom = false;
 }
 
 void SceneStage::Render(HDC hdc)
@@ -220,21 +247,31 @@ void SceneStage::Render(HDC hdc)
 				break;
 			}
 		}
-
+		
 		HFONT hFont2 = CreateFont(30, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ARCADECLASSIC"));
 		HFONT oldFont2 = (HFONT)SelectObject(hdc, hFont2);
-
-		/*if (!_ready_Land_pokemon && menu._finger_twinkle_cnt % 3 != 0)
-			TextOut(hdc, _fingerPos.x, _fingerPos.y, L"▲", 1);*/
-
 		HFONT hFont3 = CreateFont(30, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ChubbyChoo-SemiBold"));
 		HFONT oldFont3 = (HFONT)SelectObject(hdc, hFont3);
 
-		/*if (_ready_Air_pokemon && _ready_Land_pokemon && menu._finger_twinkle_cnt % 5 != 0)
-		{
-			TextOut(hdc, 35, 50, L"PRESS ENTER KEY TO CONTINUE", 28);
-			TextOut(hdc, 115, 70, L"PRESS 'R' TO RESET", 18);
-		}*/
+		// 입장 대기 상태
+		if (inWaitingRoom) {
+			if ((int)_finger_twinkle % 3 != 0) {
+				TextOut(hdc, 35, 50, L"WAITING FOR OTHER PLAYER...", 28);
+			}
+		}
+		// 포켓몬 선택 상태
+		else {
+			if (!_ready_Land_pokemon && (int)_finger_twinkle % 3 != 0)
+				TextOut(hdc, _fingerPos.x, _fingerPos.y, L"▲", 1);
+
+
+			if (_ready_Air_pokemon && _ready_Land_pokemon && (int)_finger_twinkle % 5 != 0)
+			{
+				TextOut(hdc, 35, 50, L"PRESS ENTER KEY TO CONTINUE", 28);
+				TextOut(hdc, 115, 70, L"PRESS 'R' TO RESET", 18);
+			}
+		}
+
 
 		SelectObject(hdc, oldFont);
 		SelectObject(hdc, oldFont2);
@@ -328,11 +365,16 @@ void SceneStage::GetInput(CommandList* cmdList)
 		if (target->_select_index == StageElement::Lobby)
 		{
 			moveX = 300;
-			cmdList->PushCommand((BYTE)ClientStageCmd::GoLobby, nullptr, 0);
-			SceneMgr->LoadScene(SceneType::Lobby);
-			isSendPacket = true;
+			EnterLobby(cmdList);
 			return;
 		}
+		if (_ready_Air_pokemon && _ready_Land_pokemon)
+		{
+			moveX = 300;
+			RequestEnterBattle(cmdList);
+			return;
+		}
+
 
 		switch (crntPhase)
 		{
@@ -402,12 +444,29 @@ void SceneStage::GetInput(CommandList* cmdList)
 		_enter_select = false;
 		_finger = 0;
 	}
-	if (KEY_TAP(VK_RETURN))
+	if (KEY_TAP(VK_R)) // "R"키 누르면 선택 리셋
 	{
 		_ready_Air_pokemon = false;
 		_ready_Land_pokemon = false;
 		_enter_select = true;
 		_finger = 0;
+	}
+
+	if (_select_pokemon) {
+		if (!_ready_Air_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 0)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 2)
+				_finger += 1;
+		}
+		else if (!_ready_Land_pokemon)
+		{
+			if (KEY_TAP(VK_LEFT) && _finger > 3)
+				_finger -= 1;
+			if (KEY_TAP(VK_RIGHT) && _finger < 5)
+				_finger += 1;
+		}
 	}
 }
 
@@ -440,6 +499,7 @@ void SceneStage::WriteData(void* data)
 
 void SceneStage::FingerController()
 {
+	_finger_twinkle += DeltaTime() * 2.f;
 	if (_select_pokemon && SceneMgr->IsLoading() == false)
 	{
 		if (KEY_TAP(VK_RETURN) && _enter_select)
@@ -504,26 +564,6 @@ void SceneStage::FingerController()
 					break;
 				}
 			}
-			else if (_ready_Air_pokemon && _ready_Land_pokemon)
-			{
-				moveX = 300;
-				// 여기에 배틀 입장 코드 추가...
-			}
-		}
-
-		if (!_ready_Air_pokemon)
-		{
-			if (KEY_TAP(VK_LEFT) && _finger > 0)
-				_finger -= 1;
-			if (KEY_TAP(VK_RIGHT) && _finger < 2)
-				_finger += 1;
-		}
-		else if (!_ready_Land_pokemon)
-		{
-			if (KEY_TAP(VK_LEFT) && _finger > 3)
-				_finger -= 1;
-			if (KEY_TAP(VK_RIGHT) && _finger < 5)
-				_finger += 1;
 		}
 	}
 }

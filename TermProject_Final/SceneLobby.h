@@ -43,7 +43,7 @@ class SceneLobby : public Scene {
 		CImage img;
 	};
 private:
-	std::map<int, LobbyPlayer> lobbyPlayers;
+	std::unordered_map<int, LobbyPlayer> lobbyPlayers;
 
 	CImage background;
 	NPC npc[4];

@@ -28,6 +28,7 @@ void Framework::Start(HWND hWnd)
 // SceneStage는 WriteData를 수행하지 않는다.
 void Framework::UpdateWithServer_Stage()
 {
+	AnimateScene();
 	if (!SceneMgr->IsLoading()) {
 		const std::shared_ptr<SceneStage>& sceneStage = std::static_pointer_cast<SceneStage>(SceneMgr->GetCurrentScene());
 		if (sceneStage->IsRecvPacket()) {	// 패킷을 수신해야 한다면
@@ -43,7 +44,6 @@ void Framework::UpdateWithServer_Stage()
 			sceneStage->SendComplete();		// 패킷 송신 완료
 		}
 	}
-	AnimateScene();
 }
 
 void Framework::UpdateWithServer()
@@ -86,6 +86,18 @@ bool Framework::WaitForPacket_Stage()
 
 	// 시그널 상태(SetEvent)
 	if (result == WAIT_OBJECT_0) {
+		ResetEvent(recvPacket);
+
+		if (CLIENT_NETWORK->IsConnected() == false) {
+			return false;
+		}
+
+		packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
+		if (packetLoader.buffer->empty()) {	// 예외 처리
+			SetEvent(recvPacket);
+			return false;
+		}
+
 		return true;
 	}
 	// timeout
@@ -224,4 +236,6 @@ void Framework::EnterStage()
 void Framework::ExitStage()
 {
 	SetUpdateFuncToServer();
+	CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
+	cmdList->PushCommand((BYTE)ClientLobbyCmd::Stop, nullptr, 0);
 }

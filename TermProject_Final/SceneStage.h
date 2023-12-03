@@ -53,7 +53,7 @@ private:
 	POINT _fingerPos = { 0, };
 
 	int _finger = 0;
-	int _finger_twinkle_cnt = 0;
+	float _finger_twinkle = 0;
 	int moveX = 300;
 	int _play_Air_pokemon = 0;
 	int _play_Land_pokemon = 0;
@@ -66,6 +66,11 @@ private:
 
 	bool isSendPacket{};	// 커맨드를 실어서   패킷을 송신해야 하는가?
 	bool isRecvPacket{};	// 대기열에 진입해서 패킷을 수신해야 하는가?
+
+	bool inWaitingRoom{};
+
+	void EnterLobby(CommandList* cmdList);
+	void RequestEnterBattle(CommandList* cmdList);
 public:
 	virtual void Init();
 	virtual void Render(HDC hdc);

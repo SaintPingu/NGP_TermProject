@@ -17,8 +17,10 @@ public:
 class StageScene : public Scene
 {
 private:
-	int enterPlayerCnt{};
+	std::unordered_map<int, std::shared_ptr<StagePlayer>> enterPlayers{};
 	std::unordered_map<int, std::shared_ptr<StagePlayer>> players{};
+
+	void StartBattle();
 
 public:
 	virtual void Init() override;

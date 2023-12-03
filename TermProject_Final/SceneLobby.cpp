@@ -206,6 +206,8 @@ bool SceneLobby::ProcessCommand()
 
 void SceneLobby::WriteData(void* data)
 {
+	std::set<int> clientIDs{};
+
 	PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 
 	Lobby::LobbyData lobbydata;
@@ -233,7 +235,20 @@ void SceneLobby::WriteData(void* data)
 		lobbyPlayers[clientID].pos.x = playersData->Pos.x;
 		lobbyPlayers[clientID].pos.y = playersData->Pos.y;
 
+		clientIDs.insert(clientID);
+
 		buffer->erase(buffer->begin(), buffer->begin() + sizeof(Lobby::PlayerLobbyData));
+	}
+
+	std::vector<int> removedIDs{};
+	for (auto& [clientID, player] : lobbyPlayers) {
+		if (!clientIDs.count(clientID)) {
+			removedIDs.push_back(clientID);
+		}
+	}
+
+	for (int clientID : removedIDs) {
+		lobbyPlayers.erase(clientID);
 	}
 
 	delete[] lobbydata.PlayersData;

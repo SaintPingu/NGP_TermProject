@@ -26,6 +26,9 @@ public:
 
 class PacketLoader
 {
+private:
+	std::unordered_map<int, PacketBuffer*> receivedPacketBuffers;
+
 public:
 	PacketLoader() {}
 	~PacketLoader() {}
@@ -36,6 +39,8 @@ public:
 
 	void SetPacketBuffer(int clientID, std::vector<BYTE>* buffer);
 	int PopCommand(BYTE& cmd, std::vector<BYTE>& data);
-	void Clear() { packetBuffers.clear(); }
+	void Clear() { receivedPacketBuffers.clear();  packetBuffers.clear(); }
+
+	const std::unordered_map<int, PacketBuffer*>& GetReceivedPacketBuffers() const { return receivedPacketBuffers; }
 };
 

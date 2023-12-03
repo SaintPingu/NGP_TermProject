@@ -35,7 +35,7 @@ private:
 
 	TResult Start();			// 0. 시작
 	TResult Event();			// 1. 이벤트 처리
-	TResult Update();			// 2. 업데이트 
+	TResult Update(bool isSendPacket);			// 2. 업데이트 
 	TResult SendPakcet();		// 3. 패킷 송신		- 패킷을 각 클라이언트에게 송신  
 
 private:
