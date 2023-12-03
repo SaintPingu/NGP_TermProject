@@ -470,6 +470,7 @@ enum class ServerStageCmd : BYTE
 /// ------------------+	
 enum class ServerBattleCmd : BYTE
 {
+	None,
 	Loss,
 	Win,
 	AcceptSkillQ,

@@ -31,10 +31,13 @@ void Framework::UpdateWithServer()
 		if (WaitForPacket() == false) {
 			return;
 		}
-		if (ProcessCommand() == false) {
-			return;
+		if (!packetLoader.buffer->empty()) {
+			if (ProcessCommand() == false) {
+				return;
+			}
+			WriteData();
 		}
-		WriteData();
+
 		if (!SceneMgr->IsLoading()) {
 			GetInput();
 		}
@@ -87,8 +90,7 @@ RestartRecv:
 	packetLoader.SetPacketBuffer(CLIENT_NETWORK->GetPacketBuffer());
 	if (packetLoader.buffer->empty()) {	// 예외 처리
 		std::cout << "[ERROR - WaitForPacket()] :: 수신한 패킷이 비어있습니다!\n";
-		SetEvent(recvPacket);
-		return false;
+		//return false;
 	}
 	//std::cout << "패킷 정상 수신 / 데이터 크기 : (" << packetLoader.buffer->size() << ")\n";
 

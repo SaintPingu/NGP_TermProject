@@ -47,8 +47,6 @@ void PacketGenerator::GenerateData()
 		lobbyData.PlayersData = playerlobbydata;
 	}
 
-	// 오류로 인한 임시 제거
-	return;
 	{// 배틀 생성 
 		auto& battle = SCENE_MGR->Battle();
 		auto& players = battle->GetPlayers();
@@ -61,6 +59,7 @@ void PacketGenerator::GenerateData()
 			++plCount;
 		}
 
+		return;
 		Battle::EnemyBattleData enemybattledata{};
 		auto enemies = battle->GetEnemyController()->GetEnemies();
 		enemybattledata.EnemyCnt = enemies.size();
@@ -166,14 +165,19 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		// battle씬은 int형 길이로 보낸다.
 		// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
 		// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
+		
+		//uint8 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
+		//	sizeof(battleData.PlayerBattleData[1]) +
+		//	sizeof(battleData.EnemyData.EnemyCnt) +
+		//	(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
+		//	sizeof(battleData.BulletData.BulletCnt) +
+		//	(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
+		//	sizeof(battleData.BossEffectData.EffectCnt) +
+		//	(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
+
+		// 테스트용
 		uint8 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
-			sizeof(battleData.PlayerBattleData[1]) +
-			sizeof(battleData.EnemyData.EnemyCnt) +
-			(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
-			sizeof(battleData.BulletData.BulletCnt) +
-			(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
-			sizeof(battleData.BossEffectData.EffectCnt) +
-			(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
+			sizeof(battleData.PlayerBattleData[1]);
 
 		//데이터 길이
 		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
@@ -192,6 +196,7 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			}
 		}
 
+		return true;
 		{//Enemy개수 + (Battle::EnemyData * Enemy개수)
 			buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
 			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
@@ -278,6 +283,11 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 		packetBuffer->erase(packetBuffer->begin());
 
 		if (cmd == (BYTE)ClientStageCmd::EnterStage) {
+			if (packetBuffer->empty()) {
+				packetBuffers.erase(crntClientID);
+				crntClientID = notAlloc;
+				return -2;
+			}
 			data.push_back(packetBuffer->front()); // ClientStageData
 			packetBuffer->erase(packetBuffer->begin());
 		}

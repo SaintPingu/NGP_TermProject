@@ -271,7 +271,9 @@ void SceneBattle::Render(HDC hdc)
 void SceneBattle::Animate()
 {
 	AnimatePlayers();
-	boss->Animate(HWND());
+	if (boss) {
+		boss->Animate(HWND());
+	}
 	/*player->Animate();
 	enemies->Animate();
 	boss->AnimateSkill();
@@ -418,6 +420,7 @@ void SceneBattle::WriteData(void* data)
 		players[clientID]->SetPos(pos);
 	}
 
+	return;
 	// EnemyBattleData - Cnt
 	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(BYTE));
 	RemoveData(*buffer, sizeof(BYTE));
@@ -498,7 +501,10 @@ bool SceneBattle::ProcessCommand()
 	while (packetLoader.PopCommand(cmd, buffer, SceneType::Battle)) {
 		switch ((ServerBattleCmd)cmd)
 		{
+		case ServerBattleCmd::None:
+			break;
 		case ServerBattleCmd::Loss:
+			std::cout << "[CMD] Loss\n";
 			SceneMgr->LoadScene(SceneType::Stage);
 
 			/*soundManager->StopEffectSound();
@@ -507,27 +513,32 @@ bool SceneBattle::ProcessCommand()
 
 			break;
 		case ServerBattleCmd::Win:
+			std::cout << "[CMD] Win\n";
 			SceneMgr->LoadScene(SceneType::Stage);
 
 			//soundManager->StopEffectSound();
 			//soundManager->StopBossSound();
 			break;
 		case ServerBattleCmd::AcceptSkillQ:
+			std::cout << "[CMD] AcceptSkillQ\n";
 			players[framework->client_ID]->ActiveSkill(Skill::Identity);
 			break;
 		case ServerBattleCmd::Hit: {
+			std::cout << "[CMD] Hit\n";
 			float hp;
 			memcpy(&hp, &(*buffer.begin()), sizeof(float));
 			players[framework->client_ID]->SetHp(hp);
 			break;
 		}
 		case ServerBattleCmd::UpdateMP: {
+			std::cout << "[CMD] UpdateMP\n";
 			float mp;
 			memcpy(&mp, &(*buffer.begin()), sizeof(float));
 			players[framework->client_ID]->SetMp(mp);
 			break;
 		}
 		case ServerBattleCmd::CreateEffect: {
+			std::cout << "[CMD] CreateEffect\n";
 			Effect createEffect;
 			memcpy(&createEffect.type, &(*buffer.begin()), sizeof(BYTE));
 			buffer.erase(buffer.begin());
@@ -536,6 +547,7 @@ bool SceneBattle::ProcessCommand()
 			break;
 		}
 		default:
+			assert(0);
 			break;
 		}
 	}
