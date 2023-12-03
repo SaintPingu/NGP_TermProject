@@ -175,6 +175,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Common.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="ClientNetMgr.cpp" />
     <ClCompile Include="ClientNetwork.cpp" />
     <ClCompile Include="ClientPacket.cpp" />
@@ -205,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="ClientNetMgr.h" />
     <ClInclude Include="ClientNetwork.h" />
     <ClInclude Include="ClientPacket.h" />

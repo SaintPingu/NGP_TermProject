@@ -133,6 +133,14 @@ void SceneBattle::RenderEnemies(HDC hdc)
 	}
 }
 
+void SceneBattle::AnimatePlayers()
+{
+	HWND hwnd;
+	for (auto& [id,player] : players) {
+		player->Animate(hwnd);
+	}
+}
+
 void SceneBattle::Init()
 {
 	// 맵 초기화
@@ -197,9 +205,10 @@ void SceneBattle::Init()
 	imgRange.ScaleImage(1.2f, 1.2f);
 	enemydata.type = Type::Water;
 
-	meleeEnemy = new Melee(imgMelee, { 0.0f,0.0f }, enemydata);
-	rangeEnemy = new Range(imgRange,{ 0.0f,0.0f }, enemydata);
-
+	meleeEnemy = std::make_shared<Melee>(Melee(imgMelee, { 0.0f,0.0f }, enemydata));
+	rangeEnemy = std::make_shared<Range>(Range(imgRange, { 0.0f,0.0f }, enemydata));
+	
+	// 테스트 용 데이터 넣기
 	/*EnemyData data;
 	data.dir = Dir::Down;
 	data.isAction = true;
@@ -217,10 +226,16 @@ void SceneBattle::Init()
 			}
 			enemies.push_back(data);
 		}
-	}*/
+	}
+
+	boss = std::make_shared<Boss>();
+	boss->Create();
+	boss->SetPos(Vector2(100.0f, 100.0f));*/
 
 	// 테스트 플레이어 생성
 	CreatePlayer(0, Type::Elec, Type::Fire);
+
+	gui = std::make_shared<GUIManager>(GUIManager(framework->GetRectWindow(), &players));
 }
 
 void SceneBattle::Render(HDC hdc)
@@ -228,72 +243,143 @@ void SceneBattle::Render(HDC hdc)
 	battleMap.Render(hdc, stage);
 	RenderPlayers(hdc);
 	RenderBullets(hdc);
+	boss->Render(hdc);
 	/*boss->Render(hdc);
 	player->Render(hdc);*/
 	RenderEnemies(hdc);
 	/*player->RenderSkill(hdc);
-	effects->Render(hdc);
-	gui->Render(hdc);*/
+	effects->Render(hdc);*/
+	gui->Render(hdc);
 }
 
 void SceneBattle::Animate()
 {
+	AnimatePlayers();
+	boss->Animate(HWND());
 	/*player->Animate();
 	enemies->Animate();
 	boss->AnimateSkill();
 	boss->Animate();*/
+
+	gui->Update(HWND());
 }
+
+
+#define PLAYERMOVETEST //define시 플레이어 움직임을 싱글에서 테스트 해볼수 있음.
 
 void SceneBattle::GetInput(CommandList* cmdList)
 {
 	if (cmdList == nullptr) {
-		return;
+		//return;
 	}
 
 	if (KEY_TAP('O')) {
 		//player->Heal();
 	}
-	if(KEY_TAP('P')) {
+	if (KEY_TAP('P')) {
 		//player->FullMP();
 	}
-	if(KEY_TAP('I')) {
+	if (KEY_TAP('I')) {
 		//player->InvincibleMode();
 	}
-	if(KEY_TAP('Q')) {
+	if (KEY_TAP('Q')) {
 		//player->ActiveSkill(Skill::Identity);
 	}
-	if(KEY_TAP('W')) {
+	if (KEY_TAP('W')) {
 		//player->ActiveSkill(Skill::Sector);
 	}
-	if(KEY_TAP('E')) {
+	if (KEY_TAP('E')) {
 		//player->ActiveSkill(Skill::Circle);
 	}
 
 	bool isMove = false;
-	if (KEY_TAP(VK_LEFT))
-	{
-		//player->Stop(Dir::Right);
-		//player->SetDirection(Dir::Left);
-		isMove = true;
+	if (KEY_TAP(VK_UP)) {
+		h -= 1;
 	}
-	if (KEY_TAP(VK_RIGHT))
-	{
-		/*player->Stop(Dir::Left);
-		player->SetDirection(Dir::Right);*/
-		isMove = true;
+	if (KEY_TAP(VK_DOWN)) {
+		h += 1;
 	}
-	if (KEY_TAP(VK_UP))
-	{
-		/*player->Stop(Dir::Down);
-		player->SetDirection(Dir::Up);*/
-		isMove = true;
+	if (KEY_TAP(VK_LEFT)) {
+		v -= 1;
 	}
-	if (KEY_TAP(VK_DOWN))
-	{
-		/*player->Stop(Dir::Up);
-		player->SetDirection(Dir::Down);*/
-		isMove = true;
+	if (KEY_TAP(VK_RIGHT)) {
+		v += 1;
 	}
+
+	if (KEY_AWAY(VK_UP)) {
+		h += 1;
+	}
+	if (KEY_AWAY(VK_DOWN)) {
+		h -= 1;
+	}
+	if (KEY_AWAY(VK_LEFT)) {
+		v += 1;
+	}
+	if (KEY_AWAY(VK_RIGHT)) {
+		v -= 1;
+	}
+
+	ClientBattleCmd cmd;
+
+#ifdef PLAYERMOVETEST
+	// 플레이어 움직임 테스트
+	Vector2 pos = players[framework->client_ID]->GetPosCenter();
+	if (v != 0) {
+		if (v == -1) {
+			players[framework->client_ID]->SetPos(Vector2(pos.x - 10.0f, pos.y));
+		}
+		else {
+			players[framework->client_ID]->SetPos(Vector2(pos.x + 10.0f, pos.y));
+		}
+	}
+	pos = players[framework->client_ID]->GetPosCenter();
+	if (h != 0) {
+		if (h == -1) {
+			if (isQuitDialog) {
+			}
+			else {
+				players[framework->client_ID]->SetPos(Vector2(pos.x, pos.y - 10.0f));
+			}
+		}
+		else {
+			players[framework->client_ID]->SetPos(Vector2(pos.x, pos.y + 10.0f));
+		}
+	}
+#else
+	if (v != 0) {
+		if (v == -1) {
+			cmd = ClientBattleCmd::MoveLeft;
+			isQuitDialog = false;
+		}
+		else {
+			cmd = ClientBattleCmd::MoveRight;
+			isQuitDialog = false;
+		}
+	}
+	if (h != 0) {
+		if (h == -1) {
+			if (isQuitDialog) {
+				cmd = ClientBattleCmd::Stop;
+			}
+			else {
+				cmd = ClientBattleCmd::MoveUp;
+			}
+		}
+		else {
+			cmd = ClientBattleCmd::MoveDown;
+			isQuitDialog = false;
+		}
+	}
+	else {
+		cmd = ClientBattleCmd::Stop;
+	}
+
+	cmdList->PushCommand((BYTE)cmd, nullptr, 0);
+
+	if (KEY_TAP(VK_ESCAPE) || (isQuitDialog && KEY_TAP(VK_RETURN))) {
+		framework->Terminate();
+	}
+#endif PLAYERMOVETEST
 }
 
 void SceneBattle::WriteData(void* data)

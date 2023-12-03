@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "Framework.h"
 #include "Player.h"
+
 
 Player::Player(Type type, Type subType)
 {
@@ -119,7 +121,43 @@ void Player::RenderSkill(HDC hdc)
 
 void Player::Animate(const HWND& hWnd)
 {
+	if (isDeath == true)
+	{
+		if (--deathFrame == 0)
+		{
+			//SceneMgr->StartLoading(hWnd);
+		}
+		return;
+	}
+	else if (isRevFrame == true)
+	{
+		--frame;
+	}
+	else
+	{
+		++frame;
+	}
 
+	switch (GetAction())
+	{
+	case Action::Idle:
+		if (frame > 2)
+		{
+			isRevFrame = true;
+			--frame;
+		}
+		else if (frame < 0)
+		{
+			isRevFrame = false;
+			++frame;
+		}
+		break;
+	default:
+		assert(0);
+		break;
+	}
+
+	//skillManager->Animate();
 }
 
 

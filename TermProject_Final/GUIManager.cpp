@@ -219,7 +219,7 @@ void CheckKeyUp(const HWND& hWnd, const WPARAM& wParam)
 	}
 }
 
-GUIManager::GUIManager(const RECT& rectWindow)
+GUIManager::GUIManager(const RECT& rectWindow, std::unordered_map<int, std::shared_ptr<Player>>* battleplayers) : players{ battleplayers }
 {
 
 	int fieldLength = 360; // 페이즈인가? 잘모르겠어서 기본설정
@@ -268,12 +268,12 @@ GUIManager::GUIManager(const RECT& rectWindow)
 	hurtGUI_Elec.gui = new GUIImage();
 	hurtGUI_Dark.gui = new GUIImage();
 
-	std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함
-	if (players.empty()) {
+	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함
+	if (players->empty()) {
 		return;
 	}
 	for (int i = 0; i < 2; ++i) {
-		switch (players[i]->GetType())
+		switch ((*players)[framework->client_ID]->GetType())
 		{
 		case Type::Elec:
 			icon_Q->Load(_T("images\\battle\\icon_elec_Q.png"), { 35, 35 });
@@ -291,7 +291,7 @@ GUIManager::GUIManager(const RECT& rectWindow)
 			gaugeMoveBarGUI->Load(_T("images\\battle\\gague_bar_fire.png"), { 14, 217 });
 			break;
 		}
-		switch (players[i]->GetSubType())
+		switch ((*players)[framework->client_ID]->GetSubType())
 		{
 		case Type::Elec:
 			icon_W->Load(_T("images\\battle\\icon_elec_W.png"), { 130, 130 });
@@ -390,18 +390,18 @@ void GUIManager::Animate(HWND& hWnd)
 
 void GUIManager::Paint(const HDC& hdc)
 {
-	std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
+	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
 
 	// MaxHP  MaxMP 가 몇인가? GetMaxHP 임시로 설정했음.
 
 	mainGUI->Render(hdc, rectMain);
 
 	gagueGUI_main->Render(hdc, rectHP);
-	gagueGUI_hp->RenderGauge(hdc, rectHP, players[framework->client_ID]->GetHP(), players[framework->client_ID]->GetMaxHP());
+	gagueGUI_hp->RenderGauge(hdc, rectHP, (*players)[framework->client_ID]->GetHP(), (*players)[framework->client_ID]->GetMaxHP());
 	gagueGUI_border->Render(hdc, rectHP);
 
 	gagueGUI_main->Render(hdc, rectMP);
-	gagueGUI_mp->RenderGauge(hdc, rectMP, players[framework->client_ID]->GetMP(), players[framework->client_ID]->GetMaxMP());
+	gagueGUI_mp->RenderGauge(hdc, rectMP, (*players)[framework->client_ID]->GetMP(), (*players)[framework->client_ID]->GetMaxMP());
 	gagueGUI_border->Render(hdc, rectMP);
 
 	icon_Q->Render(hdc, rectSkill_Q);
@@ -428,13 +428,13 @@ void GUIManager::Update(const HWND& hWnd)
 	hurtGUI_Elec.ReduceAlpha();
 	hurtGUI_Dark.ReduceAlpha();
 	
-	std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
+	//std::unordered_map<int, std::shared_ptr<Player>> players;// 배틀의 플레이어 연결해줘야함 
 
-	if (players.empty()) {
+	if (players->empty()) {
 		return;
 	}
 
-	for (auto& [id, player] : players) {
+	for (auto& [id, player] : *players) {
 		if (player->IsDeath() == true)
 		{
 			return;

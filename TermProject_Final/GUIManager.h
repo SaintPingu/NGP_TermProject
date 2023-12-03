@@ -25,6 +25,8 @@ private:
 		void ReduceAlpha();
 	}HurtGUI;
 
+	std::unordered_map<int, std::shared_ptr<Player>>* players = nullptr;// 배틀의 플레이어 연결해줘야함 
+
 	const RECT* rectWindow = nullptr;
 	float iconMoveMaxY = 0;
 	float iconMoveMinY = 0;
@@ -63,7 +65,7 @@ private:
 	HurtGUI hurtGUI_Elec;
 	HurtGUI hurtGUI_Dark;
 public:
-	GUIManager(const RECT& rectWindow);
+	GUIManager(const RECT& rectWindow, std::unordered_map<int, std::shared_ptr<Player>>* players);
 	void Render(HDC& hdc);
 	void Animate(HWND& hWnd);
 	void DisplayHurtFrame(Type type);

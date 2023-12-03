@@ -22,8 +22,8 @@ private:
 
 	bool isDeath;
 
-	float hp = 0;
-	float mp = 0;
+	float hp = 100, maxHp = 100;
+	float mp = 0, maxMp = 100;
 
 public:
 	Player(Type type, Type subType);
@@ -49,7 +49,7 @@ public:
 		hp = val;
 	}
 	float GetMaxHP() {
-		return hp;
+		return maxHp;
 	}
 	float GetMP() {
 		return mp;
@@ -58,6 +58,6 @@ public:
 		mp = val;
 	}
 	float GetMaxMP() {
-		return mp;
+		return maxMp;
 	}
 };

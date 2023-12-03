@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 #include "Enemy.h"
+#include "Boss.h"
+#include "GUIManager.h"
 
 class BattleMap
 {
@@ -56,8 +58,10 @@ private:
 	ObjectImage imgMelee;
 	ObjectImage imgRange;
 
-	Melee* meleeEnemy = nullptr; // 객체 하나씩만 생성해서 여러번 그리는 방식으로.
-	Range* rangeEnemy = nullptr;
+	std::shared_ptr<Melee> meleeEnemy{}; // 객체 하나씩만 생성해서 여러번 그리는 방식으로.
+	std::shared_ptr<Range> rangeEnemy{};
+	std::shared_ptr<Boss> boss{};
+	std::shared_ptr<GUIManager> gui{};
 
 	std::unordered_map<BulletType, ObjectImage> bulletImages;
 
@@ -73,6 +77,14 @@ private:
 	void RenderBullets(HDC hdc);
 	void RenderEffects(HDC hdc);
 	void RenderEnemies(HDC hdc);
+
+
+	void AnimatePlayers();
+
+	bool isQuitDialog = false;
+
+	int v{}, h{};
+
 public:
 	virtual void Init() override;
 	virtual void Render(HDC hdc) override;

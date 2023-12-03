@@ -10,6 +10,8 @@
 
 SINGLETON_PATTERN_DEFINITION(Framework)
 
+//#define SINGLEPLAY
+
 void Framework::Start(HWND hWnd)
 {
 	recvPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -70,9 +72,11 @@ void Framework::UpdateSingle()
 
 void Framework::Update()
 {
-	//UpdateSingle(); 
+#ifdef SINGLEPLAY
+	UpdateSingle(); 
+#else
 	UpdateFunc();
-	
+#endif // SINGLEPLAY	
 }
 
 bool Framework::WaitForPacket_Stage()
@@ -176,6 +180,10 @@ void Framework::Terminate()
 
 void Framework::ConnectToServer()
 {
+#ifdef SINGLEPLAY
+	return;
+#endif // SINGLEPLAY
+
 	if (clientNetwork.joinable()) {
 		clientNetwork.join();
 	}
