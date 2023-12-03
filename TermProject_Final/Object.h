@@ -3,7 +3,7 @@
 
 class GameObject abstract {
 private:
-	ObjectImage* image;
+	ObjectImage image;
 
 	Vector2 posCenter;
 	POINT bodySize = { 0, };
@@ -13,14 +13,14 @@ protected:
 	Dir direction = Dir::Empty;
 
 	GameObject() {};
-	GameObject(ObjectImage& image, const Vector2& pos);
+	GameObject(ObjectImage image, const Vector2& pos);
 	void Render(const HDC& hdc, const RECT* rectImage = nullptr);
-	void Init(ObjectImage& image, const Vector2& pos);
+	void Init(ObjectImage image, const Vector2& pos);
 	
 
 	inline const ObjectImage& GetImage()
 	{
-		return *image;
+		return image;
 	}
 
 public:
@@ -44,9 +44,9 @@ public:
 	{
 		return rectBody.bottom - rectBody.top;
 	}
-	inline void SetObjectImage(ObjectImage& img)
+	inline void SetObjectImage(ObjectImage img)
 	{
-		image = &img;
+		image = img;
 	}
 	void SetPos(const Vector2& pos);
 };

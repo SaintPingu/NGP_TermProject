@@ -1,23 +1,23 @@
 #include "stdafx.h"
 #include "object.h"
 
-GameObject::GameObject(ObjectImage& image, const Vector2& pos)
+GameObject::GameObject(ObjectImage image, const Vector2& pos)
 {
-	this->image = &image;
-	bodySize = this->image->GetBodySize();
+	this->image = image;
+	bodySize = this->image.GetBodySize();
 
 	SetPos(pos);
 }
 
 void GameObject::Render(const HDC& hdc, const RECT* rectImage)
 {
-	image->Render(hdc, rectBody, rectImage);
+	image.Render(hdc, rectBody, rectImage);
 }
 
-void GameObject::Init(ObjectImage& image, const Vector2& pos)
+void GameObject::Init(ObjectImage image, const Vector2& pos)
 {
-	this->image = &image;
-	bodySize = this->image->GetBodySize();
+	this->image = image;
+	bodySize = this->image.GetBodySize();
 
 	SetPos(pos);
 }

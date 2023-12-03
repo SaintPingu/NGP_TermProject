@@ -8,7 +8,7 @@ Player::Player(Type type, Type subType)
 	this->type = type;
 	this->subType = subType;
 
-	static ObjectImage img_pokemon;
+	ObjectImage img_pokemon;
 	ObjectImage bulletImage;
 	ObjectImage subBulletImage;
 
