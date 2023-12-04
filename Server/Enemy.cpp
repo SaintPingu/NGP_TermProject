@@ -169,6 +169,9 @@ EnemyController::EnemyController()
 		break;
 	}
 
+	createDelay_Melee *= 2;
+	createDelay_Range *= 2;
+
 	const float randHP_Melee = (float)(rand() % 6) / 10;
 	const float randHP_Range = (float)(rand() % 6) / 10;
 	meleeData.hp += randHP_Melee;

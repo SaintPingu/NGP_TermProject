@@ -64,8 +64,9 @@ public:
 	ObjectImage bulletImage;
 	POINT bulletSize = { 0, };
 
-	void Pop(size_t& index);
 public:
+	void Pop(size_t& index);
+	const Bullet* GetBullet(int index) { return bullets[index]; }
 
 	void CreateBullet(const POINT& center, const BulletData& data, Dir dir);
 	void CreateBullet(const POINT& center, const BulletData& data, const Vector2& unitVector, bool isRotateImg = false, bool isSkillBullet = false);

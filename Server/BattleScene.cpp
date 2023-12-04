@@ -46,6 +46,8 @@ void BattleScene::Update()
 	for (auto& [clientID, player] : players) {
 		player->MoveBullets();
 	}
+	CollideCheck(); // 面倒眉农 
+
 	return;
 
 
@@ -64,7 +66,6 @@ void BattleScene::Update()
 	//boss->AnimateSkill();
 
 
-	CollideCheck(); // 面倒眉农 
 
 }
 
@@ -207,22 +208,15 @@ void BattleScene::CollideCheck()
 
 void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player)
 {
-	const std::vector<BulletController::Bullet*> enemyBullets = enemies->GetEnemyBullets()->GetBullets();
-	for (size_t i = 0; i < enemyBullets.size(); ++i)
+	auto& enemyBullets = enemies->GetEnemyBullets();
+	for (size_t i = 0; i < enemyBullets->GetBulletCount(); ++i)
 	{
-		if (player->IsCollide(enemyBullets.at(i)->GetRect()) == true)
+		auto bullet = enemyBullets->GetBullet(i);
+		if (player->IsCollide(bullet->GetRect()) == true)
 		{
-			player->Hit(enemyBullets.at(i)->GetDamage()
-				, enemyBullets.at(i)->GetType()
-				, enemyBullets.at(i)->GetPos());
+			player->Hit(bullet->GetDamage(), bullet->GetType(), bullet->GetPos());
 
-			enemies->GetEnemyBullets()->Pop(i);
-
-		}
-		else if (enemyBullets.at(i)->Move() == false)
-		{
-			enemies->GetEnemyBullets()->Pop(i);
-
+			enemyBullets->Pop(i);
 		}
 	}
 }
