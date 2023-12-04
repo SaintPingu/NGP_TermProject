@@ -51,6 +51,9 @@ void BattleScene::Update()
 	// boss->Animate();
 	//boss->AnimateSkill();
 
+
+	CollideCheck(); // 충돌체크 
+
 }
 
 void BattleScene::ProcessCommand(int clientID, Command command, void* data)
@@ -205,7 +208,7 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* play
 	const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
 	const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
 
-
+	bool bUpdateMP = false;
 	for (size_t i = 0; i < playerBullets.size(); ++i)
 	{
 		const RECT	rectBullet    = playerBullets.at(i)->GetRect();
@@ -219,9 +222,7 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* play
 			if (playerBullets.at(i)->IsSkillBullet() == false)
 			{
 				player->AddMP(0.15f);
-				float MP = player->GetMP();
-				CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
-
+				bUpdateMP = true;
 			}
 			player->GetPlayerBullets()->Pop(i);
 		}
@@ -230,5 +231,12 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* play
 			player->GetPlayerBullets()->Pop(i);
 		}
 	}
+
+	if (bUpdateMP)
+	{
+		float MP = player->GetMP();
+		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+	}
+
 }
 
