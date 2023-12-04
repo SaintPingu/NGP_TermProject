@@ -24,6 +24,7 @@ void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<S
 void BattleScene::Init()
 {
 	enemies = std::make_shared<EnemyController>();
+	boss = std::make_shared<Boss>();
 }
 
 void BattleScene::Update()
@@ -223,32 +224,46 @@ void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player
 
 void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player)
 {
-	//const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
-	//const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
+	auto& mainBullets	= player->GetMainBullets();
+	auto& subBullets	= player->GetSubBullets();
 
-	//bool bUpdateMP = false;
-	//for (size_t i = 0; i < playerBullets.size(); ++i)
-	//{
-	//	const RECT	rectBullet    = playerBullets.at(i)->GetRect();
-	//	const float bulletDamage  = playerBullets.at(i)->GetDamage();
-	//	const Type	bulletType    = playerBullets.at(i)->GetType();
-	//	const POINT bulletPos     = playerBullets.at(i)->GetPos();
-	//	
-	//	if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
-	//		(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
-	//	{
-	//		if (playerBullets.at(i)->IsSkillBullet() == false)
-	//		{
-	//			player->AddMP(0.15f);
-	//			bUpdateMP = true;
-	//		}
-	//		player->GetPlayerBullets()->Pop(i);
-	//	}
-	//	else if (playerBullets.at(i)->Move() == false)
-	//	{
-	//		player->GetPlayerBullets()->Pop(i);
-	//	}
-	//}
+	bool bUpdateMP = false;
+	for (size_t b = 0; b < 2; ++b) {
+		std::shared_ptr<PlayerBullet> bullets{};
+
+		switch (b) {
+		case 0:
+			bullets = mainBullets;
+			break;
+		case 1:
+			bullets = subBullets;
+			break;
+		default:
+			assert(0);
+			break;
+		}
+
+		for (size_t i = 0; i < bullets->GetBulletCount(); ++i)
+		{
+			auto bullet = bullets->GetBullet(i);
+			const RECT	rectBullet = bullet->GetRect();
+			const float bulletDamage = bullet->GetDamage();
+			const Type	bulletType = bullet->GetType();
+			const POINT bulletPos = bullet->GetPos();
+
+			if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
+				(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
+			{
+				//if (bullet->IsSkillBullet() == false)
+				//{
+				//	player->AddMP(0.15f);
+				//	bUpdateMP = true;
+				//}
+				bullets->Pop(i);
+			}
+		}
+	}
+	
 
 	//if (bUpdateMP)
 	//{

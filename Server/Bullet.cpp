@@ -222,10 +222,10 @@ void BulletController::DestroyCollideBullet(const RECT& rect)
 {
 	for (size_t i = 0; i < bullets.size(); ++i)
 	{
-		//if (bullets.at(i)->IsCollide(rect) == true)
-		//{
-		//	effects->CreateHitEffect(bullets.at(i)->GetPos(), bullets.at(i)->GetType());
-		//	BulletController::Pop(i);
-		//}
+		if (bullets.at(i)->IsCollide(rect) == true)
+		{
+			//effects->CreateHitEffect(bullets.at(i)->GetPos(), bullets.at(i)->GetType());
+			BulletController::Pop(i);
+		}
 	}
 }

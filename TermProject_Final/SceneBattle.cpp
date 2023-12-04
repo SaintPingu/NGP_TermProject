@@ -385,14 +385,14 @@ void SceneBattle::WriteData(void* data)
 	// EnemyBattleData - Data
 	battleData.EnemyData.Enemies = new Battle::EnemyBattleData::Data[enemyCnt];
 
-	std::vector<int> IDs{};
+	std::set<int> IDs{};
 	memcpy(battleData.EnemyData.Enemies, buffer->data(), sizeof(Battle::EnemyBattleData::Data) * enemyCnt);
 	RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data) * enemyCnt);
 	for (int i = 0; i < enemyCnt; ++i) {
 		const auto& enemyData = battleData.EnemyData.Enemies[i];
 
 		int id = enemyData.ID;
-		IDs.push_back(id);
+		IDs.insert(id);
 		if (!enemies.count(id)) {
 			enemies[id] = EnemyData();
 		}
@@ -406,6 +406,17 @@ void SceneBattle::WriteData(void* data)
 		enemies[id].dir = (Dir)dir.to_ulong();
 		enemies[id].isAction = (bool)action.to_ulong();
 		enemies[id].pos = (enemyData.Pos);
+	}
+
+	// 사망한 적 제거
+	std::vector<int> idToDelete{};
+	for (auto& [id, enemy] : enemies) {
+		if (!IDs.count(id)) {
+			idToDelete.push_back(id);
+		}
+	}
+	for (int id : idToDelete) {
+		enemies.erase(id);
 	}
 
 	// BulletsBattleData - Cnt
