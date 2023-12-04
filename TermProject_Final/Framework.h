@@ -1,6 +1,7 @@
 #pragma once
 #include "ClientPacket.h"
 #include "SceneManager.h"
+#include "Sound.h"
 
 //class SceneManager;
 class ClientNetwork;
@@ -17,6 +18,7 @@ private:
 	RECT rectClientWindow{};
 	HWND hWnd;
 	std::shared_ptr<SceneManager> sceneManager{};
+	std::shared_ptr<SoundManager> soundManager{};
 	//std::shared_ptr<ClientNetwork> clientNetwork{};
 
 
@@ -54,6 +56,7 @@ public:
 	int client_ID = 0;
 	void SetClientID(int id) { client_ID = id; }
 	SceneManager* GetSceneMgr() { 	return sceneManager.get(); }
+	SoundManager* GetSoundMgr() { return soundManager.get(); }
 
 	void SetPacketLoader() { packetLoader; }
 	PacketLoader& GetPacketLoader() { return packetLoader; }
@@ -73,4 +76,5 @@ private:
 
 #define framework Framework::Inst()
 #define SceneMgr Framework::Inst()->GetSceneMgr()
+#define SoundMgr Framework::Inst()->GetSoundMgr()
 #define CrntScene SceneMgr->GetCurrentScene()
