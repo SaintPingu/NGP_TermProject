@@ -113,18 +113,6 @@ void PacketGenerator::GenerateData()
 	}
 }
 
-void PushDataLen(PacketBuffer& buffer)
-{
-	buffer.resize(buffer.size() + size_uint32);
-	memcpy(buffer.data() + size_uint32, buffer.data(), buffer.size() - size_uint32);
-
-	uint32 bufferSize = buffer.size() - size_uint32;
-	for (int i = 0; i < size_uint32; ++i) {
-		BYTE byte = (bufferSize >> (8 * i)) & 0xFF;
-		buffer[i] = byte;
-	}
-}
-
 bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
 {
 	BYTE cmdCnt = cmdList->GetCmdCnt();
@@ -138,11 +126,6 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerLobbyCmd::None);
 		}
-
-		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
-		uint32 len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
-
-		// Datalen
 
 		// ServerLobbyCmd
 		for (int i = 0;i < pCommandList.size();++i) {
@@ -163,42 +146,23 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 				buffer.push_back(bytes[j]);
 			}
 		}
-		PushDataLen(buffer);
 	}
 	else if (type == DataType::Stage) {
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerStageCmd::None);
 		}
-		uint32 len = pCommandList.size();
 
 		for (int i = 0; i < pCommandList.size(); ++i) {
 			buffer.push_back(pCommandList[i]); //ServerStageCmd
 		}
-		PushDataLen(buffer);
 
 	}
 	else if (type == DataType::Battle) {
-		// battle씬은 int형 길이로 보낸다.
-		// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
-		// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
-		
-		//uint32 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
-		//	sizeof(battleData.PlayerBattleData[1]) +
-		//	sizeof(battleData.EnemyData.EnemyCnt) +
-		//	(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
-		//	sizeof(battleData.BulletData.BulletCnt) +
-		//	(sizeof(Battle::BulletsBattleData::Data) * battleData.BulletData.BulletCnt) +
-		//	sizeof(battleData.BossEffectData.EffectCnt) +
-		//	(sizeof(Battle::BulletsBattleData::Data) * battleData.BossEffectData.EffectCnt);  // int -> Effect 변경해야함
 
 		// 테스트용
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerBattleCmd::None);
 		}
-		//uint32 len = pCommandList.size()
-		//	+ (sizeof(Battle::PlayerBattleData) * 2);
-		//	+ (sizeof(Battle::EnemyBattleData::EnemyCnt))
-		//	+ (battleData.EnemyData.EnemyCnt * sizeof(Battle::EnemyBattleData::Data));
 
 		//커맨드리스트
 		//buffer.push_back(cmdCnt); // cmdCnt
@@ -227,7 +191,6 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 				}
 			}
 		}
-		PushDataLen(buffer);
 		return true;
 
 		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)

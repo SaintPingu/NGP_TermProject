@@ -4,23 +4,12 @@
 
 bool isGenPacket = false;
 
-void PushDataLen(PacketBuffer& buffer, uint32 len)
-{
-	for (int i = 0; i < size_uint32; ++i) {
-		BYTE byte = (len >> (8 * i)) & 0xFF;
-		buffer.push_back(byte);
-	}
-}
-
 Packet PacketGenerator::GeneratePacket()
 {
 	std::vector<BYTE> pCommandList = cmdList.GetCmdList(); //cmdList를 비운다.
 
 	Packet packet;
 	isGenPacket = true;
-
-	uint32 len = pCommandList.size();
-	PushDataLen(packet, len);
 
 	for (int i = 0;i < pCommandList.size();++i) {
 		packet.push_back(pCommandList[i]); // commandList

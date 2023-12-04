@@ -7,12 +7,27 @@ TResult PacketNetwork::Init()
     return TResult();
 }
 
+void PushDataLen(PacketBuffer& buffer)
+{
+    buffer.resize(buffer.size() + size_uint32);
+    memcpy(buffer.data() + size_uint32, buffer.data(), buffer.size() - size_uint32);
+
+    uint32 bufferSize = buffer.size() - size_uint32;
+    for (int i = 0; i < size_uint32; ++i) {
+        BYTE byte = (bufferSize >> (8 * i)) & 0xFF;
+        buffer[i] = byte;
+    }
+}
+
 TResult PacketNetwork::SendPacket()
 {
     if (PacketBuf.empty()) {
         std::cout << "[ERROR - SendPacket()] 송신할 버퍼가 비어있습니다!!\n";
         return TResult::SEND_SIZE_ZERO;
     }
+
+    PushDataLen(PacketBuf);
+
     //std::cout << "Packet 송신 대기 : 포트 번호 [" << ntohs(TCP_SockAddr.sin_port) << "]\n";
     int retval = send(TCP_Socket, (const char*)PacketBuf.data(), PacketBuf.size(), 0);
     if (retval == SOCKET_ERROR) {
