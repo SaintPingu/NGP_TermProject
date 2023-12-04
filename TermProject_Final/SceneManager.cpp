@@ -45,20 +45,49 @@ void SceneManager::InitScene(SceneType scene)
 	if (crntSceneType == SceneType::Stage) {
 		framework->ExitStage();
 	}
+	int randBgm = rand() % 2;
 
 	switch (scene) {
 	case SceneType::Intro:
 		crntScene = std::make_shared<SceneIntro>();
+
+		SoundMgr->StopBGMSound();
+		SoundMgr->PlayBGMSound(BGMSound::Intro, 1.0f, true);
 		break;
 	case SceneType::Lobby:
 		crntScene = std::make_shared<SceneLobby>();
+
+		SoundMgr->StopBGMSound();
+		if (randBgm == 0)
+		{
+			SoundMgr->PlayBGMSound(BGMSound::Town1, 1.0f, true);
+		}
+		else
+		{
+			SoundMgr->PlayBGMSound(BGMSound::Town2, 1.0f, true);
+		}		
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
 		
-		break;
+
+		SoundMgr->StopBGMSound();
+		//if (isEnding == true)
+		//{
+		//	SoundMgr->PlayBGMSound(BGMSound::Ending, 1.0f, true);
+		//}
+		//else
+		
+		SoundMgr->PlayBGMSound(BGMSound::Stage, 1.0f, true);
+		
+		break;	
 	case SceneType::Battle:
 		crntScene = std::make_shared<SceneBattle>();
+
+		SoundMgr->StopBGMSound();
+		SoundMgr->PlayBGMSound(BGMSound::Battle, 1.0f, true);
+		SoundMgr->PlayEffectSound(EffectSound::Shot, 0.5f, true);
+
 		break;
 	default:
 		assert(0);
