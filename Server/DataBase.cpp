@@ -50,7 +50,7 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 			playerData.damage = 1.0f;
 			playerData.damage_Q = 10.5f / damagePerSec;
 			playerData.bulletSpeed = 8;
-			playerData.shotDelay = 90;
+			playerData.shotDelay = .2f;
 			break;
 		case Type::Water:
 			playerData.maxhp = 65;
@@ -60,7 +60,7 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 			playerData.damage = 1.25f;
 			playerData.damage_Q = 4.25f / damagePerSec;
 			playerData.bulletSpeed = 6;
-			playerData.shotDelay = 110;
+			playerData.shotDelay = .3f;
 			break;
 		case Type::Fire:
 			playerData.maxhp = 50;
@@ -70,7 +70,7 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 			playerData.damage = 1.35f;
 			playerData.damage_Q = 12.5f / damagePerSec;
 			playerData.bulletSpeed = 7;
-			playerData.shotDelay = 100;
+			playerData.shotDelay = .25f;
 			break;
 		default:
 			assert(0);
@@ -108,7 +108,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		meleeData.hp = 6;
 		meleeData.speed = 1.5f;
-		meleeData.attackDelay = 1000;
+		meleeData.attackDelay = 1.f;
 		meleeData.damage = 3;
 
 		meleeData.frameNum_Idle = 0;
@@ -118,7 +118,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		rangeData.hp = 4.75f;
 		rangeData.speed = 2;
-		rangeData.attackDelay = 2000;
+		rangeData.attackDelay = 2.f;
 		rangeData.damage = 2.25f;
 
 		rangeData.frameNum_Idle = 0;
@@ -135,7 +135,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		meleeData.hp = 2.85f;
 		meleeData.speed = 2;
-		meleeData.attackDelay = 700;
+		meleeData.attackDelay = .7f;
 		meleeData.damage = 2.5f;
 
 		meleeData.frameNum_Idle = 0;
@@ -146,7 +146,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		rangeData.hp = 5;
 		rangeData.speed = 0.7f;
-		rangeData.attackDelay = 2000;
+		rangeData.attackDelay = 2.f;
 		rangeData.damage = 2.8f;
 
 		rangeData.frameNum_Idle = 0;
@@ -162,7 +162,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		meleeData.hp = 6;
 		meleeData.speed = 1.65f;
-		meleeData.attackDelay = 1250;
+		meleeData.attackDelay = 1.25f;
 		meleeData.damage = 2.0f;
 
 		meleeData.frameNum_Idle = 0;
@@ -173,7 +173,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		rangeData.hp = 6.75f;
 		rangeData.speed = 0.5f;
-		rangeData.attackDelay = 1250;
+		rangeData.attackDelay = 1.25f;
 		rangeData.damage = 3.0f;
 
 		rangeData.frameNum_Idle = 0;
@@ -189,7 +189,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		meleeData.hp = 4.0f;
 		meleeData.speed = 2.25f;
-		meleeData.attackDelay = 850;
+		meleeData.attackDelay = .85f;
 		meleeData.damage = 2.0f;
 
 		meleeData.frameNum_Idle = 0;
@@ -200,7 +200,7 @@ void EnemyDataInit(EnemyData& meleeData, EnemyData& rangeData, Type type)
 
 		rangeData.hp = 8.5f;
 		rangeData.speed = 0.75f;
-		rangeData.attackDelay = 2000;
+		rangeData.attackDelay = 2.f;
 		rangeData.damage = 3.0f;
 
 		rangeData.frameNum_Idle = 0;

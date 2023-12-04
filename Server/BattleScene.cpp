@@ -7,13 +7,18 @@
 #include "ServerFramework.h"
 #include "SceneMgr.h"
 #include "Bullet.h"
+#include "StageScene.h"
 
 bool isBattleStarted{};
-void BattleStart()
+void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<StagePlayer>& p2)
 {
 	isBattleStarted = true;
 	SCENE_MGR->GetGameData().isBattleStart = true;
-	SCENE_MGR->Battle()->Init();
+
+	auto& battle = SCENE_MGR->Battle();
+	battle->Init();
+	battle->AddPlayer(p1);
+	battle->AddPlayer(p2);
 }
 
 void BattleScene::Init()
@@ -36,12 +41,12 @@ void BattleScene::Update()
 	enemies->CreateCheckRange();
 	enemies->CheckAttackDelay();
 	enemies->Move();
-	return;
 	enemies->MoveBullets();
 
 	for (auto& [clientID, player] : players) {
 		player->MoveBullets();
 	}
+	return;
 
 
 	if (boss) {
@@ -123,15 +128,21 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 
 void BattleScene::AddClient(int clientID)
 {
-	 players[clientID] = std::make_shared<Player>(); 
-	 if (players.size() == 1) {
-		 players[clientID]->SetPos({ 175, 500 });
-	 }
-	 else {
-		 players[clientID]->SetPos({ 325, 500 });
-	 }
-
+	// not use
 }
+
+void BattleScene::AddPlayer(const std::shared_ptr<StagePlayer>& p)
+{
+	auto& player = players[p->ID];
+	player = std::make_shared<Player>(p->typeFly, p->typeGnd);
+	if (players.size() == 1) {
+		player->SetPos({ 175, 500 });
+	}
+	else {
+		player->SetPos({ 325, 500 });
+	}
+}
+
 
 void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skill)
 {
@@ -218,38 +229,38 @@ void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player
 
 void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player)
 {
-	const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
-	const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
+	//const std::vector<BulletController::Bullet*> playerBullets    = player->GetPlayerBullets()->GetBullets();
+	//const std::vector<BulletController::Bullet*> playerSubBullets = player->GetPlayerSubBullets()->GetBullets();
 
-	bool bUpdateMP = false;
-	for (size_t i = 0; i < playerBullets.size(); ++i)
-	{
-		const RECT	rectBullet    = playerBullets.at(i)->GetRect();
-		const float bulletDamage  = playerBullets.at(i)->GetDamage();
-		const Type	bulletType    = playerBullets.at(i)->GetType();
-		const POINT bulletPos     = playerBullets.at(i)->GetPos();
-		
-		if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
-			(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
-		{
-			if (playerBullets.at(i)->IsSkillBullet() == false)
-			{
-				player->AddMP(0.15f);
-				bUpdateMP = true;
-			}
-			player->GetPlayerBullets()->Pop(i);
-		}
-		else if (playerBullets.at(i)->Move() == false)
-		{
-			player->GetPlayerBullets()->Pop(i);
-		}
-	}
+	//bool bUpdateMP = false;
+	//for (size_t i = 0; i < playerBullets.size(); ++i)
+	//{
+	//	const RECT	rectBullet    = playerBullets.at(i)->GetRect();
+	//	const float bulletDamage  = playerBullets.at(i)->GetDamage();
+	//	const Type	bulletType    = playerBullets.at(i)->GetType();
+	//	const POINT bulletPos     = playerBullets.at(i)->GetPos();
+	//	
+	//	if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
+	//		(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
+	//	{
+	//		if (playerBullets.at(i)->IsSkillBullet() == false)
+	//		{
+	//			player->AddMP(0.15f);
+	//			bUpdateMP = true;
+	//		}
+	//		player->GetPlayerBullets()->Pop(i);
+	//	}
+	//	else if (playerBullets.at(i)->Move() == false)
+	//	{
+	//		player->GetPlayerBullets()->Pop(i);
+	//	}
+	//}
 
-	if (bUpdateMP)
-	{
-		float MP = player->GetMP();
-		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
-	}
+	//if (bUpdateMP)
+	//{
+	//	float MP = player->GetMP();
+	//	CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+	//}
 
 }
 

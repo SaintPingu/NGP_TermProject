@@ -18,8 +18,6 @@ public:
 		Dir dir = Dir::Empty;
 		Vector2 unitVector;
 
-		POINT pos = { 0,0 };
-
 		FRECT rectBody = { 0, };
 		FRECT rectRotBody = { 0, };
 		Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data);
@@ -56,7 +54,7 @@ public:
 			return isSkillBullet;
 		}
 
-		Vector2 GetBulletDirVector() { return unitVector; }
+		Vector2 GetBulletDirVector();
 	};
 
 	BulletController(const ObjectImage& bulletImage);

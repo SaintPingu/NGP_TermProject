@@ -53,7 +53,7 @@ private:
 	};
 	struct Bullet {
 		BulletType type{};
-		Vector2 pos{};
+		POINT pos{};
 		Vector2 dir{};
 	};
 	struct Effect {

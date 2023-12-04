@@ -715,7 +715,7 @@ namespace Battle
 		struct Data	  // 17 BYTE
 		{
 			BYTE		bulletType;
-			Vector2		Pos;
+			POINT		Pos;
 			Vector2		Dir;
 		};
 

@@ -8,27 +8,18 @@ Player::Player(Type type, Type subType)
 {
 	constexpr int damagePerSec = 10;
 
-	static ObjectImage img_pokemon;
+	ObjectImage img_pokemon;
 	ObjectImage bulletImage;
 	ObjectImage subBulletImage;
 
-	playerData.type = type;
-	playerData.subType = subType;
+	PlayerDataInit(playerData, type, subType);
+
 	switch (playerData.type)
 	{
 	case Type::Elec:
 		pokemon = Pokemon::Thunder;
 		img_pokemon.Load({ 17,24 });
 		bulletImage.Load({ 5,16 });
-
-		playerData.maxhp = 40;
-		playerData.maxmp = 80;
-		playerData.mp = 0;
-		playerData.speed = 4;
-		playerData.damage = 1.0f;
-		playerData.damage_Q = 10.5f / damagePerSec;
-		playerData.bulletSpeed = 8;
-		playerData.shotDelay = 90;
 		break;
 	case Type::Water:
 		pokemon = Pokemon::Articuno;
@@ -36,36 +27,17 @@ Player::Player(Type type, Type subType)
 		img_pokemon.ScaleImage(1.2f, 1.2f);
 		bulletImage.Load({ 7,15 });
 		bulletImage.ScaleImage(0.9f, 0.9f);
-
-		playerData.maxhp = 65;
-		playerData.maxmp = 120;
-		playerData.mp = 40;
-		playerData.speed = 2.5f;
-		playerData.damage = 1.25f;
-		playerData.damage_Q = 4.25f / damagePerSec;
-		playerData.bulletSpeed = 6;
-		playerData.shotDelay = 110;
 		break;
 	case Type::Fire:
 		pokemon = Pokemon::Moltres;
 		img_pokemon.Load({ 15,28 });
 		bulletImage.Load({ 11,16 });
 		bulletImage.ScaleImage(0.9f, 0.9f);
-
-		playerData.maxhp = 50;
-		playerData.maxmp = 100;
-		playerData.mp = 20;
-		playerData.speed = 3;
-		playerData.damage = 1.35f;
-		playerData.damage_Q = 12.5f / damagePerSec;
-		playerData.bulletSpeed = 7;
-		playerData.shotDelay = 100;
 		break;
 	default:
 		assert(0);
 		break;
 	}
-	playerData.hp = playerData.maxhp;
 
 	switch (playerData.subType)
 	{
@@ -73,19 +45,16 @@ Player::Player(Type type, Type subType)
 		subPokemon = SubPokemon::Pikachu;
 		subBulletImage.Load({ 11,30 });
 		subBulletImage.ScaleImage(0.7f, 0.7f);
-		playerData.subDamage = 1.0f;
 		break;
 	case Type::Water:
 		subPokemon = SubPokemon::Squirtle;
 		subBulletImage.Load({ 8,24 });
 		subBulletImage.ScaleImage(0.8f, 0.7f);
-		playerData.subDamage = 1.1f;
 		break;
 	case Type::Fire:
 		subPokemon = SubPokemon::Charmander;
 		subBulletImage.Load({ 8,16 });
 		subBulletImage.ScaleImage(0.7f, 0.7f);
-		playerData.subDamage = 1.2f;
 		break;
 	default:
 		assert(0);
@@ -93,8 +62,8 @@ Player::Player(Type type, Type subType)
 	}
 
 	GameObject::Init(img_pokemon, { 250,500 });
-	//bullets = new PlayerBullet(bulletImage);
-	//subBullets = new PlayerBullet(subBulletImage);
+	mainBullets = std::make_shared<PlayerBullet>(bulletImage);
+	subBullets = std::make_shared<PlayerBullet>(subBulletImage);
 }
 Player::~Player()
 {
@@ -191,23 +160,23 @@ void Player::CheckCollideWindow(Vector2& pos) const
 
 void Player::Shot()
 {
-	//const RECT rectBody = GetRectBody();
-	//BulletData bulletData;
-	//bulletData.bulletType = playerData.type;
-	//bulletData.damage = playerData.damage;
-	//bulletData.speed = playerData.bulletSpeed;
+	const RECT rectBody = GetRectBody();
+	BulletData bulletData;
+	bulletData.bulletType = playerData.type;
+	bulletData.damage = playerData.damage;
+	bulletData.speed = playerData.bulletSpeed;
 
-	//POINT bulletPos = { 0, };
-	//bulletPos.y = rectBody.top;
-	//bulletPos.x = rectBody.left - 10;
-	//bullets->CreateBullet(bulletPos, bulletData, Dir::Up);
-	//bulletPos.x = rectBody.right + 10;
-	//bullets->CreateBullet(bulletPos, bulletData, Dir::Up);
+	POINT bulletPos = { 0, };
+	bulletPos.y = rectBody.top;
+	bulletPos.x = rectBody.left - 10;
+	mainBullets->CreateBullet(bulletPos, bulletData, Dir::Up);
+	bulletPos.x = rectBody.right + 10;
+	mainBullets->CreateBullet(bulletPos, bulletData, Dir::Up);
 
-	//bulletData.bulletType = playerData.subType;
-	//bulletData.damage = playerData.subDamage;
-	//bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
-	//subBullets->CreateBullet(bulletPos, bulletData, Dir::Up);
+	bulletData.bulletType = playerData.subType;
+	bulletData.damage = playerData.subDamage;
+	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
+	subBullets->CreateBullet(bulletPos, bulletData, Dir::Up);
 
 	//skillManager->UseSkill();
 }
@@ -218,7 +187,7 @@ void Player::CheckShot()
 		return;
 	}
 
-	//playerData.crntShotDelay -= ELAPSE_BATTLE_INVALIDATE;
+	playerData.crntShotDelay -= DeltaTime();
 	if (IsClearShotDelay() == true)
 	{
 		Shot();
@@ -268,7 +237,7 @@ void Player::ActiveSkill(Skill skill)
 }
 void Player::MoveBullets()
 {
-	bullets->Move();
+	mainBullets->Move();
 	subBullets->Move();
 }
 bool Player::IsUsingSkill() const

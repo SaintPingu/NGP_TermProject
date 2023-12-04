@@ -9,12 +9,12 @@ TResult PacketNetwork::Init()
 
 void PushDataLen(PacketBuffer& buffer)
 {
+    uint32 dataSize = buffer.size();
     buffer.resize(buffer.size() + size_uint32);
-    memcpy(buffer.data() + size_uint32, buffer.data(), buffer.size() - size_uint32);
+    memcpy(buffer.data() + size_uint32, buffer.data(), dataSize);
 
-    uint32 bufferSize = buffer.size() - size_uint32;
     for (int i = 0; i < size_uint32; ++i) {
-        BYTE byte = (bufferSize >> (8 * i)) & 0xFF;
+        BYTE byte = (dataSize >> (8 * i)) & 0xFF;
         buffer[i] = byte;
     }
 }

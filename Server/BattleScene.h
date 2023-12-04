@@ -5,6 +5,7 @@
 #include "Bullet.h"
 #include "Boss.h"
 
+class StagePlayer;
 const int maxBlattlePlayer = 2;
 class BattleScene : public Scene	
 {
@@ -18,7 +19,6 @@ private:
 	/// +----------------------------------
 	///				  ENEMY  
 	/// ----------------------------------+	
-	std::shared_ptr<PlayerBullet>		playerbullet{};
 	std::shared_ptr<EnemyController>	enemies{};
 	std::shared_ptr<Boss>				boss{};
 
@@ -30,9 +30,13 @@ public:
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
 	std::shared_ptr<Boss> GetBoss() { return boss; }
 	const std::shared_ptr<EnemyController> GetEnemyController() { return enemies; }
-	const std::shared_ptr<PlayerBullet> GetPlayerController() { return playerbullet; }
 
-	void AddClient(int clientID);
+	const std::vector<BulletController::Bullet*>& GetEnemyBullets()						{ return enemies->GetEnemyBullets()->GetBullets(); }
+	const std::vector<BulletController::Bullet*>& GetPlayerMainBullets(int clientID)	{ return players[clientID]->GetMainBullets()->GetBullets(); }
+	const std::vector<BulletController::Bullet*>& GetPlayerSubBullets(int clientID)		{ return players[clientID]->GetSubBullets()->GetBullets(); }
+
+	void AddClient(int clientID);	// not use
+	void AddPlayer(const std::shared_ptr<StagePlayer>& p);
 	void RemoveClient(int clientID) {};
 
 
@@ -54,4 +58,4 @@ public:
 
 };
 
-void BattleStart();
+void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<StagePlayer>& p2);

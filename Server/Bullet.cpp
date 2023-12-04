@@ -12,7 +12,6 @@
 BulletController::Bullet::Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data)
 {
 	this->data = data;
-	pos = center;
 	rectBody.left   = (float)center.x - ((float)bulletSize.x / 2);
 	rectBody.right  = rectBody.left + bulletSize.x;
 	rectBody.top    = (float)center.y - ((float)bulletSize.y / 2);
@@ -145,6 +144,26 @@ POINT BulletController::Bullet::GetPos() const
 	return { (LONG)rectBody.left + (width / 2), (LONG)rectBody.top + (height / 2) };
 }
 
+Vector2 BulletController::Bullet::GetBulletDirVector()
+{
+	if (dir	== Dir::Empty) {
+		return unitVector;
+	}
+
+	switch (dir) {
+	case Dir::Up:
+		return Vector2::Up();
+	case Dir::Down:
+		return Vector2::Down();
+	case Dir::Left:
+		return Vector2::Left();
+	case Dir::Right:
+		return Vector2::Right();
+	}
+
+	return Vector2::Up();
+}
+
 BulletController::BulletController(const ObjectImage& bulletImage)
 {
 	this->bulletImage = bulletImage;
@@ -179,34 +198,19 @@ void PlayerBullet::Move()
 		const float bulletDamage = bullets.at(i)->GetDamage();
 		const Type bulletType = bullets.at(i)->GetType();
 		const POINT bulletPos = bullets.at(i)->GetPos();
-		//if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
-		//	(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
-		//{
-		//	if (bullets.at(i)->IsSkillBullet() == false)
-		//	{
-		//		player->AddMP(0.15f);
-		//	}
-		//	BulletController::Pop(i);
-		//}
-		//else if (bullets.at(i)->Move() == false)
-		//{
-		//	BulletController::Pop(i);
-		//}
+
+		if (bullets.at(i)->Move() == false) {
+			BulletController::Pop(i);
+		}
 	}
 }
 void EnemyBullet::Move()
 {
 	for (size_t i = 0; i < bullets.size(); ++i)
 	{
-		//if (player->IsCollide(bullets.at(i)->GetRect()) == true)
-		//{
-		//	player->Hit(bullets.at(i)->GetDamage(), bullets.at(i)->GetType(), bullets.at(i)->GetPos());
-		//	BulletController::Pop(i);
-		//}
-		//else if (bullets.at(i)->Move() == false)
-		//{
-		//	BulletController::Pop(i);
-		//}
+		if (bullets.at(i)->Move() == false) {
+			BulletController::Pop(i);
+		}
 	}
 }
 void BulletController::Pop(size_t& index)

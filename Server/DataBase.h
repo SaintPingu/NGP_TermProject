@@ -60,8 +60,8 @@ typedef struct BossData {
 typedef struct EnemyData {
 	Type type = Type::Empty;
 
-	int attackDelay     = 0;
-	int crntAttackDelay = 0;
+	float attackDelay     = 0;
+	float crntAttackDelay = 0;
 	float bulletSpeed   = 0;
 
 	float hp     = 0;

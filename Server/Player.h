@@ -31,8 +31,8 @@ class SkillManager;
 class Player : public GameObject, public IControllable {
 private:
 	PlayerData playerData;
-	PlayerBullet* bullets      = nullptr;
-	PlayerBullet* subBullets   = nullptr;
+	std::shared_ptr<PlayerBullet>		mainBullets{};
+	std::shared_ptr<PlayerBullet>		subBullets{};
 	Vector2 posDest            = { 0, };
 	Vector2 vectorMove         = { 0, };
 	float alpha                = 0;
@@ -73,8 +73,8 @@ public:
 	/// +----------------------------------
 	///			GET PLAYE BULLETS
 	/// ----------------------------------+	
-	 PlayerBullet* GetPlayerBullets() { return bullets; }
-	 PlayerBullet* GetPlayerSubBullets() { return subBullets; }
+	 const std::shared_ptr<PlayerBullet>& GetMainBullets() { return mainBullets; }
+	 const std::shared_ptr<PlayerBullet>& GetSubBullets() { return subBullets; }
 
 
 	void ActiveSkill(Skill skill);

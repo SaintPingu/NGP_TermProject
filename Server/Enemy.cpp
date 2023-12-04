@@ -174,7 +174,7 @@ EnemyController::EnemyController()
 	meleeData.hp += randHP_Melee;
 	rangeData.hp += randHP_Range;
 
-	bullets = new EnemyBullet(imgRangeBullet);
+	bullets = std::make_shared<EnemyBullet>(imgRangeBullet);
 }
 EnemyController::~EnemyController()
 {
@@ -182,7 +182,6 @@ EnemyController::~EnemyController()
 	{
 		delete enemy;
 	}
-	delete bullets;
 }
 
 
@@ -392,7 +391,7 @@ void Melee::CheckAttackDelay()
 {
 	if (IsMove() == false)
 	{
-		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		data.crntAttackDelay -= DeltaTime();
 		if (IsClearAttackDelay() == true)
 		{
 			StartMove();
@@ -421,7 +420,7 @@ void Range::Fire()
 	isAction = true;
 	//SetAction(Action::Attack, data.frameNum_Atk);
 
-	EnemyController* enemies = nullptr; // EnemyController 연결해줘야함.
+	std::shared_ptr<EnemyController> enemies = SCENE_MGR->Battle()->GetEnemyController(); // EnemyController 연결해줘야함.
 
 	if (!enemies) {
 		return;
@@ -463,7 +462,7 @@ void Range::CheckAttackDelay()
 {
 	if (IsMove() == false)
 	{
-		data.crntAttackDelay -= ELAPSE_BATTLE_INVALIDATE;
+		data.crntAttackDelay -= DeltaTime();
 		if (IsClearAttackDelay() == true)
 		{
 			Fire();

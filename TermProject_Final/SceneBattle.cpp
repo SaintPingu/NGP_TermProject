@@ -379,15 +379,16 @@ void SceneBattle::WriteData(void* data)
 
 	// EnemyBattleData - Cnt
 	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(Battle::EnemyBattleData::EnemyCnt));
-	RemoveData(*buffer, sizeof(BYTE));
+	RemoveData(*buffer, sizeof(Battle::EnemyBattleData::EnemyCnt));
+	BYTE enemyCnt = battleData.EnemyData.EnemyCnt;
 
 	// EnemyBattleData - Data
-	battleData.EnemyData.Enemies = new Battle::EnemyBattleData::Data[battleData.EnemyData.EnemyCnt];
-	
+	battleData.EnemyData.Enemies = new Battle::EnemyBattleData::Data[enemyCnt];
+
 	std::vector<int> IDs{};
-	memcpy(battleData.EnemyData.Enemies, buffer->data(), sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt);
-	RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt);
-	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
+	memcpy(battleData.EnemyData.Enemies, buffer->data(), sizeof(Battle::EnemyBattleData::Data) * enemyCnt);
+	RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data) * enemyCnt);
+	for (int i = 0; i < enemyCnt; ++i) {
 		const auto& enemyData = battleData.EnemyData.Enemies[i];
 
 		int id = enemyData.ID;
@@ -406,33 +407,34 @@ void SceneBattle::WriteData(void* data)
 		enemies[id].isAction = (bool)action.to_ulong();
 		enemies[id].pos = (enemyData.Pos);
 	}
-	delete[] battleData.EnemyData.Enemies;
-	return;
 
 	// BulletsBattleData - Cnt
 	memcpy(&battleData.BulletData.BulletCnt, buffer->data(), sizeof(BYTE));
 	RemoveData(*buffer, sizeof(BYTE));
+	BYTE bulletCnt = battleData.BulletData.BulletCnt;
 
 	// BulletsBattleData - Data
-	battleData.BulletData.BulletsData = new Battle::BulletsBattleData::Data[battleData.BulletData.BulletCnt];
+	battleData.BulletData.BulletsData = new Battle::BulletsBattleData::Data[bulletCnt];
 	bullets.clear();
-	bullets.resize(battleData.BulletData.BulletCnt);
+	bullets.resize(bulletCnt);
 
-	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
-		memcpy(&battleData.BulletData.BulletsData[i], buffer->data(), sizeof(Battle::BulletsBattleData::Data));
-		RemoveData(*buffer, sizeof(Battle::BulletsBattleData::Data));
-
+	memcpy(battleData.BulletData.BulletsData, buffer->data(), sizeof(Battle::BulletsBattleData::Data) * bulletCnt);
+	RemoveData(*buffer, sizeof(Battle::BulletsBattleData::Data) * bulletCnt);
+	for (int i = 0; i < bulletCnt; ++i) {
 		Battle::BulletsBattleData::Data* bulletData = &battleData.BulletData.BulletsData[i];
-		bullets[i].type = static_cast<BulletType>(bulletData->bulletType);
+		bullets[i].type = (BulletType)bulletData->bulletType;
 		bullets[i].pos = bulletData->Pos;
 		bullets[i].dir = bulletData->Dir;
 	}
+	delete[] battleData.EnemyData.Enemies;
+	delete[] battleData.BulletData.BulletsData;
+	return;
 
-	// BulletsBattleData - Cnt
+	// BossEffectData - Cnt
 	memcpy(&battleData.BossEffectData.EffectCnt, buffer->data(), sizeof(BYTE));
 	RemoveData(*buffer, sizeof(BYTE));
 
-	// BulletsBattleData - Data
+	// BossEffectData - Data
 	battleData.BossEffectData.Effects = new Battle::BossSkillBattleData::Data[battleData.BossEffectData.EffectCnt];
 	bullets.clear();
 	bullets.resize(battleData.BossEffectData.EffectCnt);

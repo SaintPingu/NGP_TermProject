@@ -55,8 +55,8 @@ void PacketGenerator::GenerateData()
 		// PlayerBattleData //
 		Battle::PlayerBattleData playerbattledata[2];
 		int plCount{};
-		for (auto& [playerID, player] : players) {
-			playerbattledata[plCount].PlayerID = playerID;
+		for (auto& [clientID, player] : players) {
+			playerbattledata[plCount].PlayerID = clientID;
 			playerbattledata[plCount].Pos = player->GetPosCenter();
 			++plCount;
 		}
@@ -81,35 +81,85 @@ void PacketGenerator::GenerateData()
 		}
 		battleData.EnemyData.EnemyCnt = enemybattledata.EnemyCnt;
 		battleData.EnemyData.Enemies = enemybattledata.Enemies;
-		return;
 
-		Battle::BulletsBattleData bulletbattledata;
-		auto& enemybullets = battle->GetEnemyController()->GetEnemyBullets()->GetBullets();
-		auto& playerbullets = battle->GetPlayerController()->GetBullets();
+		// BulletBattleData - Cnt //
+		Battle::BulletsBattleData bulletBattleData;
+		auto& enemybullets = battle->GetEnemyBullets();
+		size_t bulletCnt = enemybullets.size();
+
+		for (auto& [clientID, player] : players) {
+			bulletCnt += battle->GetPlayerMainBullets(clientID).size();
+			bulletCnt += battle->GetPlayerSubBullets(clientID).size();
+		}
+		bulletBattleData.BulletCnt = (BYTE)bulletCnt;
+		bulletBattleData.BulletsData = new Battle::BulletsBattleData::Data[bulletBattleData.BulletCnt];
 		
-		bulletbattledata.BulletCnt = enemybullets.size() + playerbullets.size();
-		bulletbattledata.BulletsData = new Battle::BulletsBattleData::Data[bulletbattledata.BulletCnt];
+		// BulletBattleData - Bullets //
 		int bulletIdx{};
 		// enemy bullet 
 		for (const auto& bullet : enemybullets) {
-			bulletbattledata.BulletsData[bulletIdx].bulletType =(BYTE)bullet->GetType();
-			bulletbattledata.BulletsData[bulletIdx].Pos = bullet->GetPos();
-			bulletbattledata.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+			bulletBattleData.BulletsData[bulletIdx].bulletType = (BYTE)BulletType::Enemy;
+			bulletBattleData.BulletsData[bulletIdx].Pos = bullet->GetPos();
+			bulletBattleData.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
 			++bulletIdx;
 		}
 		// 플레이어 bullet 
-		for (const auto& bullet : playerbullets) {
-			bulletbattledata.BulletsData[bulletIdx].bulletType = (BYTE)bullet->GetType();
-			bulletbattledata.BulletsData[bulletIdx].Pos = bullet->GetPos();
-			bulletbattledata.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
-			++bulletIdx;
+		for (auto& [clientID, player] : players) {
+			auto& mainBullets = battle->GetPlayerMainBullets(clientID);
+			auto& subBullets = battle->GetPlayerSubBullets(clientID);
+			
+			// set bullet types
+			BulletType mainBulletType{};
+			BulletType subBulletType{};
+			switch (player->GetType()) {
+			case Type::Water:
+				mainBulletType = BulletType::Main_Water;
+				break;
+			case Type::Fire:
+				mainBulletType = BulletType::Main_Fire;
+				break;
+			case Type::Elec:
+				mainBulletType = BulletType::Main_Elec;
+				break;
+			default:
+				assert(0);
+				break;
+			}
+			switch (player->GetSubType()) {
+			case Type::Water:
+				subBulletType = BulletType::Sub_Water;
+				break;
+			case Type::Fire:
+				subBulletType = BulletType::Sub_Fire;
+				break;
+			case Type::Elec:
+				subBulletType = BulletType::Sub_Elec;
+				break;
+			default:
+				assert(0);
+				break;
+			}
+
+			for (const auto& bullet : mainBullets) {
+				bulletBattleData.BulletsData[bulletIdx].bulletType = (BYTE)mainBulletType;
+				bulletBattleData.BulletsData[bulletIdx].Pos = bullet->GetPos();
+				bulletBattleData.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+				++bulletIdx;
+			}
+			for (const auto& bullet : subBullets) {
+				bulletBattleData.BulletsData[bulletIdx].bulletType = (BYTE)subBulletType;
+				bulletBattleData.BulletsData[bulletIdx].Pos = bullet->GetPos();
+				bulletBattleData.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+				++bulletIdx;
+			}
 		}
+		battleData.BulletData.BulletCnt = bulletBattleData.BulletCnt;
+		battleData.BulletData.BulletsData = bulletBattleData.BulletsData;
+		return;
 
 		Battle::BossSkillBattleData bossskillbattledata{};
 		//bossskillbattledata.EffectCnt = // 이펙트 어떤 데이터인지 잘 모르겠음..
 
-		battleData.BulletData.BulletCnt = bulletbattledata.BulletCnt;
-		battleData.BulletData.BulletsData = bulletbattledata.BulletsData;
 		battleData.BossEffectData.EffectCnt = bossskillbattledata.EffectCnt;
 		battleData.BossEffectData.Effects = bossskillbattledata.Effects;
 	}
@@ -193,7 +243,6 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 				}
 			}
 		}
-		return true;
 
 		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
 			buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
@@ -203,10 +252,11 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 				memcpy(bytes, &battleData.BulletData.BulletsData[i], sizeof(Battle::BulletsBattleData::Data));
 
 				for (int j = 0; j < sizeof(Battle::BulletsBattleData::Data); ++j) {
-					buffer.push_back(bytes[i]);
+					buffer.push_back(bytes[j]);
 				}
 			}
 		}
+		return true;
 
 		{//Effect개수 + (Effect * Effect개수) 
 			buffer.push_back(battleData.BossEffectData.EffectCnt); //Effect개수

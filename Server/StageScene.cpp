@@ -33,7 +33,7 @@ void StageScene::StartBattle()
 	SCENE_MGR->PushChangeLocationEvent(P1->ID, SceneEventType::ChangeClientLocation_ToBattle);
 	SCENE_MGR->PushChangeLocationEvent(P2->ID, SceneEventType::ChangeClientLocation_ToBattle);
 
-	BattleStart();
+	BattleStart(P1, P2);
 }
 
 void StageScene::Init()

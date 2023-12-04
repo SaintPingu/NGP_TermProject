@@ -88,7 +88,7 @@ private:
 	int enemyID{};
 	std::vector<Enemy*> enemies;
 
-	EnemyBullet* bullets = nullptr;
+	std::shared_ptr<EnemyBullet> bullets{};
 
 	EnemyData meleeData;
 	EnemyData rangeData;
@@ -131,5 +131,5 @@ public:
 	}
 
 	const std::vector<Enemy*>& GetEnemies() const { return enemies; }
-	EnemyBullet* GetEnemyBullets() const { return bullets; }
+	const std::shared_ptr<EnemyBullet>& GetEnemyBullets() const { return bullets; }
 };
