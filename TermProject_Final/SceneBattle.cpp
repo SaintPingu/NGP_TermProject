@@ -472,17 +472,17 @@ bool SceneBattle::ProcessCommand()
 			std::cout << "[CMD] Loss\n";
 			SceneMgr->LoadScene(SceneType::Stage);
 
-			/*soundManager->StopEffectSound();
-			soundManager->PlayEffectSound(EffectSound::Loss);
-			soundManager->StopBGMSound();*/
+			SoundMgr->StopEffectSound();
+			SoundMgr->PlayEffectSound(EffectSound::Loss);
+			SoundMgr->StopBGMSound();
 
 			break;
 		case ServerBattleCmd::Win:
 			std::cout << "[CMD] Win\n";
 			SceneMgr->LoadScene(SceneType::Stage);
 
-			//soundManager->StopEffectSound();
-			//soundManager->StopBossSound();
+			SoundMgr->StopEffectSound();
+			SoundMgr->StopBossSound();
 			break;
 		case ServerBattleCmd::AcceptSkillQ:
 			std::cout << "[CMD] AcceptSkillQ\n";

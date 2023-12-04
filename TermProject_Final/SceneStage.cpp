@@ -329,15 +329,15 @@ void SceneStage::GetInput(CommandList* cmdList)
 				{
 				case 0:
 					airPokemon = Type::Elec;
-					//soundManager->PlayHitSound(HitSound::Elec);
+					SoundMgr->PlayHitSound(HitSound::Elec);
 					break;
 				case 1:
 					airPokemon = Type::Fire;
-					//soundManager->PlayHitSound(HitSound::Fire);
+					SoundMgr->PlayHitSound(HitSound::Fire);
 					break;
 				case 2:
 					airPokemon = Type::Water;
-					//soundManager->PlayHitSound(HitSound::Water);
+					SoundMgr->PlayHitSound(HitSound::Water);
 					break;
 				default:
 					assert(0);
@@ -358,21 +358,21 @@ void SceneStage::GetInput(CommandList* cmdList)
 					const int randSound = rand() % 2;
 					if (randSound != 0)
 					{
-						//soundManager->PlaySelectSound(SelectSound::Pikachu1);
+						SoundMgr->PlaySelectSound(SelectSound::Pikachu1);
 					}
 					else
 					{
-						//soundManager->PlaySelectSound(SelectSound::Pikachu2);
+						SoundMgr->PlaySelectSound(SelectSound::Pikachu2);
 					}
 				}
 				break;
 				case 4:
 					landPokemon = Type::Fire;
-					//soundManager->PlaySelectSound(SelectSound::Charmander);
+					SoundMgr->PlaySelectSound(SelectSound::Charmander);
 					break;
 				case 5:
 					landPokemon = Type::Water;
-					//soundManager->PlaySelectSound(SelectSound::Squirtle);
+					SoundMgr->PlaySelectSound(SelectSound::Squirtle);
 					break;
 				default:
 					assert(0);
