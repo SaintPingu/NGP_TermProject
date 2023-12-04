@@ -233,9 +233,9 @@ void BossDataInit(BossData& bossData, Type type, Difficulty difficulty)
 	bossData.bulletSpeed[static_cast<int>(BossAct::Spiral)] = 5;
 	bossData.bulletSpeed[static_cast<int>(BossAct::Spread)] = 6;
 
-	bossData.attackDelay[static_cast<int>(BossAct::Line)] = 40;
-	bossData.attackDelay[static_cast<int>(BossAct::Sector)] = 250;
-	bossData.attackDelay[static_cast<int>(BossAct::Circle)] = 200;
+	bossData.attackDelay[static_cast<int>(BossAct::Line)] = 10;
+	bossData.attackDelay[static_cast<int>(BossAct::Sector)] = 10;
+	bossData.attackDelay[static_cast<int>(BossAct::Circle)] = 10;
 	bossData.attackDelay[static_cast<int>(BossAct::Spiral)] = 10;
 	bossData.attackDelay[static_cast<int>(BossAct::Spread)] = 10;
 
@@ -252,7 +252,7 @@ void BossDataInit(BossData& bossData, Type type, Difficulty difficulty)
 			bossData.damage = 2.0f;
 			bossData.damage_skill1 = 12.5f;
 			bossData.damage_skill2 = 1.75f;
-			bossData.actDelay = 1550;
+			bossData.actDelay = 10.f;
 			break;
 		default:
 			assert(0);
@@ -274,7 +274,7 @@ void BossDataInit(BossData& bossData, Type type, Difficulty difficulty)
 			bossData.damage = 1.5f;
 			bossData.damage_skill1 = 3.5f;
 			bossData.damage_skill2 = 2.0f;
-			bossData.actDelay = 2000;
+			bossData.actDelay = 10.f;
 			break;
 		default:
 			assert(0);
@@ -296,7 +296,7 @@ void BossDataInit(BossData& bossData, Type type, Difficulty difficulty)
 			bossData.damage = 2.0f;
 			bossData.damage_skill1 = 5.5f;
 			bossData.damage_skill2 = 9.5f;
-			bossData.actDelay = 1750;
+			bossData.actDelay = 10.f;
 			break;
 		default:
 			assert(0);
@@ -318,7 +318,7 @@ void BossDataInit(BossData& bossData, Type type, Difficulty difficulty)
 			bossData.damage = 4.0f;
 			bossData.damage_skill1 = 5.5f;
 			bossData.damage_skill2 = 6.5f;
-			bossData.actDelay = 1500;
+			bossData.actDelay = 10.f;
 			break;
 		default:
 			assert(0);

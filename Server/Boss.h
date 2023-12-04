@@ -43,8 +43,8 @@ class Boss : public GameObject/*, public IAnimatable*/, public IMovable {
 private:
 	BossData bossData;
 	ObjectImage* image   = nullptr;
-	EnemyBullet* bullets = nullptr;
-	BossAct act          = BossAct::Idle;
+	std::shared_ptr<EnemyBullet> bullets{};
+	BossAct act;
 
 	Vector2 posDest    = { 0, };
 	Vector2 unitVector = { 0, };
@@ -59,7 +59,6 @@ private:
 	void SetMove(const Vector2& unitVector);
 	void SetPosDest() override;
 	void Death();
-	void StartAttack(Player* player);
 	void Shot();
 	BulletData GetBulletData();
 
@@ -67,14 +66,6 @@ private:
 	inline bool IsClearAttackDelay()
 	{
 		return (bossData.crntAttackDelay <= 0);
-	}
-	inline void ResetActDelay()
-	{
-		bossData.crntActDelay = bossData.actDelay;
-	}
-	inline bool IsClearActDelay()
-	{
-		return (bossData.crntActDelay <= 0);
 	}
 
 	void ShotByLine();
@@ -88,24 +79,17 @@ public:
 	Boss();
 	~Boss();
 	void Create();
-	//void Paint(HDC hdc);
 	void Move() override;
 	void CheckAttackDelay();
-	void CheckActDelay(Player* player);
 
-	//void Animate(const HWND& hWnd);
-	void AnimateSkill();
+
 	bool CheckHit(const RECT& rectSrc, float damage, Type hitType, POINT effectPoint = { -1, });
-	void Force__Skill1();
-	void Force__Skill2();
+
+	const std::shared_ptr<EnemyBullet>& GetBullets() const { return bullets; }
 
 	inline constexpr void ShowHP()
 	{
 		isShowHP = !isShowHP;
-	}
-	inline constexpr void ReSetBossAct()
-	{
-		act = BossAct::Idle;
 	}
 	inline constexpr Type GetType() const
 	{
@@ -119,22 +103,7 @@ public:
 	{
 		return bossData.isDeath;
 	}
-	inline constexpr BossAct GetAct() const
-	{
-		return act;
-	}
-	inline constexpr void SetAct(BossAct act)
-	{
-		this->act = act;
-	}
-	inline constexpr float GetDamage_Skill1() const
-	{
-		return bossData.damage_skill1;
-	}
-	inline constexpr float GetDamage_Skill2() const
-	{
-		return bossData.damage_skill2;
-	}
+
 	inline constexpr void KillBoss()
 	{
 		bossData.hp = 1.0f;

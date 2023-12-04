@@ -172,32 +172,7 @@ private:
 	Vector2* posOrigins = nullptr;
 
 	std::vector<Effect>warningEffects;
-	std::vector<Effect>skillEffects;
-	void Skill1_Elec_Create();
-	void Skill1_Elec(Player* player);
-	void Skill2_Elec_Create();
-	void Skill2_Elec(Player* player);
-
-	void Skill1_Water_Create();
-	void Skill1_Water(Player* player);
-	void Skill2_Water_Create();
-	void Skill2_Water(Player* player);
-
-	void Skill1_Fire_Create();
-	void Skill1_Fire(Player* player);
-	void Skill2_Fire_Create(Player* player);
-	void Skill2_Fire(Player* player);
-
-	void Skill1_Dark_Create();
-	void Skill1_Dark(Player* player);
-	void Skill2_Dark_Create();
-	void Skill2_Dark(Player* player);
 public:
 	BossSkillManager();
 	~BossSkillManager();
-
-	//void Paint(const HDC& hdc);
-	void Animate(Player* player);
-
-	void UseSkill(Player* player);
 };

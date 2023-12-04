@@ -218,8 +218,7 @@ void SceneBattle::Init()
 
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_seadra.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(1.2f, 1.2f);
-		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_water.png"), { 400, 400 });
-		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
+		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_water.png"), { 20, 20 });
 		break;
 	case StageElement::Fire:
 		imgMelee.Load(L"images\\battle\\sprite_ledyba.png", { 37,37 }, { 6,6 }, { 27,27 });
@@ -229,8 +228,7 @@ void SceneBattle::Init()
 
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_latias.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(0.8f, 0.8f);
-		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_fire.png"), { 400, 400 });
-		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
+		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_fire.png"), { 20, 20 });
 		break;
 	case StageElement::Elec:
 		imgMelee.Load(L"images\\battle\\sprite_beedrill.png", { 33,33 }, { 7,6 }, { 21,22 });
@@ -239,8 +237,7 @@ void SceneBattle::Init()
 
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_zapdos.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(0.9f, 0.9f);
-		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_elec.png"), { 400, 400 });
-		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
+		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_elec.png"), { 20, 20 });
 		break;
 	case StageElement::Dark:
 		imgMelee.Load(L"images\\battle\\sprite_crobat.png", { 40,30 }, { 5,7 }, { 32,19 });
@@ -250,8 +247,7 @@ void SceneBattle::Init()
 
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_aerodactyl.png"), { 10, 10 });
 		bulletImages[BulletType::Enemy].ScaleImage(1.6f, 1.6f);
-		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_dark.png"), { 700, 700 });
-		bulletImages[BulletType::Boss].ScaleImage(0.03f, 0.03f);
+		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_dark.png"), { 20, 20 });
 		break;
 	default:
 		assert(0);

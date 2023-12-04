@@ -51,6 +51,7 @@ void PacketGenerator::GenerateData()
 	{// 배틀 생성 
 		auto& battle = SCENE_MGR->Battle();
 		auto& players = battle->GetPlayers();
+		auto boss = battle->GetBoss();
 		
 		// PlayerBattleData //
 		Battle::PlayerBattleData playerbattledata[2];
@@ -85,7 +86,8 @@ void PacketGenerator::GenerateData()
 		// BulletBattleData - Cnt //
 		Battle::BulletsBattleData bulletBattleData;
 		auto& enemybullets = battle->GetEnemyBullets();
-		size_t bulletCnt = enemybullets.size();
+		auto& bossBullets = boss->GetBullets()->GetBullets();
+		size_t bulletCnt = enemybullets.size() + bossBullets.size();
 
 		for (auto& [clientID, player] : players) {
 			bulletCnt += battle->GetPlayerMainBullets(clientID).size();
@@ -103,6 +105,13 @@ void PacketGenerator::GenerateData()
 			bulletBattleData.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
 			++bulletIdx;
 		}
+		for (const auto& bullet : bossBullets) {
+			bulletBattleData.BulletsData[bulletIdx].bulletType = (BYTE)BulletType::Boss;
+			bulletBattleData.BulletsData[bulletIdx].Pos = bullet->GetPos();
+			bulletBattleData.BulletsData[bulletIdx].Dir = bullet->GetBulletDirVector();
+			++bulletIdx;
+		}
+
 		// 플레이어 bullet 
 		for (auto& [clientID, player] : players) {
 			auto& mainBullets = battle->GetPlayerMainBullets(clientID);
@@ -153,6 +162,8 @@ void PacketGenerator::GenerateData()
 				++bulletIdx;
 			}
 		}
+
+
 		battleData.BulletData.BulletCnt = bulletBattleData.BulletCnt;
 		battleData.BulletData.BulletsData = bulletBattleData.BulletsData;
 		return;

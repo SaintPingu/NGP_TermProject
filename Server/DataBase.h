@@ -37,7 +37,7 @@ typedef struct BossData {
 	int actDelay                      = 0;
 	int crntActDelay                  = 0;
 	int attackDelay[BOSS_BULLET_LIST] = { 0, };
-	int crntAttackDelay               = 0;
+	float crntAttackDelay               = 0;
 
 	float maxHP                         = 0;
 	float hp                            = 0;

@@ -25,14 +25,7 @@
 //
 //extern Phase phase;
 
-void Boss::Force__Skill1()
-{
-	normalSkillCount = 10;
-}
-void Boss::Force__Skill2()
-{
-	normalSkillCount = 20;
-}
+
 void Boss::SetMove(const Vector2& unitVector)
 {
 	this->unitVector = unitVector;
@@ -54,58 +47,9 @@ void Boss::Death()
 	//soundManager->StopEffectSound();
 	//soundManager->StopBossSound();
 }
-void Boss::StartAttack(Player* player)
-{
-	if (bossData.type != Type::Dark)
-	{
-		//SetAction(Action::Attack, bossData.frameNum_Atk);
-	}
-
-	if (++normalSkillCount < 3)
-	{
-		act = static_cast<BossAct>(rand() % 5);
-	}
-	else
-	{
-		if (normalSkillCount == 10)
-		{
-			act = BossAct::Skill1;
-		}
-		else if (normalSkillCount == 20)
-		{
-			act = BossAct::Skill2;
-		}
-		else
-		{
-			act = static_cast<BossAct>((rand() % 2) + 5);
-		}
-		normalSkillCount = 0;
-	}
-
-	switch (act)
-	{
-	case BossAct::Skill1:
-	case BossAct::Skill2:
-		skill->UseSkill(player);
-		return;
-	case BossAct::Line:
-	{
-		int random = rand() % 2;
-		if (random != 0)
-		{
-			SetMove(Vector2::Left());
-		}
-		else
-		{
-			SetMove(Vector2::Right());
-		}
-	}
-	break;
-	}
-	skillCount = maxSkillCount[static_cast<int>(act)];
-}
 void Boss::Shot()
 {
+	act = static_cast<BossAct>(rand() % 5);
 	switch (act)
 	{
 	case BossAct::Line:
@@ -118,45 +62,29 @@ void Boss::Shot()
 		ShotByCircle();
 		break;
 	case BossAct::Spiral:
-		ShotBySpiral();
+		ShotBySector();
 		break;
 	case BossAct::Spread:
-		ShotBySpread();
+		ShotBySector();
 		break;
 	default:
 		return;
 	}
-
-	if (--skillCount <= 0)
-	{
-		skillCount = 0;
-		act = BossAct::Idle;
-	}
+	skillCount = 1;
 }
 BulletData Boss::GetBulletData()
 {
 	BulletData bulletData;
-	const int index = static_cast<int>(act);
-	if (index >= BOSS_BULLET_LIST)
-	{
-		assert(0);
-		return bulletData;
-	}
 
 	bulletData.bulletType = bossData.type;
 	bulletData.damage = bossData.damage;
-	bulletData.speed = bossData.bulletSpeed[index];
+	bulletData.speed = bossData.bulletSpeed[static_cast<int>(act)];
 
 	return bulletData;
 }
 void Boss::ResetAttackDelay()
 {
-	const int index = static_cast<int>(act);
-	if (index >= BOSS_BULLET_LIST)
-	{
-		return;
-	}
-	bossData.crntAttackDelay = bossData.attackDelay[index];
+	bossData.crntAttackDelay = 10.f;
 }
 
 
@@ -217,7 +145,7 @@ Boss::Boss()
 		break;
 	}
 
-	bullets = new EnemyBullet(imgBullet);
+	bullets = std::make_shared<EnemyBullet>(imgBullet);
 	maxSkillCount[static_cast<unsigned int>(BossAct::Line)] = INT_MAX;
 	maxSkillCount[static_cast<unsigned int>(BossAct::Circle)] = 10;
 	maxSkillCount[static_cast<unsigned int>(BossAct::Spiral)] = 360;
@@ -227,7 +155,6 @@ Boss::Boss()
 Boss::~Boss()
 {
 	delete image;
-	delete bullets;
 }
 
 void Boss::Create()
@@ -251,63 +178,16 @@ void Boss::SetPosDest()
 		return;
 	}
 
-	//const RECT rectDisplay = sceneManager->Battle()->GetRectDisplay();
-
 	posDest = Vector2::GetDest(GetPosCenter(), unitVector, bossData.speed);
-	if (act == BossAct::Idle)
+	const RECT rectBody = GetRectBody();
+	const int maxYPos = (rectBody.bottom - rectBody.top) / 2;
+
+	Vector2 unitVector = Vector2::Down();
+
+	if (posDest.y > maxYPos)
 	{
-		const RECT rectBody = GetRectBody();
-		const int maxYPos = (rectBody.bottom - rectBody.top) / 2;
-
-		Vector2 unitVector = Vector2::Down();
-
-		if (posDest.y > maxYPos)
-		{
-			StopMove();
-			bossData.speed = 5;
-		}
-	}
-	else if (act == BossAct::Line)
-	{
-		constexpr int moveCount = 6;
-		static int crntMoveCount = moveCount;
-		static bool isReturn = false;
-
-		const RECT rectBody = GetRectBody();
-		const int minXPos = bullets->GetBulletSize().x * 4;
-		//const int maxXPos = rectDisplay.right - minXPos; // ?
-		const int maxXPos = 0.f;
-		const Vector2 posCenter = GetPosCenter();
-
-		if (posCenter.x < minXPos)
-		{
-			if (unitVector == Vector2::Left() && --crntMoveCount <= 0)
-			{
-				isReturn = true;
-			}
-			SetMove(Vector2::Right());
-		}
-		else if (posCenter.x > maxXPos)
-		{
-			if (unitVector == Vector2::Right() && --crntMoveCount <= 0)
-			{
-				isReturn = true;
-			}
-			SetMove(Vector2::Left());
-		}
-		else if (isReturn == true)
-		{
-			crntMoveCount = moveCount;
-
-			constexpr int centerX = WINDOWSIZE_X / 2;
-			if ((unitVector == Vector2::Left() && posCenter.x <= centerX) ||
-				(unitVector == Vector2::Right() && posCenter.x >= centerX))
-			{
-				isReturn = false;
-				act = BossAct::Idle;
-				StopMove();
-			}
-		}
+		StopMove();
+		bossData.speed = 5;
 	}
 }
 
@@ -383,34 +263,12 @@ void Boss::CheckAttackDelay()
 	{
 		return;
 	}
-	else if (act != BossAct::Idle)
+
+	bossData.crntAttackDelay -= DeltaTime();
+	if (bossData.crntAttackDelay <= 0.f)
 	{
-		bossData.crntAttackDelay -= DeltaTime();
-		if (IsClearAttackDelay() == true)
-		{
-			Shot();
-			ResetAttackDelay();
-		}
-	}
-}
-void Boss::CheckActDelay(Player* player)
-{
-	if (bossData.isCreated == false)
-	{
-		return;
-	}
-	else if (bossData.isDeath == true)
-	{
-		return;
-	}
-	else if (IsMove() == false && act == BossAct::Idle)
-	{
-		bossData.crntActDelay -= DeltaTime();
-		if (IsClearActDelay() == true)
-		{
-			StartAttack(player);
-			ResetActDelay();
-		}
+		bossData.crntAttackDelay = 1.5f;
+		Shot();
 	}
 }
 
@@ -574,7 +432,7 @@ void Boss::ShotByLine()
 	bulletPos.y = rectBody.bottom;
 	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2) + (((bulletCount / 2) * bulletSizeX) / 2);
 
-	const int bulletMoveAmount = bulletSizeX / 2;
+	const int bulletMoveAmount = bulletSizeX / 20;
 	const Vector2 unitVector = Vector2::Down();
 	for (int i = 0; i < bulletCount; ++i)
 	{

@@ -53,7 +53,8 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
-	constexpr int fieldTime = 36;
+	//constexpr int fieldTime = 36;
+	constexpr int fieldTime = 1;
 
 	if (!isBattleStarted) {
 		return;
@@ -125,7 +126,7 @@ void BattleScene::Update()
 		//for (auto& [clientID, player] : players) {
 		//	boss->CheckActDelay(player.get());
 		//}
-		//boss->CheckAttackDelay();
+		boss->CheckAttackDelay();
 		boss->Move();
 	}
 
