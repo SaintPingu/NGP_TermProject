@@ -10,6 +10,7 @@
 #include "StageScene.h"
 
 bool isBattleStarted{};
+
 void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<StagePlayer>& p2)
 {
 	isBattleStarted = true;
@@ -36,12 +37,19 @@ void BattleScene::Init()
 {
 	enemies = std::make_shared<EnemyController>();
 	boss = std::make_shared<Boss>();
+	firstUpdate = true;
 }
 
 void BattleScene::Update()
 {
 	if (!isBattleStarted) {
 		return;
+	}
+	if (firstUpdate) {
+		for (auto& [clientID, player] : players) {
+			float mp = player->GetMP();
+			CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, &mp, sizeof(float));
+		}
 	}
 
 	int deathCount{};
@@ -56,6 +64,18 @@ void BattleScene::Update()
 	if (deathCount == 2) {
 		BattleEnd();
 		return;
+	}
+
+	constexpr int MPUpdateDelay = 1.f;
+	constexpr int MPIncAmount = 3.f;
+	updateMPDelay += DeltaTime();
+	if (updateMPDelay >= MPUpdateDelay) {
+		updateMPDelay = 0;
+		for (auto& [clientID, player] : players) {
+			player->AddMP(MPIncAmount);
+			float mp = player->GetMP();
+			CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, &mp, sizeof(float));
+		}
 	}
 
 	enemies->CreateCheckMelee();
@@ -262,7 +282,6 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(Player* player)
 	auto& mainBullets	= player->GetMainBullets();
 	auto& subBullets	= player->GetSubBullets();
 
-	bool bUpdateMP = false;
 	for (size_t b = 0; b < 2; ++b) {
 		std::shared_ptr<PlayerBullet> bullets{};
 
@@ -289,23 +308,10 @@ void BattleScene::CollideCheck_PlayerBullets_Enemies(Player* player)
 			if ((enemies->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true) ||
 				(boss->CheckHit(rectBullet, bulletDamage, bulletType, bulletPos) == true))
 			{
-				//if (bullet->IsSkillBullet() == false)
-				//{
-				//	player->AddMP(0.15f);
-				//	bUpdateMP = true;
-				//}
 				bullets->Pop(i);
 			}
 		}
 	}
-	
-
-	//if (bUpdateMP)
-	//{
-	//	float MP = player->GetMP();
-	//	CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
-	//}
-
 }
 
 

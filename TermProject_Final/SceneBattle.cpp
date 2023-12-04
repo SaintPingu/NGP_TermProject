@@ -515,7 +515,6 @@ bool SceneBattle::ProcessCommand()
 			players[framework->client_ID]->ActiveSkill(Skill::Identity);
 			break;
 		case ServerBattleCmd::Hit: {
-			std::cout << "[CMD] Hit\n";
 			float hp;
 			memcpy(&hp, cmdData.data(), sizeof(float));
 			players[framework->client_ID]->SetHp(hp);
@@ -524,14 +523,12 @@ bool SceneBattle::ProcessCommand()
 			break;
 		}
 		case ServerBattleCmd::UpdateMP: {
-			std::cout << "[CMD] UpdateMP\n";
 			float mp;
-			memcpy(&mp, &(*cmdData.begin()), sizeof(float));
+			memcpy(&mp, cmdData.data(), sizeof(float));
 			players[framework->client_ID]->SetMp(mp);
 			break;
 		}
 		case ServerBattleCmd::CreateEffect: {
-			// std::cout << "[CMD] CreateEffect\n"; // ¿Ï
 			Battle::EffectData effectData;
 			memcpy(&effectData, cmdData.data(), sizeof(Battle::EffectData));
 			CreateEffect(effectData);

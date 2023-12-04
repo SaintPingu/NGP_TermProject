@@ -21,7 +21,10 @@ private:
 	/// ----------------------------------+	
 	std::shared_ptr<EnemyController>	enemies{};
 	std::shared_ptr<Boss>				boss{};
-	
+
+	float updateMPDelay = 0.f;
+	bool firstUpdate{};
+
 	void BattleEnd();
 public:
 	virtual void Init() override;
