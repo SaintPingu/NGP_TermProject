@@ -293,9 +293,18 @@ void SceneStage::Render(HDC hdc)
 
 }
 
+
 void SceneStage::Animate()
 {
 	FingerController();
+
+	_select_pokemon_move_frameControl++;
+	if (_select_pokemon_move_frameControl == 15) {
+		if (++_select_pokemon_move == 2) {
+			_select_pokemon_move = 0;
+		}
+		_select_pokemon_move_frameControl = 0;
+	}
 }
 
 void SceneStage::GetInput(CommandList* cmdList)
