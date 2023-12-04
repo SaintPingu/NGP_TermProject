@@ -2,6 +2,7 @@
 #include "SceneBattle.h"
 #include "InputManager.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Framework.h"
 #include "SceneManager.h"
 #include "ClientNetwork.h"
@@ -129,14 +130,17 @@ void SceneBattle::RenderEffects(HDC hdc)
 
 void SceneBattle::RenderEnemies(HDC hdc)
 {
-	for (auto& enemy : enemies) {
-		if (enemy.type == EnemyType::Melee) {
-			meleeEnemy->SetPos(enemy.pos);
-			meleeEnemy->Render(hdc);
-		}
-		else if (enemy.type == EnemyType::Range) {
-			rangeEnemy->SetPos(enemy.pos);
-			rangeEnemy->Render(hdc);
+	for (auto& [id, enemy] : enemies) {
+		switch (enemy.type) {
+		case EnemyType::Melee:
+			enemy.Render(hdc, meleeEnemy);
+			break;
+		case EnemyType::Range:
+			enemy.Render(hdc, rangeEnemy);
+			break;
+		default:
+			assert(0);
+			break;
 		}
 	}
 }
@@ -173,10 +177,15 @@ void SceneBattle::Init()
 	bulletImages[BulletType::Sub_Water].Load(_T("images\\battle\\bullet_water.png"), { 8,24 });
 	bulletImages[BulletType::Sub_Water].ScaleImage(0.8f, 0.7f);
 
-	// 스테이지별 적 총알 로드
+	// 스테이지별 적 로드
 	stage = StageElement::Water; // 테스트 스테이지
 	switch (stage) {
 	case StageElement::Water:
+		imgMelee.Load(L"images\\battle\\sprite_wingull.png", { 34,33 }, { 4,6 }, { 28,22 });
+		imgMelee.ScaleImage(1.2f, 1.2f);
+		imgRange.Load(L"images\\battle\\sprite_seadra.png", { 29,31 }, { 3,3 }, { 25,28 });
+		imgRange.ScaleImage(1.2f, 1.2f);
+
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_seadra.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(1.2f, 1.2f);
 		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_water.png"), { 400, 400 });
@@ -205,16 +214,9 @@ void SceneBattle::Init()
 		break;
 	}
 
-	EnemyDataStatus enemydata;
-
-	imgMelee.Load(L"images\\battle\\sprite_wingull.png", { 34,33 }, { 4,6 }, { 28,22 });
-	imgMelee.ScaleImage(1.2f, 1.2f);
-	imgRange.Load(L"images\\battle\\sprite_seadra.png", { 29,31 }, { 3,3 }, { 25,28 });
-	imgRange.ScaleImage(1.2f, 1.2f);
-	enemydata.type = Type::Water;
-
-	meleeEnemy = std::make_shared<Melee>(Melee(imgMelee, { 0.0f,0.0f }, enemydata));
-	rangeEnemy = std::make_shared<Range>(Range(imgRange, { 0.0f,0.0f }, enemydata));
+	Vector2 pos{};
+	meleeEnemy = std::make_shared<Melee>(imgMelee, pos);
+	rangeEnemy = std::make_shared<Range>(imgRange, pos);
 	
 	// 테스트 용 데이터 넣기
 	/*EnemyData data;
@@ -376,30 +378,35 @@ void SceneBattle::WriteData(void* data)
 	}
 
 	// EnemyBattleData - Cnt
-	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(BYTE));
+	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(Battle::EnemyBattleData::EnemyCnt));
 	RemoveData(*buffer, sizeof(BYTE));
-	std::cout << "EnemyCnt :: " << battleData.EnemyData.EnemyCnt << std::endl;
 
 	// EnemyBattleData - Data
 	battleData.EnemyData.Enemies = new Battle::EnemyBattleData::Data[battleData.EnemyData.EnemyCnt];
-	enemies.clear();
-	enemies.resize(battleData.EnemyData.EnemyCnt);
-
+	
+	std::vector<int> IDs{};
+	memcpy(battleData.EnemyData.Enemies, buffer->data(), sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt);
+	RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt);
 	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
-		memcpy(&battleData.EnemyData.Enemies[i], buffer->data(), sizeof(Battle::EnemyBattleData::Data));
-		RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data));
+		const auto& enemyData = battleData.EnemyData.Enemies[i];
 
-		Battle::EnemyBattleData::Data* enemyData = &battleData.EnemyData.Enemies[i];
-		std::bitset<8> byte(enemyData->TypeDirActPad);
+		int id = enemyData.ID;
+		IDs.push_back(id);
+		if (!enemies.count(id)) {
+			enemies[id] = EnemyData();
+		}
+
+		std::bitset<8> byte(enemyData.TypeDirActPad);
 		std::bitset<2> type(byte.to_string().substr(0, 2));
 		std::bitset<3> dir(byte.to_string().substr(2, 3));
 		std::bitset<1> action(byte.to_string().substr(5, 1));
 
-		enemies[i].type = (static_cast<EnemyType>(type.to_ulong()));
-		enemies[i].dir = (static_cast<Dir>(dir.to_ulong()));
-		enemies[i].isAction = (static_cast<bool>(action.to_ulong()));
-		enemies[i].pos = (enemyData->Pos);
+		enemies[id].type = (EnemyType)type.to_ulong();
+		enemies[id].dir = (Dir)dir.to_ulong();
+		enemies[id].isAction = (bool)action.to_ulong();
+		enemies[id].pos = (enemyData.Pos);
 	}
+	delete[] battleData.EnemyData.Enemies;
 	return;
 
 	// BulletsBattleData - Cnt
@@ -533,4 +540,11 @@ Type GetPlayerFlyType()
 Type GetPlayerGndType()
 {
 	return myPlayer.gnd;
+}
+
+void SceneBattle::EnemyData::Render(HDC hdc, std::shared_ptr<Enemy> enemy)
+{
+	enemy->SetPos(pos);
+	enemy->SetDir(dir);
+	enemy->Render(hdc);
 }

@@ -1,8 +1,11 @@
 #pragma once
 #include "Scene.h"
-#include "Enemy.h"
 #include "Boss.h"
 #include "GUIManager.h"
+
+class Enemy;
+class Melee;
+class Range;
 
 class BattleMap
 {
@@ -38,12 +41,15 @@ public:
 class Player;
 class SceneBattle : public Scene {
 private:
-	// 12-03 최정일 Enemy 클래스 생성으로 주석 처리 
-	struct EnemyData {
+	class EnemyData {
+	public:
 		EnemyType type{};
 		Vector2 pos{};
 		Dir dir{};
 		bool isAction;
+		float frame{};
+
+		void Render(HDC hdc, std::shared_ptr<Enemy> enemy);
 	};
 	struct Bullet {
 		BulletType type{};
@@ -70,7 +76,7 @@ private:
 	BattleMap battleMap;
 	std::unordered_map<int, std::shared_ptr<Player>> players;
 	std::vector<Bullet> bullets{};
-	std::vector<EnemyData> enemies{};
+	std::unordered_map<int, EnemyData> enemies{};
 	std::vector<Effect> effects{};
 
 

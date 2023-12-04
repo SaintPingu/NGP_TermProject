@@ -5,6 +5,7 @@
 
 class Enemy abstract : public GameObject, public IMovable {
 protected:
+	int ID{};
 	EnemyData data;
 	Vector2 posDest = { 0, };
 	Vector2 unitVector = { 0, };
@@ -40,6 +41,10 @@ public:
 	{
 		return isAction;
 	}
+
+	void SetID(int _ID) { ID = _ID; }
+	int GetID() const { return ID; }
+
 };
 
 class Melee : public Enemy {
@@ -80,6 +85,7 @@ class EnemyBullet;
 struct BulletData;
 class EnemyController {
 private:
+	int enemyID{};
 	std::vector<Enemy*> enemies;
 
 	EnemyBullet* bullets = nullptr;

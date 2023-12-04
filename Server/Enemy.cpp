@@ -5,7 +5,6 @@
 #include "BattleScene.h"
 #include "ServerFramework.h"
 
-
 Enemy::Enemy(ObjectImage& image, const Vector2& pos, const EnemyData& data) : GameObject(image, pos)
 {
 	StartMove();
@@ -203,7 +202,6 @@ void EnemyController::CreateCheckMelee()
 	{
 		return;
 	}
-	std::cout << "적 유닛 생성\n";
 	delay_Melee = 0;
 
 	for (int i = 0; i < createAmount_Melee; ++i)
@@ -212,6 +210,8 @@ void EnemyController::CreateCheckMelee()
 		float yPos = -(rand() % 100);
 
 		Melee* enemy = new Melee(imgMelee, { xPos, yPos }, meleeData);
+		enemy->SetID(enemyID++);
+		enemy->StartMove();
 		enemies.emplace_back(enemy);
 	}
 }
@@ -240,6 +240,8 @@ void EnemyController::CreateCheckRange()
 		const float yPos = -(rand() % 100);
 
 		Range* enemy = new Range(imgRange, { xPos, yPos }, rangeData);
+		enemy->SetID(enemyID++);
+		enemy->StartMove();
 		enemies.emplace_back(enemy);
 	}
 }
@@ -314,21 +316,25 @@ void Melee::SetPosDest()
 	{
 		return;
 	}
+	const Vector2 posCenter = GetPosCenter();
+	Vector2 vectorToPlayer{};
 
 	auto& players = SCENE_MGR->Battle()->GetPlayers();
 	std::shared_ptr<Player> player{};
-	float distance{};
+	float minDistance = 999999;
 	for (auto& [clientID, p] : players) {
-		player = p;
+		Vector2 v = posCenter - p->GetPosCenter();
+		float distance = v.Norm();
+		if (distance < minDistance) {
+			minDistance = distance;
+			player = p;
+			vectorToPlayer = v;
+		}
 	}
 
 	if (!player) {
 		return;
 	}
-
-	const Vector2 posCenter = GetPosCenter();
-
-	const Vector2 vectorToPlayer = posCenter - player->GetPosCenter();
 
 	const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
 
@@ -361,9 +367,9 @@ bool Melee::CheckCollidePlayer(int clientID)
 
 void Melee::Move()
 {
-	Player* battlePlayers = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
+	auto& players = SCENE_MGR->Battle()->GetPlayers(); // player[clientID] 배틀씬의 플레이어 연결해야함.
 
-	if (!battlePlayers) {
+	if (players.empty()) {
 		return;
 	}
 
@@ -371,19 +377,13 @@ void Melee::Move()
 	{
 		return;
 	}
-	
-	if (CheckCollidePlayer(0) == true)
-	{
-		battlePlayers[0].Hit(data.damage, GetType());
-		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
-		return;
-	}
-	else if (CheckCollidePlayer(1) == true) {
-		battlePlayers[1].Hit(data.damage, GetType());
-		//effects->CreateHitEffect(player->GetPosCenter(), GetType());
-		return;
-	}
 
+	for (auto& [clientID, player] : players) {
+		if (CheckCollidePlayer(clientID)) {
+			player->Hit(data.damage, GetType());
+		}
+	}
+	
 	SetPosDest();
 	SetPos(posDest);
 }

@@ -682,7 +682,7 @@ namespace Battle
 		/// --------------+	
 		struct Data          // 9 BYTE
 		{
-
+			int			ID;
 			BYTE		TypeDirActPad;    // 1 BYTE - ( 0b [7][6] Type [5][4] Dir [3][2] Action [1][0] Padding)
 			Vector2		Pos;
 		};

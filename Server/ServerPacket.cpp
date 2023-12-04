@@ -72,8 +72,10 @@ void PacketGenerator::GenerateData()
 			std::bitset<2> type((BYTE)enemies[i]->GetEnemyType());
 			std::bitset<3> dir((BYTE)enemies[i]->GetDir());
 			std::bitset<1> action((BYTE)enemies[i]->IsAction()); //action?
-			std::bitset<8> byte(type.to_string() + dir.to_string() + action.to_string());
+			std::bitset<2> padding((BYTE)0);
+			std::bitset<8> byte(type.to_string() + dir.to_string() + action.to_string() + padding.to_string());
 
+			enemybattledata.Enemies[i].ID = enemies[i]->GetID();
 			enemybattledata.Enemies[i].TypeDirActPad = static_cast<BYTE>(byte.to_ulong());
 			enemybattledata.Enemies[i].Pos = enemies[i]->GetPosCenter();
 		}
@@ -226,6 +228,7 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 void PacketGenerator::DeleteData()
 {
 	delete[] lobbyData.PlayersData;
+	delete[] battleData.EnemyData.Enemies;
 }
 
 void PacketLoader::SetPacketBuffer(int clientID, std::vector<BYTE>* buffer)
