@@ -83,8 +83,3 @@ public:
 		rectPokemonIcon.top = iconMoveMaxY;
 	}
 };
-
-void SetDifficulty(Difficulty difficulty);
-Difficulty GetDifficulty();
-void CheckKeyDown(const HWND& hWnd, const WPARAM& wParam);
-void CheckKeyUp(const HWND& hWnd, const WPARAM& wParam);

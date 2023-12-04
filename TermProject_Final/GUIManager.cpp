@@ -13,236 +13,10 @@
 #include "SceneStage.h"
 #include "SceneBattle.h"
 
-#define KEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0))
-#define KEYUP(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1))
-
-#define MOVE_UP VK_UP
-#define MOVE_LEFT VK_LEFT
-#define MOVE_DOWN VK_DOWN
-#define MOVE_RIGHT VK_RIGHT
-
-#define ELAPSE_BATTLE_GUI 10
-
-//extern GameData gameData;
-//extern Player* player;
-//extern EnemyController* enemies;
-//extern Boss* boss;
-//extern GUIManager* gui;
-//extern SceneManager* sceneManager;
-//extern SoundManager* soundManager;
-
-void SetDifficulty(Difficulty difficulty)
-{
-	//gameData.difficulty = difficulty;
-}
-Difficulty GetDifficulty()
-{
-	return Difficulty::Easy;
-	//return gameData.difficulty;
-}
-
-void CheckKeyDown(const HWND& hWnd, const WPARAM& wParam)
-{
-	SceneManager* sceneManager = SceneMgr;
-	SceneType crntSceneType = SceneMgr->GetCurrentSceneType();
-
-	if (crntSceneType == SceneType::Lobby || crntSceneType == SceneType::Stage)
-	{
-		/*if (wParam == 'h' || wParam == 'H')
-		{
-			town._allHide = !town._allHide;
-			stage._allHide = !stage._allHide;
-		}
-		else if (wParam == VK_F6)
-		{
-			phase.ResetPhase();
-		}*/
-	}
-	else if (crntSceneType == SceneType::Phase)
-	{
-		if (sceneManager->IsLoading() == false && wParam == VK_BACK)
-		{
-			//sceneManager->LoadScene(SceneType::Stage);
-		}
-		else if (wParam == VK_ADD)
-		{
-			//phase.ClearPhase();
-		}
-		else if (wParam == VK_F6)
-		{
-			//phase.ResetPhase();
-			//sceneManager->LoadScene(SceneType::Stage);
-		}
-	}
-	else if (crntSceneType == SceneType::Battle)
-	{
-		switch (wParam)
-		{
-		case _T('H'):
-			//gameData.isShowHitbox = !gameData.isShowHitbox;
-			break;
-		case _T('J'):
-			//gameData.isShowDrawBox = !gameData.isShowDrawBox;
-			break;
-		case _T('O'):
-			//player->Heal();
-			break;
-		case _T('P'):
-			//player->FullMP();
-			break;
-		case _T('I'):
-			//player->InvincibleMode();
-			break;
-		case VK_SUBTRACT:
-			//boss->KillBoss();
-			break;
-		case VK_BACK:
-			//gui->SkipField();
-			break;
-		case _T('Q'):
-			//player->ActiveSkill(Skill::Identity);
-			break;
-		case _T('W'):
-			//player->ActiveSkill(Skill::Sector);
-			break;
-		case _T('E'):
-			//player->ActiveSkill(Skill::Circle);
-			break;
-		case VK_DIVIDE:
-			//boss->Force__Skill1();
-			break;
-		case VK_MULTIPLY:
-			//boss->Force__Skill2();
-			break;
-		case VK_F1:
-			SetDifficulty(Difficulty::Easy);
-			break;
-		case VK_F2:
-			SetDifficulty(Difficulty::Normal);
-			break;
-		case VK_F3:
-			SetDifficulty(Difficulty::Hard);
-			break;
-		case VK_F5:
-			//boss->ShowHP();
-			break;
-		}
-
-		bool isMove = false;
-		if (KEYDOWN(MOVE_LEFT))
-		{
-			//player->Stop(Dir::Right);
-			//player->SetDirection(Dir::Left);
-			//isMove = true;
-		}
-		if (KEYDOWN(MOVE_RIGHT))
-		{
-			if (wParam != MOVE_LEFT)
-			{
-				/*player->Stop(Dir::Left);
-				player->SetDirection(Dir::Right);
-				isMove = true;*/
-			}
-		}
-		if (KEYDOWN(MOVE_UP))
-		{
-			/*player->Stop(Dir::Down);
-			player->SetDirection(Dir::Up);
-			isMove = true;*/
-		}
-		if (KEYDOWN(MOVE_DOWN))
-		{
-			if (wParam != MOVE_UP)
-			{
-				/*player->Stop(Dir::Up);
-				player->SetDirection(Dir::Down);
-				isMove = true;*/
-			}
-		}
-
-		if (isMove == true)
-		{
-			//player->SetMove(hWnd, TIMERID_BATTLE_MOVE_PLAYER, ELAPSE_BATTLE_MOVE_PLAYER, T_Battle_MovePlayer);
-		}
-	}
-}
-
-void CheckKeyUp(const HWND& hWnd, const WPARAM& wParam)
-{
-
-	SceneManager* sceneManager = SceneMgr;
-	SceneType crntSceneType = SceneMgr->GetCurrentSceneType();
-
-	if (crntSceneType == SceneType::Lobby)
-	{
-		if (wParam == VK_LEFT || wParam == VK_RIGHT || wParam == VK_UP || wParam == VK_DOWN)
-		{
-			//town.StopPlayer();
-		}
-	}
-	else if (crntSceneType == SceneType::Battle)
-	{
-		/*if (player->IsMove() == true)
-		{
-			switch (wParam)
-			{
-			case MOVE_LEFT:
-				player->Stop(Dir::Left);
-				if (KEYDOWN(MOVE_RIGHT))
-				{
-					player->SetDirection(Dir::Right);
-				}
-				break;
-			case MOVE_RIGHT:
-				player->Stop(Dir::Right);
-				if (KEYDOWN(MOVE_LEFT))
-				{
-					player->SetDirection(Dir::Left);
-				}
-				break;
-			case MOVE_UP:
-				player->Stop(Dir::Up);
-				if (KEYDOWN(MOVE_DOWN))
-				{
-					player->SetDirection(Dir::Down);
-				}
-				break;
-			case MOVE_DOWN:
-				player->Stop(Dir::Down);
-				if (KEYDOWN(MOVE_UP))
-				{
-					player->SetDirection(Dir::Up);
-				}
-				break;
-			}
-		}*/
-	}
-}
-
 GUIManager::GUIManager()
 {
 
 	int fieldLength = 360; // 페이즈인가? 잘모르겠어서 기본설정
-	/*const int crntPhase = phase.GetPhase();
-
-	switch (crntPhase)
-	{
-	case 0:
-		fieldLength = 360;
-		break;
-	case 1:
-		fieldLength = 480;
-		break;
-	case 2:
-		fieldLength = 480;
-		break;
-	case 3:
-		fieldLength = 600;
-		break;
-	default:
-		assert(0);
-		break;
-	}*/
 
 	constexpr int main_guiHeight = 80;
 
@@ -302,6 +76,7 @@ GUIManager::GUIManager()
 		break;
 	}
 
+	rectMain = rectWindow;
 	rectMain.top = rectMain.bottom - main_guiHeight;
 
 	constexpr POINT skillBoxSize = { 38,39 };
@@ -355,7 +130,7 @@ GUIManager::GUIManager()
 	constexpr int corrValue = 5;
 	iconMoveMaxY = (rectMoveBar.top - (pokemonIconSize.y / 2)) + corrValue;
 	iconMoveMinY = (rectMoveBar.bottom + (pokemonIconSize.y / 2));
-	iconMoveAmount = (moveBarHeight / fieldLength) / ELAPSE_BATTLE_GUI;
+	//iconMoveAmount = (moveBarHeight / fieldLength) / ELAPSE_BATTLE_GUI;
 
 	mainGUI->Load(_T("images\\battle\\battleGUI.png"), { 500, 80 });
 	gagueGUI_main->Load(_T("images\\battle\\gauge.png"), { 130, 130 });

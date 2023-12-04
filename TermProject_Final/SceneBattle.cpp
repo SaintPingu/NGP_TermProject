@@ -219,32 +219,6 @@ void SceneBattle::Init()
 	rangeEnemy = std::make_shared<Range>(imgRange, pos);
 	
 	// 테스트 용 데이터 넣기
-	/*EnemyData data;
-	data.dir = Dir::Down;
-	data.isAction = true;
-	data.pos = Vector2(100.0f, 100.0f);
-	data.type = EnemyType::Melee;
-	for (int i = 0; i < 10;++i) {
-		for (int j = 0;j < 10;++j) {
-			data.pos = Vector2(100.0f + i * 30, 100.0f + j * 20);
-			if (rand() % 2) {
-				data.type = EnemyType::Range;
-			}
-			else {
-				data.type = EnemyType::Melee;
-
-			}
-			enemies.push_back(data);
-		}
-	}
-
-	boss = std::make_shared<Boss>();
-	boss->Create();
-	boss->SetPos(Vector2(100.0f, 100.0f));*/
-
-	// 테스트 플레이어 생성
-	//CreatePlayer(0, Type::Elec, Type::Fire);
-
 	gui = std::make_shared<GUIManager>();
 	players[framework->client_ID] = std::make_shared<Player>(myPlayer.fly, myPlayer.gnd);
 	gui->SetPlayer(players[framework->client_ID]);
@@ -262,8 +236,7 @@ void SceneBattle::Render(HDC hdc)
 	if (boss) {
 		boss->Render(hdc);
 	}
-	/*boss->Render(hdc);
-	player->Render(hdc);*/
+	/*boss->Render(hdc);;*/
 	RenderEnemies(hdc);
 	/*player->RenderSkill(hdc);
 	effects->Render(hdc);*/
