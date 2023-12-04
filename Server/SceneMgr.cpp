@@ -10,6 +10,7 @@ void SceneMgr::Init()
 	lobbyScene  = std::make_shared<LobbyScene>();
 	stageScene  = std::make_shared<StageScene>();
 	battleScene = std::make_shared<BattleScene>();
+	gameData.crntStageType = StageElement::Water;
 }
 
 void SceneMgr::InsertClient(int id)
@@ -158,4 +159,23 @@ void SceneMgr::PushChangeLocationEvent(int clientID, SceneEventType type)
 	// Event ¸¦ Push  
 	int* data = new int(clientID);
 	sceneEvents.push(std::make_pair(type, PVOID(data)));
+}
+
+
+void SceneMgr::ClearStage()
+{
+	switch (gameData.crntStageType)
+	{
+	case StageElement::Water:
+		gameData.crntStageType = StageElement::Fire;
+		break;
+	case StageElement::Fire:
+		gameData.crntStageType = StageElement::Elec;
+		break;
+	case StageElement::Elec:
+		gameData.crntStageType = StageElement::Dark;
+		break;
+	case StageElement::Dark:
+		break;
+	}
 }

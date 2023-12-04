@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "Framework.h"
 #include "SceneManager.h"
+#include "SceneStage.h"
 #include "ClientNetwork.h"
 #include "ClientNetMgr.h"
 
@@ -207,7 +208,7 @@ void SceneBattle::Init()
 	bulletImages[BulletType::Sub_Water].ScaleImage(0.8f, 0.7f);
 
 	// 스테이지별 적 로드
-	stage = StageElement::Water; // 테스트 스테이지
+	stage = GetStageElement();
 	switch (stage) {
 	case StageElement::Water:
 		imgMelee.Load(L"images\\battle\\sprite_wingull.png", { 34,33 }, { 4,6 }, { 28,22 });
@@ -221,18 +222,32 @@ void SceneBattle::Init()
 		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
 		break;
 	case StageElement::Fire:
+		imgMelee.Load(L"images\\battle\\sprite_ledyba.png", { 37,37 }, { 6,6 }, { 27,27 });
+		imgMelee.ScaleImage(1.2f, 1.2f);
+		imgRange.Load(L"images\\battle\\sprite_latias.png", { 44,34 }, { 2,4 }, { 42,29 });
+		imgRange.ScaleImage(1.3f, 1.3f);
+
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_latias.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(0.8f, 0.8f);
 		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_fire.png"), { 400, 400 });
 		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
 		break;
 	case StageElement::Elec:
+		imgMelee.Load(L"images\\battle\\sprite_beedrill.png", { 33,33 }, { 7,6 }, { 21,22 });
+		imgMelee.ScaleImage(1.2f, 1.2f);
+		imgRange.Load(L"images\\battle\\sprite_zapdos.png", { 58,58 }, { 12,12 }, { 36,46 });
+
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_zapdos.png"), { 14, 14 });
 		bulletImages[BulletType::Enemy].ScaleImage(0.9f, 0.9f);
 		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_elec.png"), { 400, 400 });
 		bulletImages[BulletType::Boss].ScaleImage(0.05f, 0.05f);
 		break;
 	case StageElement::Dark:
+		imgMelee.Load(L"images\\battle\\sprite_crobat.png", { 40,30 }, { 5,7 }, { 32,19 });
+		imgMelee.ScaleImage(1.1f, 1.1f);
+		imgRange.Load(L"images\\battle\\sprite_aerodactyl.png", { 40,40 }, { 6,9 }, { 30,27 });
+		imgRange.ScaleImage(1.5f, 1.5f);
+
 		bulletImages[BulletType::Enemy].Load(_T("images\\battle\\bullet_aerodactyl.png"), { 10, 10 });
 		bulletImages[BulletType::Enemy].ScaleImage(1.6f, 1.6f);
 		bulletImages[BulletType::Boss].Load(_T("images\\battle\\bullet_boss_dark.png"), { 700, 700 });
@@ -487,8 +502,7 @@ bool SceneBattle::ProcessCommand()
 		case ServerBattleCmd::None:
 			return true;
 		case ServerBattleCmd::Loss:
-			std::cout << "[CMD] Loss\n";
-			SceneMgr->LoadScene(SceneType::Stage);
+			SceneMgr->LoadScene(SceneType::Lobby);
 
 			SoundMgr->StopEffectSound();
 			SoundMgr->PlayEffectSound(EffectSound::Loss);
@@ -497,10 +511,11 @@ bool SceneBattle::ProcessCommand()
 			break;
 		case ServerBattleCmd::Win:
 			std::cout << "[CMD] Win\n";
-			SceneMgr->LoadScene(SceneType::Stage);
+			SceneMgr->LoadScene(SceneType::Lobby);
 
 			SoundMgr->StopEffectSound();
-			SoundMgr->StopBossSound();
+			SoundMgr->PlayEffectSound(EffectSound::Win);
+			SoundMgr->StopBGMSound();
 			break;
 		case ServerBattleCmd::AcceptSkillQ:
 			std::cout << "[CMD] AcceptSkillQ\n";

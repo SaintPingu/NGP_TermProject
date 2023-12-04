@@ -46,7 +46,7 @@ public:
 	void InsertClient(int id);
 	void DeleteClient(int id);
 
-
+	void ClearStage();
 
 	const std::shared_ptr<LobbyScene>&  Lobby() const { return lobbyScene; }
 	const std::shared_ptr<StageScene>&  Stage() const { return stageScene; }
