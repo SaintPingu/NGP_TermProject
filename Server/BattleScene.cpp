@@ -25,8 +25,15 @@ void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<S
 void BattleScene::BattleEnd()
 {
 	isBattleStarted = false;
-	SCENE_MGR->GetGameData().isBattleStart = false;
 
+	for (auto& [clientID, player] : players) {
+		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::Loss, nullptr, 0);
+		CLIENT_MGR->ClearCommand(clientID);
+		SCENE_MGR->PushChangeLocationEvent(clientID, SceneEventType::ChangeClientLocation_ToStage);
+	}
+}
+void BattleScene::Release()
+{
 	// 메모리 해제
 	enemies = nullptr;
 	boss = nullptr;
@@ -36,6 +43,7 @@ void BattleScene::BattleEnd()
 
 void BattleScene::Init()
 {
+	Release();
 	enemies = std::make_shared<EnemyController>();
 	boss = std::make_shared<Boss>();
 	skillManager = std::make_shared<SkillManager>();
@@ -45,8 +53,8 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
-	//constexpr int fieldTime = 36;
-	constexpr int fieldTime = 1;
+	constexpr int fieldTime = 36;
+	//constexpr int fieldTime = 1;
 
 	if (!isBattleStarted) {
 		return;
@@ -196,12 +204,14 @@ void BattleScene::AddClient(int clientID)
 
 void BattleScene::RemoveClient(int clientID)
 {
-	// 다른 클라이언트에게 종료 메세지를 보내고 씬을 종료한다.
-	for (auto& [playerID, player] : players) {
-		CLIENT_MGR->PushCommand(playerID, (BYTE)ServerBattleCmd::Loss, nullptr, 0);
-	}
+	if (isBattleStarted) {
+		// 다른 클라이언트에게 종료 메세지를 보내고 씬을 종료한다.
+		for (auto& [playerID, player] : players) {
+			CLIENT_MGR->PushCommand(playerID, (BYTE)ServerBattleCmd::Loss, nullptr, 0);
+		}
 
-	BattleEnd();
+		BattleEnd();
+	}
 }
 
 void BattleScene::AddPlayer(const std::shared_ptr<StagePlayer>& p)

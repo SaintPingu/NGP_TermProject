@@ -63,6 +63,9 @@ public:
 		return rectDisplay;
 	}
 
+	void Release();
+
 };
 
 void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<StagePlayer>& p2);
+bool IsBattleStart();

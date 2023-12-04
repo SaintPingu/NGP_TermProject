@@ -32,8 +32,13 @@ void StageScene::StartBattle()
 	/// ----------------------------------+	
 	SCENE_MGR->PushChangeLocationEvent(P1->ID, SceneEventType::ChangeClientLocation_ToBattle);
 	SCENE_MGR->PushChangeLocationEvent(P2->ID, SceneEventType::ChangeClientLocation_ToBattle);
+	CLIENT_MGR->ClearCommand(P1->ID);
+	CLIENT_MGR->ClearCommand(P2->ID);
 
 	BattleStart(P1, P2);
+	players.erase(P1->ID);
+	players.erase(P2->ID);
+	enterPlayers.clear();
 }
 
 void StageScene::Init()
@@ -67,6 +72,10 @@ void StageScene::Update()
 
 void StageScene::ProcessCommand(int clientID, Command command, void* data)
 {
+	if (!players.count(clientID)) {
+		return;
+	}
+
 	auto& player = players.at(clientID);
 
 	ClientStageCmd clientCmd = (ClientStageCmd)command;
@@ -127,7 +136,6 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	}
 		break;
 	default:
-		assert(0);
 		break;
 	}
 

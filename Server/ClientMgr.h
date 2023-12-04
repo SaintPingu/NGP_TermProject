@@ -74,6 +74,7 @@ public:
 	void Exit();
 
 	void PushCommand(int clientID, BYTE cmd, void* data, size_t size);
+	void ClearCommand(int clientID);
 private:
 	int CreateID();
 

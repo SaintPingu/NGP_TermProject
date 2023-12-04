@@ -199,6 +199,17 @@ void ClientMgr::PushCommand(int clientID, BYTE cmd, void* data, size_t size)
 	}
 }
 
+void ClientMgr::ClearCommand(int clientID)
+{
+	ClientInfo* client = GetClient(clientID);
+	if (client) {
+		client->GetPacketBuffer().clear();
+	}
+	else {
+		std::cout << "[ERROR - PushCommand ] Client ID doesn't exist :: [" << clientID << "]\n";
+	}
+}
+
 void ClientMgr::RegisterTerminateClientID(int id)
 {
 	/*

@@ -3,6 +3,7 @@
 #include "LobbyScene.h"
 #include "StageScene.h"
 #include "BattleScene.h"
+#include "ClientMgr.h"
 
 void SceneMgr::Init()
 {
@@ -42,8 +43,12 @@ void SceneMgr::DeleteClient(int id)
 
 void SceneMgr::SetClientLocation(int id, SceneType type)
 {
-	SceneType crntClientLocation = gameData.clientLocations[id];
+	if (!CLIENT_MGR->GetClient(id)) {
+		gameData.clientLocations.erase(id);
+		return;
+	}
 
+	SceneType crntClientLocation = gameData.clientLocations[id];
 	std::string befLoc{};
 	switch (crntClientLocation) {
 	case SceneType::Lobby:
@@ -59,7 +64,7 @@ void SceneMgr::SetClientLocation(int id, SceneType type)
 		befLoc = "Battle";
 		break;
 	default:
-		assert(0);
+		//assert(0);
 		break;
 	}
 
@@ -78,7 +83,7 @@ void SceneMgr::SetClientLocation(int id, SceneType type)
 		aftLoc = "Battle";
 		break;
 	default:
-		assert(0);
+		//assert(0);
 		break;
 	}
 
@@ -87,7 +92,6 @@ void SceneMgr::SetClientLocation(int id, SceneType type)
 
 	gameData.clientLocations[id] = type;
 }
-
 
 void SceneMgr::UpdateScenes()
 {
