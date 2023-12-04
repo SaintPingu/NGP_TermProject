@@ -127,8 +127,7 @@ void SceneBattle::RenderBullets(HDC hdc)
 void SceneBattle::RenderEffects(HDC hdc)
 {
 	for (auto& effect : effects) {
-		const RECT rectImage = ISprite::GetRectImage(effectImages[effect.type], 0);
-		effectImages[effect.type].Render(hdc, effect.pos, &rectImage);
+		effect.Render(hdc, effectImages[effect.type]);
 	}
 }
 
@@ -159,11 +158,24 @@ void SceneBattle::AnimatePlayers()
 	}
 }
 
+void SceneBattle::AnimateEffects()
+{
+	for (size_t i = 0; i < effects.size(); ++i)
+	{
+		if (effects.at(i).Animate() == false)
+		{
+			effects[i--] = effects.back();
+			effects.pop_back();
+		}
+	}
+}
+
 void SceneBattle::CreateEffect(const Battle::EffectData& data)
 {
 	Effect effect{};
 	effect.type = (EffectType)data.type;
 	effect.pos = data.pos;
+	effect.maxFrame = effectImages[effect.type].GetMaxFrame();
 
 	effects.push_back(effect);
 }
@@ -281,6 +293,7 @@ void SceneBattle::Animate()
 	if (boss) {
 		boss->Animate(HWND());
 	}
+	AnimateEffects();
 	/*player->Animate();
 	enemies->Animate();
 	boss->AnimateSkill();
@@ -563,7 +576,18 @@ void SceneBattle::EnemyData::Render(HDC hdc, std::shared_ptr<Enemy> enemy)
 }
 
 
-void SceneBattle::Effect::Render(HDC hdc)
+void SceneBattle::Effect::Render(HDC hdc, EffectImage& image)
 {
+	const RECT rectImage = ISprite::GetRectImage(image, (int)frame);
+	image.Render(hdc, pos, &rectImage);
+}
 
+bool SceneBattle::Effect::Animate()
+{
+	frame += DeltaTime() * 15;
+	if (frame >= maxFrame) {
+		return false;
+	}
+
+	return true;
 }

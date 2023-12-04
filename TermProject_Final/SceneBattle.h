@@ -61,8 +61,10 @@ private:
 		EffectType type{};
 		POINT pos{};
 		float frame{};
+		int maxFrame{};
 
-		void Render(HDC hdc);
+		void Render(HDC hdc, EffectImage& image);
+		bool Animate();
 	};
 
 	std::unordered_map<EffectType, EffectImage> effectImages;
@@ -92,6 +94,7 @@ private:
 
 
 	void AnimatePlayers();
+	void AnimateEffects();
 
 	int v{}, h{};
 

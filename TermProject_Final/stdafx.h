@@ -22,6 +22,7 @@
 #include <functional>
 #include <bitset>
 #include <set>
+#include <deque>
 
 #include <string>
 #include <unordered_map>
