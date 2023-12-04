@@ -68,6 +68,7 @@ private:
 
 	bool _allHide = false;
 	int _select_pokemon_move = 0;
+	int _select_pokemon_move_frameControl = 0;
 
 	bool inWaitingRoom{};
 
