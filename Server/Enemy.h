@@ -50,7 +50,7 @@ public:
 class Melee : public Enemy {
 private:
 	void SetPosDest();
-	bool CheckCollidePlayer(int clientID);
+	bool CheckCollidePlayer(const std::shared_ptr<Player>& player);
 public:
 	Melee(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
 	void Move() override;

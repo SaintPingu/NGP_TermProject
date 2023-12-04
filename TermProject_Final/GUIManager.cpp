@@ -214,20 +214,20 @@ RECT GUIManager::GetRectDisplay() const
 	return rectDisplay;
 }
 
-void GUIManager::DisplayHurtFrame(Type type)
+void GUIManager::DisplayHurtFrame()
 {
-	switch (type)
+	switch (GetStageElement())
 	{
-	case Type::Fire:
+	case StageElement::Fire:
 		hurtGUI_Fire.alpha = hurtGUI_alpha;
 		break;
-	case Type::Water:
+	case StageElement::Water:
 		hurtGUI_Water.alpha = hurtGUI_alpha;
 		break;
-	case Type::Elec:
+	case StageElement::Elec:
 		hurtGUI_Elec.alpha = hurtGUI_alpha;
 		break;
-	case Type::Dark:
+	case StageElement::Dark:
 		CheckOverflowAdd(hurtGUI_Dark.alpha, 0x50);
 		break;
 	default:

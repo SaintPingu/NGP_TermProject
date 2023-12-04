@@ -4,6 +4,10 @@
 #include "Skill.h"
 #include "Bullet.h"
 #include "ServerPacket.h"
+#include "Effect.h"
+#include "ServerPacket.h"
+#include "ClientMgr.h"
+#include "ServerFramework.h"
 
 Player::Player(Type type, Type subType)
 {
@@ -72,8 +76,9 @@ Player::~Player()
 	//delete subBullets;
 	//delete skillManager;
 }
-void Player::Init()
+void Player::Init(int _ID)
 {
+	ID = _ID;
 	//skillManager = new SkillManager();
 }
 
@@ -202,32 +207,27 @@ void Player::CheckShot()
 
 void Player::Hit(float damage, Type hitType, POINT effectPoint)
 {
+	if (playerData.isDeath == true)
+	{
+		return;
+	}
+	else if (effectPoint.x == -1)
+	{
+		effectPoint = GetPosCenter();
+		GetRandEffectPoint(effectPoint);
+	}
+
 	EffectType effectType = GetEffectType_Hit(hitType);
 	PushHitEffect(effectType, effectPoint);
 
-	//if (playerData.isDeath == true)
-	//{
-	//	return;
-	//}
-	//else if (effectPoint.x == -1)
-	//{
-	//	effectPoint = GetPosCenter();
-	//	GetRandEffectPoint(effectPoint);
-	//}
-	//effects->CreateHitEffect(effectPoint, hitType);
-	//gui->DisplayHurtFrame(hitType);
+	CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::Hit, &playerData.hp, sizeof(float));
 
-	//if (playerData.isInvincible == true)
-	//{
-	//	return;
-	//}
-
-	//damage = CalculateDamage(damage, playerData.type, hitType);
-	//if ((playerData.hp -= damage) <= 0)
-	//{
-	//	effects->CreateExplosionEffect(GetPosCenter(), playerData.type);
-	//	Player::Death();
-	//}
+	damage = CalculateDamage(damage, playerData.type, hitType);
+	if ((playerData.hp -= damage) <= 0)
+	{
+		PushHitEffect(GetEffectType_Exp(playerData.type), GetPosCenter());
+		Player::Death();
+	}
 }
 
 void Player::ActiveSkill(Skill skill)

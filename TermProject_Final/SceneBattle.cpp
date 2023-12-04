@@ -517,8 +517,10 @@ bool SceneBattle::ProcessCommand()
 		case ServerBattleCmd::Hit: {
 			std::cout << "[CMD] Hit\n";
 			float hp;
-			memcpy(&hp, &(*cmdData.begin()), sizeof(float));
+			memcpy(&hp, cmdData.data(), sizeof(float));
 			players[framework->client_ID]->SetHp(hp);
+			SoundMgr->PlayHitSound(HitSound::Auto);
+			gui->DisplayHurtFrame();
 			break;
 		}
 		case ServerBattleCmd::UpdateMP: {

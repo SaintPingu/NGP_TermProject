@@ -5,6 +5,7 @@
 #include "BattleScene.h"
 #include "ServerFramework.h"
 #include "ServerPacket.h"
+#include "Effect.h"
 
 Enemy::Enemy(ObjectImage& image, const Vector2& pos, const EnemyData& data) : GameObject(image, pos)
 {
@@ -277,12 +278,6 @@ bool EnemyController::CheckHit(const RECT& rectSrc, float damage, Type hitType, 
 	return false;
 }
 
-void GetRandEffectPoint(POINT& effectPoint)
-{
-	constexpr int range = 20;
-	effectPoint.x += (rand() % range) - (range / 2);
-	effectPoint.y += (rand() % range) - (range / 2);
-}
 void EnemyController::CheckHitAll(const RECT& rectSrc, float damage, Type hitType)
 {
 	for (size_t i = 0; i < enemies.size(); ++i)
@@ -353,10 +348,8 @@ void Melee::SetPosDest()
 	posDest = posCenter - (unitVector * data.speed);
 }
 
-bool Melee::CheckCollidePlayer(int clientID)
+bool Melee::CheckCollidePlayer(const std::shared_ptr<Player>& player)
 {
-	Player* player = nullptr; // player[clientID] 배틀씬의 플레이어 연결해야함.
-
 	if (!player) {
 		return false;
 	}
@@ -389,7 +382,7 @@ void Melee::Move()
 	}
 
 	for (auto& [clientID, player] : players) {
-		if (CheckCollidePlayer(clientID)) {
+		if (CheckCollidePlayer(player)) {
 			player->Hit(data.damage, GetType());
 		}
 	}

@@ -21,7 +21,8 @@ private:
 	/// ----------------------------------+	
 	std::shared_ptr<EnemyController>	enemies{};
 	std::shared_ptr<Boss>				boss{};
-
+	
+	void BattleEnd();
 public:
 	virtual void Init() override;
 	virtual void Update() override;
@@ -37,7 +38,7 @@ public:
 
 	void AddClient(int clientID);	// not use
 	void AddPlayer(const std::shared_ptr<StagePlayer>& p);
-	void RemoveClient(int clientID) {};
+	void RemoveClient(int clientID);
 
 
 
@@ -46,8 +47,9 @@ public:
 	void CollideCheck();
 
 private:
-	void CollideCheck_EnemyBullets_Player(int clientID,  Player* player);
-	void CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player);
+	void CollideCheck_Enemies_Player(Player* player);
+	void CollideCheck_EnemyBullets_Player(Player* player);
+	void CollideCheck_PlayerBullets_Enemies(Player* player);
 
 public:
 	RECT GetRectDisplay() const

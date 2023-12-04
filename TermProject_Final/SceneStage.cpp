@@ -28,6 +28,10 @@ void SetStageElement(StageElement stageElement)
 	crntPhase = stageElement;
 }
 
+StageElement GetStageElement()
+{
+	return crntPhase;
+}
 
 SceneStage::SceneStage()
 {

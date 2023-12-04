@@ -67,7 +67,7 @@ public:
 	GUIManager();
 	void Render(HDC hdc);
 	void Animate(HWND& hWnd);
-	void DisplayHurtFrame(Type type);
+	void DisplayHurtFrame();
 
 	void Update(const HWND& hWnd);
 	RECT GetRectDisplay() const;

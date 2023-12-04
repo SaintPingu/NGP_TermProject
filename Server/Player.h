@@ -30,6 +30,7 @@ class SkillManager;
 
 class Player : public GameObject, public IControllable {
 private:
+	int ID{};
 	PlayerData playerData;
 	std::shared_ptr<PlayerBullet>		mainBullets{};
 	std::shared_ptr<PlayerBullet>		subBullets{};
@@ -57,7 +58,7 @@ public:
 	Player() {};
 	Player(Type type, Type subType);
 	~Player();
-	void Init();
+	void Init(int _ID);
 
 	void SetDirection(Dir dir);
 	void Move() override;

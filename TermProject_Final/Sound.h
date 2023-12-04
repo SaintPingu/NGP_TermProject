@@ -3,7 +3,7 @@
 enum class EffectSound { Win = 0, Loss, Shot, Shot_nLoop, Explosion };
 enum class BGMSound { Intro = 0, Town1, Town2, Stage, Battle, Battle_Boss, Ending };
 enum class SkillSound { Elec = 0, Fire, Water };
-enum class HitSound { Elec = 0, Fire, Water, Dark };
+enum class HitSound { Elec = 0, Fire, Water, Dark, Auto };
 enum class BossSound { Elec_Laser, Fire_Meteor, Fire_Ball, Water_Tsunami, Water_Splash, Dark };
 enum class SelectSound { Pikachu1, Pikachu2, Squirtle, Charmander };
 enum class SoundChannel { Bgm = 0, Effect, Skill, Boss };

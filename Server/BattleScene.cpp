@@ -21,6 +21,17 @@ void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<S
 	battle->AddPlayer(p2);
 }
 
+void BattleScene::BattleEnd()
+{
+	isBattleStarted = false;
+	SCENE_MGR->GetGameData().isBattleStart = false;
+
+	// 메모리 해제
+	enemies = nullptr;
+	boss = nullptr;
+	players.clear();
+}
+
 void BattleScene::Init()
 {
 	enemies = std::make_shared<EnemyController>();
@@ -33,9 +44,18 @@ void BattleScene::Update()
 		return;
 	}
 
+	int deathCount{};
 	for (auto& [clientID, player] : players) {
+		if (player->IsDeath()) {
+			++deathCount;
+			continue;
+		}
 		player->Move();
 		player->CheckShot();
+	}
+	if (deathCount == 2) {
+		BattleEnd();
+		return;
 	}
 
 	enemies->CreateCheckMelee();
@@ -72,6 +92,10 @@ void BattleScene::Update()
 
 void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 {
+	if (!players.count(clientID)) {
+		return;
+	}
+
 	auto& player = players.at(clientID);
 
 	ClientBattleCmd  clientCmd = (ClientBattleCmd)command;
@@ -133,10 +157,21 @@ void BattleScene::AddClient(int clientID)
 	// not use
 }
 
+void BattleScene::RemoveClient(int clientID)
+{
+	// 다른 클라이언트에게 종료 메세지를 보내고 씬을 종료한다.
+	for (auto& [playerID, player] : players) {
+		CLIENT_MGR->PushCommand(playerID, (BYTE)ServerBattleCmd::Loss, nullptr, 0);
+	}
+
+	BattleEnd();
+}
+
 void BattleScene::AddPlayer(const std::shared_ptr<StagePlayer>& p)
 {
 	auto& player = players[p->ID];
 	player = std::make_shared<Player>(p->typeFly, p->typeGnd);
+	player->Init(p->ID);
 	if (players.size() == 1) {
 		player->SetPos({ 175, 500 });
 	}
@@ -192,22 +227,22 @@ void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skil
 void BattleScene::CollideCheck()
 {
 	for (auto& [clientID, player] : players) {
-		
+
 	/// +----------------------------------
 	///	     ENEMY BULLETS <-> PLAYER 
 	/// ----------------------------------+	
-		CollideCheck_EnemyBullets_Player(clientID, player.get());
+		CollideCheck_EnemyBullets_Player(player.get());
 
 	/// +----------------------------------
 	///	  PLAYER BULLETS <-> ENEMIES, BOSS
 	/// ----------------------------------+	
-		CollideCheck_PlayerBullets_Enemies(clientID, player.get());
+		CollideCheck_PlayerBullets_Enemies(player.get());
 	}
 
 
 }
 
-void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player)
+void BattleScene::CollideCheck_EnemyBullets_Player(Player* player)
 {
 	auto& enemyBullets = enemies->GetEnemyBullets();
 	for (size_t i = 0; i < enemyBullets->GetBulletCount(); ++i)
@@ -222,7 +257,7 @@ void BattleScene::CollideCheck_EnemyBullets_Player(int clientID,  Player* player
 	}
 }
 
-void BattleScene::CollideCheck_PlayerBullets_Enemies(int clientID,  Player* player)
+void BattleScene::CollideCheck_PlayerBullets_Enemies(Player* player)
 {
 	auto& mainBullets	= player->GetMainBullets();
 	auto& subBullets	= player->GetSubBullets();

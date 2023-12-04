@@ -87,3 +87,4 @@ public:
 };
 
 void SetStageElement(StageElement stageElement);
+StageElement GetStageElement();

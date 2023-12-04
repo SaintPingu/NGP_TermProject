@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "sound.h"
+#include "SceneStage.h"
 
 
 inline constexpr void CheckResult(const FMOD_RESULT& result)
@@ -137,6 +138,26 @@ void SoundManager::StopSkillSound()
 
 void SoundManager::PlayHitSound(HitSound hitSound)
 {
+	if (hitSound == HitSound::Auto) {
+	switch (GetStageElement()) {
+	case StageElement::Water:
+		hitSound = HitSound::Water;
+		break;
+	case StageElement::Fire:
+		hitSound = HitSound::Fire;
+		break;
+	case StageElement::Elec:
+		hitSound = HitSound::Elec;
+		break;
+	case StageElement::Dark:
+		hitSound = HitSound::Dark;
+		break;
+	default:
+		assert(0);
+		break;
+	}
+
+	}
 	FMOD_System_Update(soundSystem);
 	FMOD_System_PlaySound(soundSystem, hitSoundList[static_cast<int>(hitSound)], 0, false, NULL);
 }
