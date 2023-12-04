@@ -476,6 +476,7 @@ enum class ServerBattleCmd : BYTE
 	Hit,
 	UpdateMP,
 	CreateEffect,
+	BossPos,
 
 };
 

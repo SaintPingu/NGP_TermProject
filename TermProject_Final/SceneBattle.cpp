@@ -142,6 +142,8 @@ void SceneBattle::RenderEnemies(HDC hdc)
 			enemy.Render(hdc, rangeEnemy);
 			break;
 		case EnemyType::Boss:
+			boss->SetPos(enemy.pos);
+			boss->Render(hdc);
 			break;
 		default:
 			assert(0);
@@ -263,6 +265,12 @@ void SceneBattle::Init()
 	meleeEnemy = std::make_shared<Melee>(imgMelee, pos);
 	rangeEnemy = std::make_shared<Range>(imgRange, pos);
 
+	// 보스 초기화
+	boss = std::make_shared<Boss>();
+	enemies[-1] = EnemyData();
+	enemies[-1].type = EnemyType::Boss;
+	enemies[-1].pos = { -9999, -9999 };
+
 	gui = std::make_shared<GUIManager>();
 	players[framework->client_ID] = std::make_shared<Player>(myPlayer.fly, myPlayer.gnd);
 	gui->SetPlayer(players[framework->client_ID]);
@@ -277,9 +285,6 @@ void SceneBattle::Render(HDC hdc)
 	battleMap.Render(hdc, stage);
 	RenderPlayers(hdc);
 	RenderBullets(hdc);
-	if (boss) {
-		boss->Render(hdc);
-	}
 	//boss->Render(hdc);
 	RenderEnemies(hdc);
 	//player->RenderSkill(hdc);
@@ -294,10 +299,6 @@ void SceneBattle::Animate()
 		boss->Animate(HWND());
 	}
 	AnimateEffects();
-	/*player->Animate();
-	enemies->Animate();
-	boss->AnimateSkill();
-	boss->Animate();*/
 
 	gui->Update(HWND());
 }
@@ -421,7 +422,7 @@ void SceneBattle::WriteData(void* data)
 	// 사망한 적 제거
 	std::vector<int> idToDelete{};
 	for (auto& [id, enemy] : enemies) {
-		if (!IDs.count(id)) {
+		if (!IDs.count(id) && id != -1) {
 			idToDelete.push_back(id);
 		}
 	}
@@ -523,6 +524,12 @@ bool SceneBattle::ProcessCommand()
 			Battle::EffectData effectData;
 			memcpy(&effectData, cmdData.data(), sizeof(Battle::EffectData));
 			CreateEffect(effectData);
+			break;
+		}
+		case ServerBattleCmd::BossPos: {
+			Vector2 pos;
+			memcpy(&pos, cmdData.data(), sizeof(Vector2));
+			enemies[-1].pos = pos;
 			break;
 		}
 		default:

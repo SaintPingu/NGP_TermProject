@@ -192,15 +192,6 @@ EnemyController::~EnemyController()
 
 void EnemyController::CreateCheckMelee()
 {
-	//if (boss->IsCreated() == true)
-	//{
-	//	return;
-	//}
-	//else if (gui->IsFieldEnd() == true)
-	//{
-	//	return;
-	//}
-
 	delay_Melee += DeltaTime();
 	if (delay_Melee < createDelay_Melee)
 	{
@@ -221,15 +212,6 @@ void EnemyController::CreateCheckMelee()
 }
 void EnemyController::CreateCheckRange()
 {
-	//if (boss->IsCreated() == true)
-	//{
-	//	return;
-	//}
-	//else if (gui->IsFieldEnd() == true)
-	//{
-	//	return;
-	//}
-
 	delay_Range += DeltaTime();
 	if (delay_Range < createDelay_Range)
 	{

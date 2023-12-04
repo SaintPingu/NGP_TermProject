@@ -9,15 +9,14 @@
 #include "scene.h"
 #include "sound.h"
 #include "Framework.h"
+#include "SceneStage.h"
 
 Boss::Boss()
 {
-	//const RECT rectDisplay = sceneManager->GetRectDisplay();
-
 	ObjectImage imgBullet;
 	image = new ObjectImage();
 
-	switch (StageElement::Water)
+	switch (GetStageElement())
 	{
 	case StageElement::Elec:
 		image->Load(_T("images\\battle\\sprite_boss_elec.png"), { 73,68 }, { 3,7 }, { 69,50 });
@@ -47,6 +46,8 @@ Boss::Boss()
 		assert(0);
 		break;
 	}
+
+	GameObject::Init(*image, {-9999, -9999});
 }
 Boss::~Boss()
 {
@@ -61,10 +62,9 @@ Boss::~Boss()
 
 void Boss::Render(HDC hdc)
 {
-	constexpr int disappearFrame = -3;
-
-	const RECT rectImage = ISprite::GetRectImage(GetImage(), frame);
-	GameObject::Render(hdc, &rectImage);
+	image->Render(GetRectBody(), hdc);
+	/*const RECT rectImage = ISprite::GetRectImage(GetImage(), frame);
+	GameObject::Render(hdc, &rectImage);*/
 }
 
 void Boss::Animate(const HWND& hWnd)

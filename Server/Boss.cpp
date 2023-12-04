@@ -226,26 +226,23 @@ Boss::Boss()
 }
 Boss::~Boss()
 {
-	if (skill != nullptr)
-	{
-		delete skill;
-	}
 	delete image;
 	delete bullets;
 }
 
 void Boss::Create()
 {
+	if (bossData.isCreated) {
+		return;
+	}
+
 	bossData = GetBossData();
 	bossData.isCreated = true;
-	skill = new BossSkillManager();
+	skill = std::make_shared<BossSkillManager>();
 
 	Vector2 posCenter = { WINDOWSIZE_X / 2 , -300 };
 	GameObject::Init(*image, posCenter);
 	SetMove(Vector2::Down());
-
-	//soundManager->StopBGMSound();
-	//soundManager->PlayBGMSound(BGMSound::Battle_Boss, 1.0f, true);
 }
 void Boss::SetPosDest()
 {

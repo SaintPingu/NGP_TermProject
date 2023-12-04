@@ -24,6 +24,7 @@ private:
 	std::shared_ptr<SkillManager>		skillManager{};
 
 	float updateMPDelay = 0.f;
+	float elapsedTime = 0.f;
 	bool firstUpdate{};
 
 	void BattleEnd();

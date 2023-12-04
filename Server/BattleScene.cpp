@@ -40,10 +40,14 @@ void BattleScene::Init()
 	boss = std::make_shared<Boss>();
 	skillManager = std::make_shared<SkillManager>();
 	firstUpdate = true;
+	elapsedTime = 0.f;
 }
 
 void BattleScene::Update()
 {
+	//constexpr int fieldTime = 36;
+	constexpr int fieldTime = 1;
+
 	if (!isBattleStarted) {
 		return;
 	}
@@ -68,6 +72,11 @@ void BattleScene::Update()
 		return;
 	}
 
+	elapsedTime += DeltaTime();
+	if (elapsedTime >= fieldTime) {
+		boss->Create();
+	}
+
 	constexpr int MPUpdateDelay = 1.f;
 	constexpr int MPIncAmount = 3.f;
 	updateMPDelay += DeltaTime();
@@ -80,8 +89,17 @@ void BattleScene::Update()
 		}
 	}
 
-	enemies->CreateCheckMelee();
-	enemies->CreateCheckRange();
+	if (!boss->IsCreated())
+	{
+		enemies->CreateCheckMelee();
+		enemies->CreateCheckRange();
+	}
+	else {
+		Vector2 pos = boss->GetPosCenter();
+		for (auto& [clientID, player] : players) {
+			CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::BossPos, &pos, sizeof(Vector2));
+		}
+	}
 	enemies->CheckAttackDelay();
 	enemies->Move();
 	enemies->MoveBullets();
@@ -91,14 +109,11 @@ void BattleScene::Update()
 	}
 	CollideCheck(); // 충돌체크 
 
-	return;
-
-
 	if (boss) {
-		for (auto& [clientID, player] : players) {
-			boss->CheckActDelay(player.get());
-		}
-		boss->CheckAttackDelay();
+		//for (auto& [clientID, player] : players) {
+		//	boss->CheckActDelay(player.get());
+		//}
+		//boss->CheckAttackDelay();
 		boss->Move();
 	}
 

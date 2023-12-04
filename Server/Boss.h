@@ -49,7 +49,7 @@ private:
 	Vector2 posDest    = { 0, };
 	Vector2 unitVector = { 0, };
 
-	BossSkillManager* skill            = nullptr;
+	std::shared_ptr<BossSkillManager> skill{};
 	int maxSkillCount[BOSS_SKILL_LIST] = { 0, };
 	int skillCount                     = 0;
 	int deathFrame                     = 30;

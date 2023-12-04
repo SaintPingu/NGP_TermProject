@@ -51,10 +51,10 @@ public:
 };
 
 
-
+class Boss;
 class BossSkillManager {
 private:
-	class Boss* boss{};	// 보스 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
+	std::shared_ptr<Boss> boss{};
 	class Player* player{};
 
 private:

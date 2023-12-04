@@ -15,8 +15,7 @@
 
 GUIManager::GUIManager()
 {
-
-	int fieldLength = 360; // 페이즈인가? 잘모르겠어서 기본설정
+	constexpr int fieldLength = 360; // 페이즈인가? 잘모르겠어서 기본설정
 
 	constexpr int main_guiHeight = 80;
 

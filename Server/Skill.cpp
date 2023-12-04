@@ -528,6 +528,7 @@ bool BossSkillManager::Effect::RotateToPlayer(float t, Player* player)
 
 BossSkillManager::BossSkillManager()
 {
+	boss = SCENE_MGR->Battle()->GetBoss();
 	switch (boss->GetType())
 	{
 	case Type::Elec:

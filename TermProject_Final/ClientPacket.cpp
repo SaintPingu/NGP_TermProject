@@ -56,16 +56,26 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType s
 		cmd = buffer->front();
 		buffer->erase(buffer->begin());
 
-		if (cmd == (BYTE)ServerBattleCmd::Hit || cmd == (BYTE)ServerBattleCmd::UpdateMP) {
-			// float hp || float mp
+		switch ((ServerBattleCmd)cmd) {
+		case ServerBattleCmd::Hit:
+		case ServerBattleCmd::UpdateMP:
 			cmdData.insert(cmdData.begin(), buffer->begin(), buffer->begin() + sizeof(float));
 			RemoveData(*buffer, sizeof(float));
-		}
-		else if (cmd == (BYTE)ServerBattleCmd::CreateEffect) {
+			break;
+		case ServerBattleCmd::CreateEffect:
+		{
 			size_t dataSize = sizeof(Battle::EffectData);
 			cmdData.resize(dataSize);
 			memcpy(cmdData.data(), buffer->data(), dataSize);
 			buffer->erase(buffer->begin(), buffer->begin() + dataSize);
+		}
+			break;
+		case ServerBattleCmd::BossPos:
+			cmdData.insert(cmdData.begin(), buffer->begin(), buffer->begin() + sizeof(Vector2));
+			RemoveData(*buffer, sizeof(Vector2));
+			break;
+		default:
+			break;
 		}
 
 		return true;
