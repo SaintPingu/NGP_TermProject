@@ -42,9 +42,6 @@ void SceneManager::InitScene(SceneType scene)
 		framework->ConnectToServer();
 	}
 
-	if (crntSceneType == SceneType::Stage) {
-		framework->ExitStage();
-	}
 	int randBgm = rand() % 2;
 
 	switch (scene) {
@@ -69,15 +66,8 @@ void SceneManager::InitScene(SceneType scene)
 		break;
 	case SceneType::Stage:
 		crntScene = std::make_shared<SceneStage>();
-		
 
 		SoundMgr->StopBGMSound();
-		//if (isEnding == true)
-		//{
-		//	SoundMgr->PlayBGMSound(BGMSound::Ending, 1.0f, true);
-		//}
-		//else
-		
 		SoundMgr->PlayBGMSound(BGMSound::Stage, 1.0f, true);
 		
 		break;	

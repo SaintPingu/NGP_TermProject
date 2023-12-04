@@ -1,13 +1,7 @@
 #include "stdafx.h"
 #include "Bullet.h"
-
+#include "ServerPacket.h"
 #include "Scene.h"
-
-//extern Player* player;
-//extern EnemyController* enemies;
-//extern Boss* boss;
-//extern EffectManager* effects;
-//extern SceneManager* sceneManager;
 
 BulletController::Bullet::Bullet(const POINT& center, const POINT& bulletSize, const BulletData& data)
 {
@@ -224,7 +218,8 @@ void BulletController::DestroyCollideBullet(const RECT& rect)
 	{
 		if (bullets.at(i)->IsCollide(rect) == true)
 		{
-			//effects->CreateHitEffect(bullets.at(i)->GetPos(), bullets.at(i)->GetType());
+			EffectType effectType = GetEffectType_Hit(bullets.at(i)->GetType());
+			PushHitEffect(effectType, bullets.at(i)->GetPos());
 			BulletController::Pop(i);
 		}
 	}

@@ -123,7 +123,7 @@ enum class SubPokemon { Null = 0, Pikachu = 0, Squirtle, Charmander };
 enum class Type { Empty = 0, Fire, Elec, Water, Dark };
 enum class EnemyType { Melee = 0, Range, Boss };
 enum class BulletType { Empty = 0, Main_Fire, Main_Elec, Main_Water, Sub_Fire, Sub_Elec, Sub_Water, Enemy, Boss, _count };
-enum class EffectType { Empty = 0, Explode_Fire, Explode_Water, Explode_Elec, Cloud_Fire, Cloud_Water, Cloud_Elec };
+enum class EffectType { Empty = 0, Explode_Fire, Explode_Water, Explode_Elec, Explode_Dark, Cloud_Fire, Cloud_Water, Cloud_Elec, Cloud_Dark };
 enum class Skill { Empty = 0, Identity, Sector, Circle };
 
 enum class StageElement { Water = 0, Fire, Elec, Dark, Lobby, Null };
@@ -425,9 +425,7 @@ bool IntersectRect2(const RECT& rect1, const RECT& rect2);
 float CalculateDamage(float damage, Type destType, Type srcType);
 
 
-class CommandList
-{
-	BYTE cmdCnt{};
+class CommandList {
 public:
 	CommandList();
 	~CommandList();
@@ -436,7 +434,6 @@ public:
 
 	void PushCommand(BYTE cmd, void* data, size_t size);
 
-	BYTE GetCmdCnt();
 	std::vector<BYTE> GetCmdList();
 };
 
@@ -735,41 +732,11 @@ namespace Battle
 		BulletsBattleData		BulletData;
 		BossSkillBattleData		BossEffectData;
 	};
-};
 
-
-
-
-/// +--------------
-///	    LOBBY
-/// --------------+	
-struct LobbyPacket
-{
-	BYTE				DataLen;
-	ServerLobbyCmd		Command;
-	Lobby::LobbyData	LobbyData;
-};
-
-
-/// +--------------
-///	    STAGE
-/// --------------+	
-struct StagePacket
-{
-	BYTE				DataLen;
-	ServerStageCmd		Command;
-};
-
-
-/// +--------------
-///	    BATTLE
-/// --------------+	
-struct BattlePacket
-{
-	int32				DataLen;
-	BYTE				CmdCnt;
-	ServerBattleCmd* Command;		// [ServerBattleCmd][ServerBattleCmd]...[ServerBattleCmd]
-	Battle::BattleData	BattleData;
+	struct EffectData {
+		BYTE	type;
+		POINT	pos;
+	};
 };
 
 

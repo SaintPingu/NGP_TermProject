@@ -30,7 +30,7 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType s
 
 	if (scenetype == SceneType::Lobby)
 	{
-		cmd = (BYTE)(*buffer->begin()); // 1byte
+		cmd = buffer->front(); // 1byte
 		buffer->erase(buffer->begin());
 
 		if (cmd == (BYTE)ServerLobbyCmd::GoStage) {
@@ -41,13 +41,11 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType s
 	}
 	else if (scenetype == SceneType::Stage)
 	{
-		cmd = (BYTE)(*buffer->begin()); // 1byte
+		cmd = buffer->front(); // 1byte
 		buffer->erase(buffer->begin());
 
 		if (cmd == (BYTE)ServerStageCmd::GoBattle) { // ClientStageData other
-			for (int i = 0; i < buffer->size(); ++i) {
-				cmdData.push_back((*buffer)[i]);
-			}
+			cmdData.insert(cmdData.begin(), buffer->begin(), buffer->begin() + buffer->size());
 		}
 		buffer->clear(); // stage는 data가 따로 없으므로 여기서 Clear
 
@@ -55,22 +53,19 @@ bool PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& cmdData, SceneType s
 	}
 	else if (scenetype == SceneType::Battle)
 	{
-		cmd = (BYTE)(*buffer->begin());
+		cmd = buffer->front();
 		buffer->erase(buffer->begin());
 
 		if (cmd == (BYTE)ServerBattleCmd::Hit || cmd == (BYTE)ServerBattleCmd::UpdateMP) {
 			// float hp || float mp
 			cmdData.insert(cmdData.begin(), buffer->begin(), buffer->begin() + sizeof(float));
-			buffer->erase(buffer->begin(), buffer->begin() + sizeof(float));
+			RemoveData(*buffer, sizeof(float));
 		}
 		else if (cmd == (BYTE)ServerBattleCmd::CreateEffect) {
-			// char type , Vector2 pos ==> float[2]
-			cmdData.push_back((BYTE)(*buffer->begin()));
-			buffer->erase(buffer->begin());
-
-			//cmdData.begin() => type
-			cmdData.insert(cmdData.begin() + 1, buffer->begin(), buffer->begin() + (sizeof(float) * 2));
-			buffer->erase(buffer->begin(), buffer->begin() + (sizeof(float) * 2));
+			size_t dataSize = sizeof(Battle::EffectData);
+			cmdData.resize(dataSize);
+			memcpy(cmdData.data(), buffer->data(), dataSize);
+			buffer->erase(buffer->begin(), buffer->begin() + dataSize);
 		}
 
 		return true;

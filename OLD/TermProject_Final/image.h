@@ -97,6 +97,7 @@ public:
 class ISprite abstract {
 protected:
 	int frame = 0;
+public:
 	RECT GetRectImage(const Image& image, int frame, int spriteRow = 0) const;
 };
 

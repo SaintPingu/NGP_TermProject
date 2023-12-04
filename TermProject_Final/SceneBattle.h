@@ -56,11 +56,16 @@ private:
 		POINT pos{};
 		Vector2 dir{};
 	};
-	struct Effect {
+	class Effect {
+	public:
 		EffectType type{};
-		Vector2 pos{};
+		POINT pos{};
+		float frame{};
+
+		void Render(HDC hdc);
 	};
 
+	std::unordered_map<EffectType, EffectImage> effectImages;
 
 	ObjectImage imgMelee;
 	ObjectImage imgRange;
@@ -89,6 +94,8 @@ private:
 	void AnimatePlayers();
 
 	int v{}, h{};
+
+	void CreateEffect(const Battle::EffectData& data);
 
 public:
 	virtual void Init() override;

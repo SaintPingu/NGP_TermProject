@@ -369,16 +369,6 @@ void CommandList::PushCommand(BYTE cmd, void* data, size_t size)
 	for (int i = 0; i < size;++i) {
 		buffer.push_back(((BYTE*)data)[i]);
 	}
-
-	++cmdCnt;
-}
-
-
-BYTE CommandList::GetCmdCnt()
-{
-	BYTE retVal = cmdCnt;
-	cmdCnt = 0;
-	return retVal;
 }
 
 std::vector<BYTE> CommandList::GetCmdList()
@@ -388,7 +378,6 @@ std::vector<BYTE> CommandList::GetCmdList()
 		copyBuffer.push_back(buffer[i]);
 	}
 	buffer.clear();
-	cmdCnt = 0;
 	return copyBuffer;
 }
 

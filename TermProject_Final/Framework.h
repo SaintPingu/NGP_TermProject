@@ -67,8 +67,6 @@ public:
 	// 23-11-25 민동현 : WaitForPacket() 함수를 꺠우기 위한 함수
 	void WakeForPacket() { SetEvent(recvPacket); }
 
-	void ExitStage();
-
 private:
 	std::function<void()> UpdateFunc{};
 

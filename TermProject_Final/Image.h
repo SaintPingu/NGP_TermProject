@@ -98,7 +98,8 @@ public:
 class ISprite abstract {
 protected:
 	int frame = 0;
-	RECT GetRectImage(const Image& image, int frame, int spriteRow = 0) const;
+public:
+	static RECT GetRectImage(const Image& image, int frame, int spriteRow = 0);
 };
 
 class IAnimatable abstract : public ISprite {

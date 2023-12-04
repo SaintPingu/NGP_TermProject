@@ -20,9 +20,7 @@ void Framework::Start(HWND hWnd)
 	GetClientRect(hWnd, &rectClientWindow);
 	soundManager = std::make_shared<SoundManager>();
 
-
 	sceneManager = std::make_shared<SceneManager>();
-	soundManager = std::make_shared<SoundManager>();
 	sceneManager->Init(hWnd);
 
 	this->hWnd = hWnd;
@@ -42,7 +40,6 @@ void Framework::UpdateWithServer()
 			}
 			WriteData();
 		}
-
 		if (!SceneMgr->IsLoading()) {
 			GetInput();
 			SendPacket();
@@ -200,11 +197,4 @@ void Framework::DefaultPacketSend()
 {
 	ResetEvent(recvPacket);
 	CLIENT_NETWORK->Send();
-}
-
-void Framework::ExitStage()
-{
-	// 스테이지에서 벗어나 로비로 입장 전, Stop 커맨드를 한 번 보낸다. (동기화)
-	//CommandList* cmdList = &CLIENT_NETWORK->GetPacketGenerator().cmdList;
-	//cmdList->PushCommand((BYTE)ClientLobbyCmd::Stop, nullptr, 0);
 }

@@ -26,7 +26,7 @@ enum class clientEventType
 	registerNewID,
 	END,
 };
-
+constexpr int ALL_CLIENT = -9;
 class ClientInfo;
 class ClientMgr
 {
@@ -43,6 +43,7 @@ private:
 	PacketGenerator				packetGenerator{};
 	PacketLoader				packetLoader{};
 
+	std::vector<ClientInfo*> GetAllClients();
 public:
 	bool	Event();
 	bool	SendPacket();

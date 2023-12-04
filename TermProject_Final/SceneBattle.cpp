@@ -126,6 +126,10 @@ void SceneBattle::RenderBullets(HDC hdc)
 
 void SceneBattle::RenderEffects(HDC hdc)
 {
+	for (auto& effect : effects) {
+		const RECT rectImage = ISprite::GetRectImage(effectImages[effect.type], 0);
+		effectImages[effect.type].Render(hdc, effect.pos, &rectImage);
+	}
 }
 
 void SceneBattle::RenderEnemies(HDC hdc)
@@ -137,6 +141,8 @@ void SceneBattle::RenderEnemies(HDC hdc)
 			break;
 		case EnemyType::Range:
 			enemy.Render(hdc, rangeEnemy);
+			break;
+		case EnemyType::Boss:
 			break;
 		default:
 			assert(0);
@@ -151,6 +157,15 @@ void SceneBattle::AnimatePlayers()
 	for (auto& [id,player] : players) {
 		player->Animate(hwnd);
 	}
+}
+
+void SceneBattle::CreateEffect(const Battle::EffectData& data)
+{
+	Effect effect{};
+	effect.type = (EffectType)data.type;
+	effect.pos = data.pos;
+
+	effects.push_back(effect);
 }
 
 void SceneBattle::Init()
@@ -214,11 +229,28 @@ void SceneBattle::Init()
 		break;
 	}
 
+	// 이펙트 이미지
+	effectImages[EffectType::Explode_Fire].Load(_T("images\\battle\\explode_fire.png"), { 56, 56 }, 8);
+	effectImages[EffectType::Explode_Fire].ScaleImage(.7f, .7f);
+	effectImages[EffectType::Explode_Elec].Load(_T("images\\battle\\explode_elec.png"), { 81, 73 }, 8);
+	effectImages[EffectType::Explode_Elec].ScaleImage(.6f, .6f);
+	effectImages[EffectType::Explode_Water].Load(_T("images\\battle\\explode_water.png"), { 72, 64 }, 9);
+	effectImages[EffectType::Explode_Water].ScaleImage(.7f, .7f);
+	effectImages[EffectType::Explode_Dark].Load(_T("images\\battle\\explode_dark.png"), { 40, 40 }, 12);
+
+	effectImages[EffectType::Cloud_Fire].Load(_T("images\\battle\\sprite_cloud_fire.png"), { 56, 64 }, 11);
+	effectImages[EffectType::Cloud_Fire].ScaleImage(.8f, .8f);
+	effectImages[EffectType::Cloud_Elec].Load(_T("images\\battle\\sprite_cloud_elec.png"), { 56, 64 }, 11);
+	effectImages[EffectType::Cloud_Elec].ScaleImage(.8f, .8f);
+	effectImages[EffectType::Cloud_Water].Load(_T("images\\battle\\sprite_cloud_water.png"), { 48, 56 }, 15);
+	effectImages[EffectType::Cloud_Water].ScaleImage(.9f, .9f);
+	effectImages[EffectType::Cloud_Dark].Load(_T("images\\battle\\sprite_cloud_dark.png"), { 56, 64 }, 11);
+
+	// 적
 	Vector2 pos{};
 	meleeEnemy = std::make_shared<Melee>(imgMelee, pos);
 	rangeEnemy = std::make_shared<Range>(imgRange, pos);
-	
-	// 테스트 용 데이터 넣기
+
 	gui = std::make_shared<GUIManager>();
 	players[framework->client_ID] = std::make_shared<Player>(myPlayer.fly, myPlayer.gnd);
 	gui->SetPlayer(players[framework->client_ID]);
@@ -236,10 +268,10 @@ void SceneBattle::Render(HDC hdc)
 	if (boss) {
 		boss->Render(hdc);
 	}
-	/*boss->Render(hdc);;*/
+	//boss->Render(hdc);
 	RenderEnemies(hdc);
-	/*player->RenderSkill(hdc);
-	effects->Render(hdc);*/
+	//player->RenderSkill(hdc);
+	RenderEffects(hdc);
 	gui->Render(hdc);
 }
 
@@ -263,6 +295,7 @@ void SceneBattle::GetInput(CommandList* cmdList)
 	if (cmdList == nullptr) {
 		return;
 	}
+	cmdList->buffer.clear();
 
 	if (KEY_TAP('O')) {
 		//player->Heal();
@@ -440,18 +473,14 @@ bool SceneBattle::ProcessCommand()
 	std::shared_ptr<SceneBattle> scene;
 	
 	// 배틀은 명령이 여러개이므로 반복필요
-	BYTE cmdCnt = 1;
-	//BYTE cmdCnt = packetLoader.buffer->front();
-	//packetLoader.buffer->erase(packetLoader.buffer->begin());
-	//std::cout << "CmdCnt = [" << (int)cmdCnt << "]\n";
-	for (BYTE i = 0; i < cmdCnt; ++i) {
+	while(true) {
 		BYTE cmd{};
 		PacketBuffer cmdData;
 		packetLoader.PopCommand(cmd, cmdData, SceneType::Battle);
 		switch ((ServerBattleCmd)cmd)
 		{
 		case ServerBattleCmd::None:
-			break;
+			return true;
 		case ServerBattleCmd::Loss:
 			std::cout << "[CMD] Loss\n";
 			SceneMgr->LoadScene(SceneType::Stage);
@@ -487,12 +516,10 @@ bool SceneBattle::ProcessCommand()
 			break;
 		}
 		case ServerBattleCmd::CreateEffect: {
-			std::cout << "[CMD] CreateEffect\n";
-			Effect createEffect;
-			memcpy(&createEffect.type, &(*cmdData.begin()), sizeof(BYTE));
-			cmdData.erase(cmdData.begin());
-			memcpy(&createEffect.pos, &(*cmdData.begin()), sizeof(float) * 2);
-			effects.push_back(createEffect);
+			// std::cout << "[CMD] CreateEffect\n"; // 완
+			Battle::EffectData effectData;
+			memcpy(&effectData, cmdData.data(), sizeof(Battle::EffectData));
+			CreateEffect(effectData);
 			break;
 		}
 		default:
@@ -533,4 +560,10 @@ void SceneBattle::EnemyData::Render(HDC hdc, std::shared_ptr<Enemy> enemy)
 	enemy->SetPos(pos);
 	enemy->SetDir(dir);
 	enemy->Render(hdc);
+}
+
+
+void SceneBattle::Effect::Render(HDC hdc)
+{
+
 }

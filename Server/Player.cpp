@@ -3,6 +3,7 @@
 #include "scene.h"
 #include "Skill.h"
 #include "Bullet.h"
+#include "ServerPacket.h"
 
 Player::Player(Type type, Type subType)
 {
@@ -201,6 +202,9 @@ void Player::CheckShot()
 
 void Player::Hit(float damage, Type hitType, POINT effectPoint)
 {
+	EffectType effectType = GetEffectType_Hit(hitType);
+	PushHitEffect(effectType, effectPoint);
+
 	//if (playerData.isDeath == true)
 	//{
 	//	return;

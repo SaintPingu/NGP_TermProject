@@ -4,6 +4,7 @@
 #include "SceneMgr.h"
 #include "BattleScene.h"
 #include "ServerFramework.h"
+#include "ServerPacket.h"
 
 Enemy::Enemy(ObjectImage& image, const Vector2& pos, const EnemyData& data) : GameObject(image, pos)
 {
@@ -263,7 +264,7 @@ bool EnemyController::CheckHit(const RECT& rectSrc, float damage, Type hitType, 
 	{
 		if (enemies.at(i)->IsCollide(rectSrc) == true)
 		{
-			//effects->CreateHitEffect(effectPoint, hitType);
+			PushHitEffect(GetEffectType_Hit(hitType), effectPoint);
 			const float calDamage = CalculateDamage(damage, enemies.at(i)->GetType(), hitType);
 			if (enemies.at(i)->Hit(damage) == true)
 			{
@@ -275,6 +276,13 @@ bool EnemyController::CheckHit(const RECT& rectSrc, float damage, Type hitType, 
 
 	return false;
 }
+
+void GetRandEffectPoint(POINT& effectPoint)
+{
+	constexpr int range = 20;
+	effectPoint.x += (rand() % range) - (range / 2);
+	effectPoint.y += (rand() % range) - (range / 2);
+}
 void EnemyController::CheckHitAll(const RECT& rectSrc, float damage, Type hitType)
 {
 	for (size_t i = 0; i < enemies.size(); ++i)
@@ -282,8 +290,8 @@ void EnemyController::CheckHitAll(const RECT& rectSrc, float damage, Type hitTyp
 		if (enemies.at(i)->IsCollide(rectSrc) == true)
 		{
 			POINT effectPoint = enemies.at(i)->GetPosCenter();
-			/*GetRandEffectPoint(effectPoint);
-			effects->CreateHitEffect(effectPoint, hitType);*/
+			GetRandEffectPoint(effectPoint);
+			PushHitEffect(GetEffectType_Hit(hitType), effectPoint);
 			const float calDamage = CalculateDamage(damage, enemies.at(i)->GetType(), hitType);
 			if (enemies.at(i)->Hit(calDamage) == true)
 			{

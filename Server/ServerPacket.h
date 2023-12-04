@@ -44,3 +44,7 @@ public:
 	const std::unordered_map<int, PacketBuffer*>& GetReceivedPacketBuffers() const { return receivedPacketBuffers; }
 };
 
+
+void PushHitEffect(EffectType type, POINT pos);
+EffectType GetEffectType_Hit(Type type);
+EffectType GetEffectType_Exp(Type type);

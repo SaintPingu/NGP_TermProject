@@ -126,12 +126,12 @@ void EffectManager::CreateExplosionEffect(const POINT& pos, Type type)
 //}
 
 
-void GetRandEffectPoint(POINT& effectPoint)
-{
-	constexpr int range = 20;
-	effectPoint.x += (rand() % range) - (range / 2);
-	effectPoint.y += (rand() % range) - (range / 2);
-}
+//void GetRandEffectPoint(POINT& effectPoint)
+//{
+//	constexpr int range = 20;
+//	effectPoint.x += (rand() % range) - (range / 2);
+//	effectPoint.y += (rand() % range) - (range / 2);
+//}
 void EffectManager::CreateBossDeathEffect(const Boss& boss)
 {
 	const EffectImage* effectImage = nullptr;

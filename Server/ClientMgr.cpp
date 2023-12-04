@@ -11,6 +11,19 @@
 SINGLETON_PATTERN_DEFINITION(ClientMgr);
 constexpr int invalidID = -1;
 
+std::vector<ClientInfo*> ClientMgr::GetAllClients()
+{
+	std::vector<ClientInfo*> result{};
+	result.reserve(clientPool.size());
+	for (int i = 0; i < clientPool.size(); ++i) {
+		if (clientPool[i] != nullptr) {
+			result.push_back(clientPool[i]);
+		}
+	}
+
+	return result;
+}
+
 bool ClientMgr::Event()
 {
 	// 동기화 처리  

@@ -251,7 +251,7 @@ void GUIImage::RenderGauge(const HDC& hdc, const RECT& rectDest, float current, 
 
 
 
-RECT ISprite::GetRectImage(const Image& image, int frame, int spriteRow) const
+RECT ISprite::GetRectImage(const Image& image, int frame, int spriteRow)
 {
 	const POINT drawSize = image.GetDrawSize();
 	RECT rectImage = image.GetRectImage();

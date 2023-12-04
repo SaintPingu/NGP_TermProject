@@ -167,7 +167,6 @@ void PacketGenerator::GenerateData()
 
 bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList, DataType type)
 {
-	BYTE cmdCnt = cmdList->GetCmdCnt();
 	std::vector<BYTE> pCommandList = cmdList->GetCmdList(); //cmdList를 비운다.
 
 	buffer.clear();
@@ -211,13 +210,10 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 	}
 	else if (type == DataType::Battle) {
 
-		// 테스트용
-		if (pCommandList.empty()) {
-			pCommandList.push_back((BYTE)ServerBattleCmd::None);
-		}
+		// 명령 끝 커맨드
+		pCommandList.push_back((BYTE)ServerBattleCmd::None);
 
 		//커맨드리스트
-		//buffer.push_back(cmdCnt); // cmdCnt
 		for (int i = 0; i < pCommandList.size(); ++i) {
 			buffer.push_back(pCommandList[i]); //ServerBattleCmd
 		}
@@ -337,4 +333,54 @@ int PacketLoader::PopCommand(BYTE& cmd, std::vector<BYTE>& data)
 	}
 
 	return crntClientID;
+}
+
+
+
+
+
+
+
+void PushHitEffect(EffectType type, POINT pos)
+{
+	Battle::EffectData effectData{};
+	effectData.type = (BYTE)type;
+	effectData.pos = pos;
+
+	auto& players = SCENE_MGR->Battle()->GetPlayers();
+	for (auto& [clientID, player] : players) {
+		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::CreateEffect, &effectData, sizeof(Battle::EffectData));
+	}
+}
+
+EffectType GetEffectType_Hit(Type type)
+{
+	switch (type) {
+	case Type::Elec:
+		return EffectType::Explode_Elec;
+	case Type::Water:
+		return EffectType::Explode_Water;
+	case Type::Fire:
+		return EffectType::Explode_Fire;
+	case Type::Dark:
+		return EffectType::Explode_Dark;
+	}
+
+	return EffectType::Empty;
+}
+
+EffectType GetEffectType_Exp(Type type)
+{
+	switch (type) {
+	case Type::Elec:
+		return EffectType::Cloud_Elec;
+	case Type::Water:
+		return EffectType::Cloud_Water;
+	case Type::Fire:
+		return EffectType::Cloud_Fire;
+	case Type::Dark:
+		return EffectType::Cloud_Dark;
+	}
+
+	return EffectType::Empty;
 }
