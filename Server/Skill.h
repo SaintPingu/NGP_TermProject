@@ -12,14 +12,14 @@ private:
 	public:
 		Effect(const EffectImage& imgSkill, Type type);
 		//void Paint(const HDC& hdc, const RECT& rectBody) const;
-		bool Animate();
+		//bool Animate();
 
 		inline int GetFrame() const
 		{
 			return frame;
 		}
 	};
-	class Player* playerOwner	= nullptr; // 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
+	Player* player	= nullptr; // 스킬 매니저를 소유한 플레이어의 포인터 ( Owner )
 
 	Effect* skillEffect         = nullptr;
 	Skill	crntSkill           = Skill::Empty;
@@ -40,8 +40,7 @@ public:
 	SkillManager(Player* owner);
 
 	void UseSkill();
-	//void Paint(const HDC& hdc) const;
-	//void Animate();
+	void Update();
 
 	void ActiveSkill(Skill skill);
 

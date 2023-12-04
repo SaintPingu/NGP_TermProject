@@ -69,6 +69,7 @@ Player::Player(Type type, Type subType)
 	GameObject::Init(img_pokemon, { 250,500 });
 	mainBullets = std::make_shared<PlayerBullet>(bulletImage);
 	subBullets = std::make_shared<PlayerBullet>(subBulletImage);
+	skillManager = std::make_shared<SkillManager>(this);
 }
 Player::~Player()
 {
@@ -184,10 +185,11 @@ void Player::Shot()
 	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
 	subBullets->CreateBullet(bulletPos, bulletData, Dir::Up);
 
-	//skillManager->UseSkill();
+	skillManager->UseSkill();
 }
 void Player::CheckShot()
 {
+	skillManager->Update();
 	if (playerData.isDeath == true)
 	{
 		return;

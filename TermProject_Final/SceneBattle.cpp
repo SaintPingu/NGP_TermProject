@@ -310,23 +310,14 @@ void SceneBattle::GetInput(CommandList* cmdList)
 	}
 	cmdList->buffer.clear();
 
-	if (KEY_TAP('O')) {
-		//player->Heal();
-	}
-	if (KEY_TAP('P')) {
-		//player->FullMP();
-	}
-	if (KEY_TAP('I')) {
-		//player->InvincibleMode();
-	}
 	if (KEY_TAP('Q')) {
-		//player->ActiveSkill(Skill::Identity);
+		cmdList->PushCommand((BYTE)ClientBattleCmd::SkillQ, nullptr, 0);
 	}
 	if (KEY_TAP('W')) {
-		//player->ActiveSkill(Skill::Sector);
+		cmdList->PushCommand((BYTE)ClientBattleCmd::SkillW, nullptr, 0);
 	}
 	if (KEY_TAP('E')) {
-		//player->ActiveSkill(Skill::Circle);
+		cmdList->PushCommand((BYTE)ClientBattleCmd::SkillE, nullptr, 0);
 	}
 
 	if (KEY_TAP(VK_UP)) {

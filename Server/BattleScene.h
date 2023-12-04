@@ -21,6 +21,7 @@ private:
 	/// ----------------------------------+	
 	std::shared_ptr<EnemyController>	enemies{};
 	std::shared_ptr<Boss>				boss{};
+	std::shared_ptr<SkillManager>		skillManager{};
 
 	float updateMPDelay = 0.f;
 	bool firstUpdate{};

@@ -1,6 +1,7 @@
 #pragma once
 #include "DataBase.h"
 #include "object.h"
+#include "Skill.h"
 
 struct BulletData;
 class PlayerBullet;
@@ -38,7 +39,7 @@ private:
 	Vector2 vectorMove         = { 0, };
 	float alpha                = 0;
 
-	SkillManager* skillManager = nullptr;
+	std::shared_ptr<SkillManager> skillManager{};
 	int skillCount             = 0;
 	int deathFrame             = 40;
 

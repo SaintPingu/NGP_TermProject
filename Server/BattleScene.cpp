@@ -30,6 +30,7 @@ void BattleScene::BattleEnd()
 	// 메모리 해제
 	enemies = nullptr;
 	boss = nullptr;
+	skillManager = nullptr;
 	players.clear();
 }
 
@@ -37,6 +38,7 @@ void BattleScene::Init()
 {
 	enemies = std::make_shared<EnemyController>();
 	boss = std::make_shared<Boss>();
+	skillManager = std::make_shared<SkillManager>();
 	firstUpdate = true;
 }
 
@@ -227,6 +229,7 @@ void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skil
 		{
 			float MP = player->GetMP();
 			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+			player->ActiveSkill(Skill::Sector);
 		}
 	}
 		break;
@@ -237,6 +240,7 @@ void BattleScene::ActiveSkill(int ID, std::shared_ptr<Player> player, Skill skil
 		{
 			float MP = player->GetMP();
 			CLIENT_MGR->PushCommand(ID, (BYTE)ServerBattleCmd::UpdateMP, (PVOID)&MP, sizeof(float));
+			player->ActiveSkill(Skill::Circle);
 		}
 	}
 		break;

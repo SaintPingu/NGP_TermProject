@@ -79,7 +79,7 @@ SkillManager::Effect::Effect(const EffectImage& imgSkill, Type type)
 
 SkillManager::SkillManager(Player* owner)
 {
-	playerOwner = owner;
+	player = owner;
 	const Type type = owner->GetType();
 	switch (type)
 	{
@@ -110,17 +110,17 @@ SkillManager::SkillManager(Player* owner)
 RECT SkillManager::GetRectBody() const
 {
 	RECT rectBody = { 0, };
-	switch (playerOwner->GetType())
+	switch (player->GetType())
 	{
 	case Type::Elec:
-		rectBody = playerOwner->GetRectBody();
+		rectBody = player->GetRectBody();
 		rectBody.left -= 20;
 		rectBody.right += 20;
 		rectBody.bottom = rectBody.top;
 		rectBody.top = rectBody.bottom - WINDOWSIZE_Y;
 		break;
 	case Type::Fire:
-		rectBody = playerOwner->GetRectBody();
+		rectBody = player->GetRectBody();
 		rectBody.left -= 40;
 		rectBody.right += 30;
 		rectBody.bottom = rectBody.top + 10;
@@ -171,61 +171,51 @@ void SkillManager::UseSkill()
 	}
 }
 
-//void SkillManager::Paint(const HDC& hdc) const
-//{
-//	if (isIdentity == false)
-//	{
-//		return;
-//	}
-//
-//	const RECT rectBody = SkillManager::GetRectBody();
-//	skillEffect->Paint(hdc, rectBody);
-//}
+void SkillManager::Update()
+{
+	if (isIdentity == false)
+	{
+		return;
+	}
+	//else if (skillEffect->Animate() == false)
+	//{
+	//	isIdentity = false;
+	//	return;
+	//}
 
-//void SkillManager::Animate()
-//{
-//	if (isIdentity == false)
-//	{
-//		return;
-//	}
-//	else if (skillEffect->Animate() == false)
-//	{
-//		isIdentity = false;
-//		soundManager->StopSkillSound();
-//		return;
-//	}
-//
-//	RECT rectBody = GetRectBody();
-//	rectBody.top += 20;
-//	const Type playerType = player->GetType();
-//	if (playerType == Type::Fire)
-//	{
-//		if (skillEffect->GetFrame() < 17)
-//		{
-//			rectBody.left += (rectBody.right - rectBody.left) / 2;
-//			rectBody.top += 100;
-//		}
-//		else if (skillEffect->GetFrame() > 27)
-//		{
-//			rectBody.right -= (rectBody.right - rectBody.left) / 2;
-//		}
-//	}
-//
-//	const float damage = player->GetDamage_Q();
-//	for (int i = 0; i < 5; ++i)
-//	{
-//		if (boss->CheckHit(rectBody, damage, playerType) == false)
-//		{
-//			break;
-//		}
-//	}
-//	enemies->CheckHitAll(rectBody, damage, playerType);
-//	if (playerType == Type::Fire ||
-//		playerType == Type::Elec)
-//	{
-//		enemies->DestroyCollideBullet(rectBody);
-//	}
-//}
+	RECT rectBody = GetRectBody();
+	rectBody.top += 20;
+	const Type playerType = player->GetType();
+	if (playerType == Type::Fire)
+	{
+		if (skillEffect->GetFrame() < 17)
+		{
+			rectBody.left += (rectBody.right - rectBody.left) / 2;
+			rectBody.top += 100;
+		}
+		else if (skillEffect->GetFrame() > 27)
+		{
+			rectBody.right -= (rectBody.right - rectBody.left) / 2;
+		}
+	}
+
+	const float damage = player->GetDamage_Q();
+	//for (int i = 0; i < 5; ++i)
+	//{
+	//	if (boss->CheckHit(rectBody, damage, playerType) == false)
+	//	{
+	//		break;
+	//	}
+	//}
+
+	auto& enemies = SCENE_MGR->Battle()->GetEnemyController();
+	enemies->CheckHitAll(rectBody, damage, playerType);
+	if (playerType == Type::Fire ||
+		playerType == Type::Elec)
+	{
+		enemies->DestroyCollideBullet(rectBody);
+	}
+}
 
 void SkillManager::ActiveSkill(Skill skill)
 {
@@ -241,7 +231,7 @@ void SkillManager::ActiveSkill(Skill skill)
 	switch (skill)
 	{
 	case Skill::Sector:
-		if (playerOwner->ReduceMP(15) == false)
+		if (player->ReduceMP(15) == false)
 		{
 			return;
 		}
@@ -249,7 +239,7 @@ void SkillManager::ActiveSkill(Skill skill)
 		crntSkill = skill;
 		break;
 	case Skill::Circle:
-		if (playerOwner->ReduceMP(10) == false)
+		if (player->ReduceMP(10) == false)
 		{
 			return;
 		}
@@ -257,28 +247,9 @@ void SkillManager::ActiveSkill(Skill skill)
 		crntSkill = skill;
 		break;
 	case Skill::Identity:
-		if (playerOwner->ReduceMP(30) == false)
+		if (player->ReduceMP(30) == false)
 		{
 			return;
-		}
-
-		switch (playerOwner->GetType())
-		{
-		case Type::Elec:
-			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(10);
-			//soundManager->PlaySkillSound(SkillSound::Elec);
-			break;
-		case Type::Fire:
-			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(15);
-			//soundManager->PlaySkillSound(SkillSound::Fire);
-			break;
-		case Type::Water:
-			//SCENE_MGR->Battle()->GetBattle()->ShakeMap(20);
-			//soundManager->PlaySkillSound(SkillSound::Water);
-			break;
-		default:
-			assert(0);
-			break;
 		}
 
 		isIdentity = true;
@@ -294,11 +265,11 @@ void SkillManager::ShotBySector()
 	constexpr int bulletCount = 12;
 
 	BulletData bulletData;
-	bulletData.bulletType = playerOwner->GetSubType();
-	bulletData.damage = playerOwner->GetDamage_WE();
+	bulletData.bulletType = player->GetSubType();
+	bulletData.damage = player->GetDamage_WE();
 	bulletData.speed = 10;
 
-	const RECT rectBody = playerOwner->GetRectBody();
+	const RECT rectBody = player->GetRectBody();
 	POINT bulletPos = { 0, };
 	bulletPos.y = rectBody.top;
 	bulletPos.x = rectBody.left + ((rectBody.right - rectBody.left) / 2);
@@ -310,22 +281,20 @@ void SkillManager::ShotBySector()
 
 	for (int i = 0; i < bulletCount + 1; ++i)
 	{
-		//playerOwner->CreateSubBullet(bulletPos, bulletData, unitVector, true, true);
+		player->GetSubBullets()->CreateBullet(bulletPos, bulletData, unitVector, true, true);
 		unitVector = Rotate(unitVector, rotationDegree);
 	}
-
-	//soundManager->PlayEffectSound(EffectSound::Shot_nLoop);
 }
 void SkillManager::ShotByCircle()
 {
 	constexpr int bulletCount = 18;
 
 	BulletData bulletData;
-	bulletData.bulletType = playerOwner->GetSubType();
-	bulletData.damage = playerOwner->GetDamage_WE();
+	bulletData.bulletType = player->GetSubType();
+	bulletData.damage = player->GetDamage_WE();
 	bulletData.speed = 10;
 
-	const POINT bulletPos = playerOwner->GetPosCenter();
+	const POINT bulletPos = player->GetPosCenter();
 
 	Vector2 unitVector = Vector2::Up();
 	constexpr int degree = 6;
@@ -333,11 +302,9 @@ void SkillManager::ShotByCircle()
 
 	for (int i = 0; i < bulletCount; ++i)
 	{
-		//playerOwner->CreateSubBullet(bulletPos, bulletData, unitVector, true, true);
+		player->GetSubBullets()->CreateBullet(bulletPos, bulletData, unitVector, true, true);
 		unitVector = Rotate(unitVector, 360 / bulletCount);
 	}
-
-//	soundManager->PlayEffectSound(EffectSound::Shot_nLoop);
 }
 
 
