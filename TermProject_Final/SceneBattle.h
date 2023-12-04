@@ -40,7 +40,7 @@ class SceneBattle : public Scene {
 private:
 	// 12-03 최정일 Enemy 클래스 생성으로 주석 처리 
 	struct EnemyData {
-		Enemytype type{};
+		EnemyType type{};
 		Vector2 pos{};
 		Dir dir{};
 		bool isAction;

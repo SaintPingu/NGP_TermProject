@@ -19,6 +19,8 @@ protected:
 	{
 		return (data.crntAttackDelay <= 0);
 	}
+
+	bool isAction{};
 public:
 	Enemy(ObjectImage& image, const Vector2& pos, const EnemyData& data);
 	virtual void Move() override;
@@ -31,7 +33,13 @@ public:
 		return data.type;
 	}
 
+	virtual EnemyType GetEnemyType() const abstract;
+
 	Dir GetDir() const;
+	bool IsAction() const
+	{
+		return isAction;
+	}
 };
 
 class Melee : public Enemy {
@@ -40,9 +48,13 @@ private:
 	bool CheckCollidePlayer(int clientID);
 public:
 	Melee(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
-	//void Paint(const HDC& hdc) override;
 	void Move() override;
 	void CheckAttackDelay() override;
+
+	virtual EnemyType GetEnemyType() const override
+	{
+		return EnemyType::Melee;
+	}
 };
 
 class Range : public Enemy {
@@ -53,9 +65,13 @@ private:
 	void Fire();
 public:
 	Range(ObjectImage& image, const Vector2& pos, const EnemyData& data) : Enemy(image, pos, data) {};
-	//void Paint(const HDC& hdc) override;
 	void Move() override;
 	void CheckAttackDelay() override;
+
+	virtual EnemyType GetEnemyType() const override
+	{
+		return EnemyType::Range;
+	}
 };
 
 

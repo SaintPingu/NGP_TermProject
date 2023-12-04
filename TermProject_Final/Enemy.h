@@ -30,7 +30,7 @@ protected:
 	//Vector2 posDest = { 0, };
 	//Vector2 unitVector = { 0, };
 
-	/*Enemytype type{};
+	/*EnemyType type{};
 	Vector2 pos{};
 	Dir dir{};
 	bool isAction;*/
@@ -61,11 +61,11 @@ public:
 	{
 		return data.type;
 	}
-	/*inline Enemytype GetEnemytype() const
+	/*inline EnemyType GetEnemyType() const
 	{
 		return type;
 	}
-	void SetType(Enemytype val) {
+	void SetType(EnemyType val) {
 		type = val;
 	}
 	void SetPos(Vector2 val) {

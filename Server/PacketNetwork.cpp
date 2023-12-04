@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PacketNetwork.h"
 
-constexpr uint8 terminateCode = UINT8_MAX;
+constexpr uint32 terminateCode = UINT8_MAX;
 TResult PacketNetwork::Init()
 {
     return TResult();
@@ -31,8 +31,8 @@ TResult PacketNetwork::RecvPacket()
 {
     //std::cout << "Packet 수신 대기 : 포트 번호 [" << ntohs(TCP_SockAddr.sin_port) << "]\n";
     int retval{};
-    uint8 dataLen;
-    retval = recv(TCP_Socket, (char*)&dataLen, sizeof(uint8), MSG_WAITALL);
+    uint32 dataLen;
+    retval = recv(TCP_Socket, (char*)&dataLen, size_uint32, MSG_WAITALL);
     if (retval == SOCKET_ERROR) {
         return TResult::FAIL;
     }
@@ -59,7 +59,7 @@ TResult PacketNetwork::RecvPacket()
 TResult PacketNetwork::SendTerminatePacket()
 {
     PacketBuf.clear();
-    PacketBuf.insert(PacketBuf.begin(), &terminateCode, &terminateCode + sizeof(uint8));
+    PacketBuf.insert(PacketBuf.begin(), &terminateCode, &terminateCode + size_uint32);
     return SendPacket();
 }
 

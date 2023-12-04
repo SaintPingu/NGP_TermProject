@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PacketNetwork.h"
 
-constexpr uint8 terminateCode = UINT8_MAX;
+constexpr uint32 terminateCode = UINT8_MAX;
 TResult PacketNetwork::Init()
 {
     return TResult();
@@ -27,11 +27,13 @@ TResult PacketNetwork::RecvPacket()
 {
     //std::cout << "Packet 수신 대기\n";
     int retval{};
-    uint8 dataLen;
-    retval = recv(TCP_Socket, (char*)&dataLen, sizeof(uint8), MSG_WAITALL);
+    uint32 dataLen;
+    retval = recv(TCP_Socket, (char*)&dataLen, size_uint32, MSG_WAITALL);
     if (retval == SOCKET_ERROR) {
         return TResult::FAIL;
     }
+
+    //std::cout << "Packet 헤더 수신 완료 : 데이터 길이[" << dataLen << "]\n";
 
     if (dataLen == terminateCode) {
         return TResult::CLIENT_DISCONNECT;
@@ -55,7 +57,7 @@ TResult PacketNetwork::RecvPacket()
 TResult PacketNetwork::SendTerminatePacket()
 {
     PacketBuf.clear();
-    PacketBuf.insert(PacketBuf.begin(), &terminateCode, &terminateCode + sizeof(uint8));
+    PacketBuf.insert(PacketBuf.begin(), &terminateCode, &terminateCode + size_uint32);
     return SendPacket();
 }
 

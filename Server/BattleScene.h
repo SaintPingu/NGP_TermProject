@@ -18,9 +18,9 @@ private:
 	/// +----------------------------------
 	///				  ENEMY  
 	/// ----------------------------------+	
-	PlayerBullet*		playerbullet;
-	EnemyController*	enemies;
-	Boss*				boss;
+	std::shared_ptr<PlayerBullet>		playerbullet{};
+	std::shared_ptr<EnemyController>	enemies{};
+	std::shared_ptr<Boss>				boss{};
 
 public:
 	virtual void Init() override;
@@ -28,9 +28,9 @@ public:
 	virtual void ProcessCommand(int clientID, Command command, void* data) override;
 
 	const std::unordered_map<int, std::shared_ptr<Player>>& GetPlayers() const { return players; }
-	Boss* GetBoss() { return boss; }
-	const EnemyController* GetEnemyController() { return enemies; }
-	const PlayerBullet* GetPlayerController() { return playerbullet; }
+	std::shared_ptr<Boss> GetBoss() { return boss; }
+	const std::shared_ptr<EnemyController> GetEnemyController() { return enemies; }
+	const std::shared_ptr<PlayerBullet> GetPlayerController() { return playerbullet; }
 
 	void AddClient(int clientID);
 	void RemoveClient(int clientID) {};

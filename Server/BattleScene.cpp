@@ -4,17 +4,21 @@
 
 #include "ClientInfo.h"
 #include "ClientMgr.h"
+#include "ServerFramework.h"
+#include "SceneMgr.h"
 #include "Bullet.h"
 
 bool isBattleStarted{};
 void BattleStart()
 {
 	isBattleStarted = true;
+	SCENE_MGR->GetGameData().isBattleStart = true;
+	SCENE_MGR->Battle()->Init();
 }
 
 void BattleScene::Init()
 {
-
+	enemies = std::make_shared<EnemyController>();
 }
 
 void BattleScene::Update()
@@ -28,23 +32,26 @@ void BattleScene::Update()
 		player->CheckShot();
 	}
 
-	return;
 	enemies->CreateCheckMelee();
 	enemies->CreateCheckRange();
 	enemies->CheckAttackDelay();
-
-	for (auto& [clientID, player] : players) {
-		boss->CheckActDelay(player.get());
-
-	}
-	boss->CheckAttackDelay();
+	enemies->Move();
+	return;
+	enemies->MoveBullets();
 
 	for (auto& [clientID, player] : players) {
 		player->MoveBullets();
 	}
-	enemies->MoveBullets();
-	enemies->Move();
-	boss->Move();
+
+
+	if (boss) {
+		for (auto& [clientID, player] : players) {
+			boss->CheckActDelay(player.get());
+		}
+		boss->CheckAttackDelay();
+		boss->Move();
+	}
+
 
 	// player->Animate(hWnd);
 	// enemies->Animate();
@@ -114,6 +121,12 @@ void BattleScene::ProcessCommand(int clientID, Command command, void* data)
 void BattleScene::AddClient(int clientID)
 {
 	 players[clientID] = std::make_shared<Player>(); 
+	 if (players.size() == 1) {
+		 players[clientID]->SetPos({ 175, 500 });
+	 }
+	 else {
+		 players[clientID]->SetPos({ 325, 500 });
+	 }
 
 }
 

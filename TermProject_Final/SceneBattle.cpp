@@ -130,11 +130,11 @@ void SceneBattle::RenderEffects(HDC hdc)
 void SceneBattle::RenderEnemies(HDC hdc)
 {
 	for (auto& enemy : enemies) {
-		if (enemy.type == Enemytype::Melee) {
+		if (enemy.type == EnemyType::Melee) {
 			meleeEnemy->SetPos(enemy.pos);
 			meleeEnemy->Render(hdc);
 		}
-		else if (enemy.type == Enemytype::Range) {
+		else if (enemy.type == EnemyType::Range) {
 			rangeEnemy->SetPos(enemy.pos);
 			rangeEnemy->Render(hdc);
 		}
@@ -221,15 +221,15 @@ void SceneBattle::Init()
 	data.dir = Dir::Down;
 	data.isAction = true;
 	data.pos = Vector2(100.0f, 100.0f);
-	data.type = Enemytype::Melee;
+	data.type = EnemyType::Melee;
 	for (int i = 0; i < 10;++i) {
 		for (int j = 0;j < 10;++j) {
 			data.pos = Vector2(100.0f + i * 30, 100.0f + j * 20);
 			if (rand() % 2) {
-				data.type = Enemytype::Range;
+				data.type = EnemyType::Range;
 			}
 			else {
-				data.type = Enemytype::Melee;
+				data.type = EnemyType::Melee;
 
 			}
 			enemies.push_back(data);
@@ -375,36 +375,32 @@ void SceneBattle::WriteData(void* data)
 		players[clientID]->SetPos(pos);
 	}
 
-	return;
 	// EnemyBattleData - Cnt
 	memcpy(&battleData.EnemyData.EnemyCnt, buffer->data(), sizeof(BYTE));
 	RemoveData(*buffer, sizeof(BYTE));
+	std::cout << "EnemyCnt :: " << battleData.EnemyData.EnemyCnt << std::endl;
 
 	// EnemyBattleData - Data
-	battleData.EnemyData.Enemys = new Battle::EnemyBattleData::Data[battleData.EnemyData.EnemyCnt];
+	battleData.EnemyData.Enemies = new Battle::EnemyBattleData::Data[battleData.EnemyData.EnemyCnt];
 	enemies.clear();
 	enemies.resize(battleData.EnemyData.EnemyCnt);
 
 	for (int i = 0; i < battleData.EnemyData.EnemyCnt; ++i) {
-		memcpy(&battleData.EnemyData.Enemys[i], buffer->data(), sizeof(Battle::EnemyBattleData::Data));
+		memcpy(&battleData.EnemyData.Enemies[i], buffer->data(), sizeof(Battle::EnemyBattleData::Data));
 		RemoveData(*buffer, sizeof(Battle::EnemyBattleData::Data));
 
-		Battle::EnemyBattleData::Data* enemyData = &battleData.EnemyData.Enemys[i];
+		Battle::EnemyBattleData::Data* enemyData = &battleData.EnemyData.Enemies[i];
 		std::bitset<8> byte(enemyData->TypeDirActPad);
 		std::bitset<2> type(byte.to_string().substr(0, 2));
 		std::bitset<3> dir(byte.to_string().substr(2, 3));
 		std::bitset<1> action(byte.to_string().substr(5, 1));
 
-		enemies[i].type = (static_cast<Enemytype>(type.to_ulong()));
+		enemies[i].type = (static_cast<EnemyType>(type.to_ulong()));
 		enemies[i].dir = (static_cast<Dir>(dir.to_ulong()));
 		enemies[i].isAction = (static_cast<bool>(action.to_ulong()));
 		enemies[i].pos = (enemyData->Pos);
-
-		/*enemies[i].SetType(static_cast<Enemytype>(type.to_ulong()));
-		enemies[i].SetDir(static_cast<Dir>(dir.to_ulong()));
-		enemies[i].SetIsAction(static_cast<bool>(action.to_ulong()));
-		enemies[i].SetPos(enemyData->Pos);*/
 	}
+	return;
 
 	// BulletsBattleData - Cnt
 	memcpy(&battleData.BulletData.BulletCnt, buffer->data(), sizeof(BYTE));

@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "SceneMgr.h"
+#include "BattleScene.h"
 #include "ServerFramework.h"
 
 
@@ -202,6 +203,7 @@ void EnemyController::CreateCheckMelee()
 	{
 		return;
 	}
+	std::cout << "적 유닛 생성\n";
 	delay_Melee = 0;
 
 	for (int i = 0; i < createAmount_Melee; ++i)
@@ -209,8 +211,8 @@ void EnemyController::CreateCheckMelee()
 		float xPos = rand() % WINDOWSIZE_X;
 		float yPos = -(rand() % 100);
 
-		//Melee* enemy = new Melee(imgMelee, { xPos, yPos }, meleeData);
-		//enemies.emplace_back(enemy);
+		Melee* enemy = new Melee(imgMelee, { xPos, yPos }, meleeData);
+		enemies.emplace_back(enemy);
 	}
 }
 void EnemyController::CreateCheckRange()
@@ -313,25 +315,20 @@ void Melee::SetPosDest()
 		return;
 	}
 
-	Player* player = nullptr; //player 배틀씬의 플레이어 연결해야함.
+	auto& players = SCENE_MGR->Battle()->GetPlayers();
+	std::shared_ptr<Player> player{};
+	float distance{};
+	for (auto& [clientID, p] : players) {
+		player = p;
+	}
+
 	if (!player) {
 		return;
 	}
+
 	const Vector2 posCenter = GetPosCenter();
 
-	Vector2 distanceToplayer1 = posCenter - player[0].GetPosCenter();
-	Vector2 distanceToplayer2 = posCenter - player[1].GetPosCenter();
-
-	Vector2* nearVector;
-	if (distanceToplayer1.x * distanceToplayer1.x + distanceToplayer1.y * distanceToplayer1.y 
-		< distanceToplayer2.x * distanceToplayer2.x + distanceToplayer2.y * distanceToplayer2.y) {
-		nearVector  = &distanceToplayer1;
-	}
-	else {
-		nearVector = &distanceToplayer2;
-	}
-
-	const Vector2 vectorToPlayer = *nearVector;
+	const Vector2 vectorToPlayer = posCenter - player->GetPosCenter();
 
 	const float radius = GetRadius(vectorToPlayer.x, vectorToPlayer.y);
 
@@ -421,6 +418,7 @@ void Range::SetPosDest()
 
 void Range::Fire()
 {
+	isAction = true;
 	//SetAction(Action::Attack, data.frameNum_Atk);
 
 	EnemyController* enemies = nullptr; // EnemyController 연결해줘야함.

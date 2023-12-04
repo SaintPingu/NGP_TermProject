@@ -47,10 +47,12 @@ void PacketGenerator::GenerateData()
 		lobbyData.PlayersData = playerlobbydata;
 	}
 
+	if(SCENE_MGR->GetGameData().isBattleStart)
 	{// 배틀 생성 
 		auto& battle = SCENE_MGR->Battle();
 		auto& players = battle->GetPlayers();
 		
+		// PlayerBattleData //
 		Battle::PlayerBattleData playerbattledata[2];
 		int plCount{};
 		for (auto& [playerID, player] : players) {
@@ -61,20 +63,23 @@ void PacketGenerator::GenerateData()
 		battleData.PlayerBattleData[0] = playerbattledata[0];
 		battleData.PlayerBattleData[1] = playerbattledata[1];
 
-		return;
+		// EnemyBattleData //
 		Battle::EnemyBattleData enemybattledata{};
 		auto enemies = battle->GetEnemyController()->GetEnemies();
 		enemybattledata.EnemyCnt = enemies.size();
-		enemybattledata.Enemys = new Battle::EnemyBattleData::Data[enemybattledata.EnemyCnt];
+		enemybattledata.Enemies = new Battle::EnemyBattleData::Data[enemybattledata.EnemyCnt];
 		for (int i = 0; i < enemybattledata.EnemyCnt; ++i) {
-			std::bitset<2> type((BYTE)enemies[i]->GetType());
+			std::bitset<2> type((BYTE)enemies[i]->GetEnemyType());
 			std::bitset<3> dir((BYTE)enemies[i]->GetDir());
-			std::bitset<1> action(0); //action?
+			std::bitset<1> action((BYTE)enemies[i]->IsAction()); //action?
 			std::bitset<8> byte(type.to_string() + dir.to_string() + action.to_string());
 
-			enemybattledata.Enemys[i].TypeDirActPad = static_cast<BYTE>(byte.to_ulong());
-			enemybattledata.Enemys[i].Pos = enemies[i]->GetPosCenter();
+			enemybattledata.Enemies[i].TypeDirActPad = static_cast<BYTE>(byte.to_ulong());
+			enemybattledata.Enemies[i].Pos = enemies[i]->GetPosCenter();
 		}
+		battleData.EnemyData.EnemyCnt = enemybattledata.EnemyCnt;
+		battleData.EnemyData.Enemies = enemybattledata.Enemies;
+		return;
 
 		Battle::BulletsBattleData bulletbattledata;
 		auto& enemybullets = battle->GetEnemyController()->GetEnemyBullets()->GetBullets();
@@ -101,12 +106,22 @@ void PacketGenerator::GenerateData()
 		Battle::BossSkillBattleData bossskillbattledata{};
 		//bossskillbattledata.EffectCnt = // 이펙트 어떤 데이터인지 잘 모르겠음..
 
-		battleData.EnemyData.EnemyCnt = enemybattledata.EnemyCnt;
-		battleData.EnemyData.Enemys = enemybattledata.Enemys;
 		battleData.BulletData.BulletCnt = bulletbattledata.BulletCnt;
 		battleData.BulletData.BulletsData = bulletbattledata.BulletsData;
 		battleData.BossEffectData.EffectCnt = bossskillbattledata.EffectCnt;
 		battleData.BossEffectData.Effects = bossskillbattledata.Effects;
+	}
+}
+
+void PushDataLen(PacketBuffer& buffer)
+{
+	buffer.resize(buffer.size() + size_uint32);
+	memcpy(buffer.data() + size_uint32, buffer.data(), buffer.size() - size_uint32);
+
+	uint32 bufferSize = buffer.size() - size_uint32;
+	for (int i = 0; i < size_uint32; ++i) {
+		BYTE byte = (bufferSize >> (8 * i)) & 0xFF;
+		buffer[i] = byte;
 	}
 }
 
@@ -125,10 +140,9 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		}
 
 		// 데이터 길이 = 커맨드리스트 길이 + 플레이어 개수 + (플레이어 개수 * 플레이어 데이터)
-		uint8 len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
+		uint32 len = pCommandList.size() + sizeof(BYTE) + (lobbyData.PlayerCnt * sizeof(Lobby::PlayerLobbyData));
 
 		// Datalen
-		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8));
 
 		// ServerLobbyCmd
 		for (int i = 0;i < pCommandList.size();++i) {
@@ -149,17 +163,18 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 				buffer.push_back(bytes[j]);
 			}
 		}
+		PushDataLen(buffer);
 	}
 	else if (type == DataType::Stage) {
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerStageCmd::None);
 		}
-		uint8 len = pCommandList.size();
-		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
+		uint32 len = pCommandList.size();
 
 		for (int i = 0; i < pCommandList.size(); ++i) {
 			buffer.push_back(pCommandList[i]); //ServerStageCmd
 		}
+		PushDataLen(buffer);
 
 	}
 	else if (type == DataType::Battle) {
@@ -167,7 +182,7 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		// 데이터 길이 = 커맨드리스트 크기 + PlayerBattleData[2] + Enemy개수 + (Battle::EnemyData * Enemy개수)
 		// + Bullet개수 + (Battle::BulletBattleData * Bullet개수) + Effect개수 + (Effect * Effect개수)
 		
-		//uint8 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
+		//uint32 len = pCommandList.size() + sizeof(battleData.PlayerBattleData[0]) +
 		//	sizeof(battleData.PlayerBattleData[1]) +
 		//	sizeof(battleData.EnemyData.EnemyCnt) +
 		//	(sizeof(Battle::EnemyBattleData::Data) * battleData.EnemyData.EnemyCnt) +
@@ -180,12 +195,10 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 		if (pCommandList.empty()) {
 			pCommandList.push_back((BYTE)ServerBattleCmd::None);
 		}
-		uint8 len = pCommandList.size()
-			//sizeof(BYTE)
-			+ (sizeof(Battle::PlayerBattleData) * 2);
-
-		//데이터 길이
-		buffer.insert(buffer.begin(), &len, &len + sizeof(uint8)); // Datalen
+		//uint32 len = pCommandList.size()
+		//	+ (sizeof(Battle::PlayerBattleData) * 2);
+		//	+ (sizeof(Battle::EnemyBattleData::EnemyCnt))
+		//	+ (battleData.EnemyData.EnemyCnt * sizeof(Battle::EnemyBattleData::Data));
 
 		//커맨드리스트
 		//buffer.push_back(cmdCnt); // cmdCnt
@@ -201,19 +214,21 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 			}
 		}
 
-		return true;
+
 		{//Enemy개수 + (Battle::EnemyData * Enemy개수)
 			buffer.push_back(battleData.EnemyData.EnemyCnt); //Enemy개수
 			BYTE bytes[sizeof(Battle::EnemyBattleData::Data)];
 			for (int i = 0; i < int(battleData.EnemyData.EnemyCnt); ++i) {
 
-				memcpy(bytes, &battleData.EnemyData.Enemys[i], sizeof(Battle::EnemyBattleData::Data));
+				memcpy(bytes, &battleData.EnemyData.Enemies[i], sizeof(Battle::EnemyBattleData::Data));
 
 				for (int j = 0; j < sizeof(Battle::EnemyBattleData::Data); ++j) {
-					buffer.push_back(bytes[i]);
+					buffer.push_back(bytes[j]);
 				}
 			}
 		}
+		PushDataLen(buffer);
+		return true;
 
 		{//Bullet개수 + (Battle::BulletBattleData * Bullet개수)
 			buffer.push_back(battleData.BulletData.BulletCnt); //Bullet개수
