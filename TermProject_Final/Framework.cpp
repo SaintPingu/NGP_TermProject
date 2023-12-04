@@ -20,9 +20,7 @@ void Framework::Start(HWND hWnd)
 	GetClientRect(hWnd, &rectClientWindow);
 	soundManager = std::make_shared<SoundManager>();
 
-
 	sceneManager = std::make_shared<SceneManager>();
-	soundManager = std::make_shared<SoundManager>();
 	sceneManager->Init(hWnd);
 
 	this->hWnd = hWnd;
