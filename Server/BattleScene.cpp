@@ -21,6 +21,10 @@ void BattleStart(const std::shared_ptr<StagePlayer>& p1, const std::shared_ptr<S
 	battle->AddPlayer(p1);
 	battle->AddPlayer(p2);
 }
+bool IsBattleStart()
+{
+	return isBattleStarted;
+}
 
 void BattleScene::BattleEnd()
 {
@@ -53,8 +57,7 @@ void BattleScene::Init()
 
 void BattleScene::Update()
 {
-	//constexpr int fieldTime = 36;
-	constexpr int fieldTime = 1;
+	constexpr int fieldTime = 36;
 
 	if (!isBattleStarted) {
 		return;

@@ -3,7 +3,7 @@
 
 // 2023-11-08-WED (장재문) : 최정일님 코드 일부 수정 - 사유 : 코드 재정의 오류 ( Common.h 에 이미 Type 정의 되어있음 ) - 주석 해결 + Init 함수들 cpp 에서 h 로 옮김 + stdafx.h 를 cpp 로 옮김  
 //enum class Type { Empty = 0, Fire, Elec, Water, Dark }; 
-enum class BossAct { Line = 0, Circle, Spiral, Sector, Spread, Skill1, Skill2, Idle };
+enum class BossAct { Line = 0, Circle, Spiral, Sector, Spread, Idle };
 enum class Difficulty { Easy = 0, Normal, Hard };
 
 #define BOSS_BULLET_LIST 5

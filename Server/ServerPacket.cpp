@@ -222,7 +222,7 @@ bool PacketGenerator::GeneratePacket(PacketBuffer& buffer, CommandList* cmdList,
 	else if (type == DataType::Battle) {
 
 		// 명령 끝 커맨드
-		pCommandList.push_back((BYTE)ServerBattleCmd::None);
+		pCommandList.push_back((BYTE)ServerBattleCmd::End);
 
 		//커맨드리스트
 		for (int i = 0; i < pCommandList.size(); ++i) {

@@ -495,7 +495,7 @@ bool SceneBattle::ProcessCommand()
 		packetLoader.PopCommand(cmd, cmdData, SceneType::Battle);
 		switch ((ServerBattleCmd)cmd)
 		{
-		case ServerBattleCmd::None:
+		case ServerBattleCmd::End:
 			return true;
 		case ServerBattleCmd::Loss:
 			SceneMgr->LoadScene(SceneType::Stage);

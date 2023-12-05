@@ -89,6 +89,9 @@ void StageScene::ProcessCommand(int clientID, Command command, void* data)
 	/// ----------------------------------+	
 	case ClientStageCmd::EnterStage:
 	{
+		if (IsBattleStart()) {
+			break;
+		}
 		PacketBuffer* buffer = static_cast<PacketBuffer*>(data);
 		Stage::ClientStageData clientStageData = (Stage::ClientStageData)buffer->front();
 		buffer->clear();

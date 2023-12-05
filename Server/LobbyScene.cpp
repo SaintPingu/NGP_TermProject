@@ -11,7 +11,7 @@
 
 void LobbyPlayer::Move()
 {
-	constexpr float speed = 400.f;
+	constexpr float speed = 200.f;
 
 	if (!isMoving) {
 		return;

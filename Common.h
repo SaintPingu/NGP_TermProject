@@ -469,7 +469,7 @@ enum class ServerStageCmd : BYTE
 /// ------------------+	
 enum class ServerBattleCmd : BYTE
 {
-	None,
+	End,
 	Loss,
 	Win,
 	AcceptSkillQ,
