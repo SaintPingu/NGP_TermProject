@@ -43,8 +43,8 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 		switch (playerData.type)
 		{
 		case Type::Elec:
-			playerData.maxhp = 40;
-			playerData.maxmp = 80;
+			playerData.maxhp = 50;
+			playerData.maxmp = 50;
 			playerData.mp = 0;
 			playerData.speed = 4;
 			playerData.damage = 1.0f;
@@ -53,8 +53,8 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 			playerData.shotDelay = .2f;
 			break;
 		case Type::Water:
-			playerData.maxhp = 65;
-			playerData.maxmp = 120;
+			playerData.maxhp = 50;
+			playerData.maxmp = 50;
 			playerData.mp = 40;
 			playerData.speed = 2.5f;
 			playerData.damage = 1.25f;
@@ -64,7 +64,7 @@ void PlayerDataInit(PlayerData& playerData, Type type, Type subType)
 			break;
 		case Type::Fire:
 			playerData.maxhp = 50;
-			playerData.maxmp = 100;
+			playerData.maxmp = 50;
 			playerData.mp = 20;
 			playerData.speed = 3;
 			playerData.damage = 1.35f;

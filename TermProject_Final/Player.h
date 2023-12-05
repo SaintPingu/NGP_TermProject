@@ -22,8 +22,8 @@ private:
 
 	bool isDeath;
 
-	float hp = 100, maxHp = 100;
-	float mp = 0, maxMp = 100;
+	float hp = 50, maxHp = 50;
+	float mp = 0, maxMp = 50;
 
 public:
 	Player(Type type, Type subType);

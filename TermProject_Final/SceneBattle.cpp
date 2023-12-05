@@ -498,7 +498,7 @@ bool SceneBattle::ProcessCommand()
 		case ServerBattleCmd::None:
 			return true;
 		case ServerBattleCmd::Loss:
-			SceneMgr->LoadScene(SceneType::Lobby);
+			SceneMgr->LoadScene(SceneType::Stage);
 
 			SoundMgr->StopEffectSound();
 			SoundMgr->PlayEffectSound(EffectSound::Loss);
@@ -507,7 +507,7 @@ bool SceneBattle::ProcessCommand()
 			break;
 		case ServerBattleCmd::Win:
 			std::cout << "[CMD] Win\n";
-			SceneMgr->LoadScene(SceneType::Lobby);
+			SceneMgr->LoadScene(SceneType::Stage);
 
 			SoundMgr->StopEffectSound();
 			SoundMgr->PlayEffectSound(EffectSound::Win);

@@ -29,7 +29,7 @@ void BattleScene::BattleEnd()
 	for (auto& [clientID, player] : players) {
 		CLIENT_MGR->PushCommand(clientID, (BYTE)ServerBattleCmd::Loss, nullptr, 0);
 		CLIENT_MGR->ClearCommand(clientID);
-		SCENE_MGR->PushChangeLocationEvent(clientID, SceneEventType::ChangeClientLocation_ToLobby);
+		SCENE_MGR->PushChangeLocationEvent(clientID, SceneEventType::ChangeClientLocation_ToStage);
 	}
 }
 void BattleScene::Release()
@@ -302,6 +302,18 @@ void BattleScene::CollideCheck_EnemyBullets_Player(Player* player)
 			player->Hit(bullet->GetDamage(), bullet->GetType(), bullet->GetPos());
 
 			enemyBullets->Pop(i);
+		}
+	}
+
+	auto& bossBullets = boss->GetBullets();
+	for (size_t i = 0; i < bossBullets->GetBulletCount(); ++i)
+	{
+		auto bullet = bossBullets->GetBullet(i);
+		if (player->IsCollide(bullet->GetRect()) == true)
+		{
+			player->Hit(bullet->GetDamage(), bullet->GetType(), bullet->GetPos());
+
+			bossBullets->Pop(i);
 		}
 	}
 }

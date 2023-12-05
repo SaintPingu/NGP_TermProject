@@ -2,28 +2,15 @@
 #include "Boss.h"
 #include "player.h"
 #include "bullet.h"
-//#include "timer.h"
 #include "effect.h"
-//#include "interface.h"
 #include "skill.h"
 #include "scene.h"
-//#include "sound.h"
 #include "Image.h"
 #include "SceneMgr.h"
 #include "ServerFramework.h"
 #include "BattleScene.h"
+#include "ServerPacket.h"
 
-
-
-//#include "phase.h"
-
-//extern GameData gameData;
-//extern Player* player;
-//extern EffectManager* effects;
-//extern SceneManager* sceneManager;
-//extern SoundManager* soundManager;
-//
-//extern Phase phase;
 
 
 void Boss::SetMove(const Vector2& unitVector)
@@ -313,7 +300,9 @@ bool Boss::CheckHit(const RECT& rectSrc, float damage, Type hitType, POINT effec
 			}
 		}
 
-		//effects->CreateHitEffect(effectPoint, hitType);
+		EffectType effectType = GetEffectType_Hit(hitType);
+		PushHitEffect(effectType, effectPoint);
+
 		const float calDamage = CalculateDamage(damage, GetType(), hitType);
 		if ((bossData.hp -= calDamage) <= 0)
 		{
